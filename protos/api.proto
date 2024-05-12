@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package api;
+
+service SchedulerApi {
+    rpc SubmitTask(TaskRequest) returns (TaskResponse) {}
+    rpc TaskCompleted(TaskCompletedRequest) returns (TaskCompletedResponse) {}
+}
+
+service WorkerApi {
+    rpc GetResult(GetResultRequest) returns (GetResultResponse) {}
+    rpc ExecuteTask(TaskRequest) returns (TaskResponse) {}
+}
+
+message TaskRequest {
+    Task task = 1;
+}
+
+message TaskResponse {
+    Future future = 1;
+}
+
+message TaskCompletedRequest {
+    bytes taskId = 1;
+}
+
+message TaskCompletedResponse {}
+
+message GetResultRequest {
+    Future future = 1;
+}
+
+message GetResultResponse {
+    bytes result = 1;
+}
+
+message Task {
+    bytes taskId = 1;
+    bytes taskData = 2;
+}
+
+message Future {
+    string resultLocation = 1;
+}
