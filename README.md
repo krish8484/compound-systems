@@ -2,6 +2,10 @@ CS244b Course Project
 
 The Distributed Task Execution System is designed to efficiently distribute and execute tasks across multiple worker processes while providing a mechanism for clients to track task completion and retrieve results. This system aims to leverage parallelism and distributed computing to enhance task execution performance.
 
+A set of capability extensions will be pursued from the base implementation to process across multiple machines with simplified scheduling, introduce a global scheduler for efficient resource allocation, and integrate shared memory mechanisms to facilitate seamless data sharing among distributed components. 
+
+Subsequent versions will implement a specific distributed system for a RAG-LLM (Retrieval-Augmented Generation Large Language Model) application leveraging shared memory for reuse, drawing inspiration from web application prefetching strategies. 
+
 Steps to Run
 
 1) Install miniconda from https://docs.anaconda.com/free/miniconda/
@@ -9,4 +13,4 @@ Steps to Run
 3) conda activate cs244b
 4) Trigger driver from one terminal - python3 driver.py (this will start the scheduler as well)
 5) Start the worker in another terminal - python3 worker.py
-5) Submit tasks with driver, they should be seen getting executed on worker.
+5) Submit tasks with the driver; they should be seen getting executed on the worker.
