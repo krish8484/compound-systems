@@ -1,11 +1,14 @@
 import signal
 import sys
 import socket
+from scheduler_client import SchedulerClient
 
 class Worker:
-    def __init__(self, scheduler_host, scheduler_port):
+    def __init__(self, scheduler_host, scheduler_port, worker_host, worker_port):
         self.scheduler_host = scheduler_host
         self.scheduler_port = scheduler_port
+        self.scheduler_client = SchedulerClient(self.scheduler_host, self.scheduler_port)
+        self.scheduler_client.RegisterWorker("{}:{}".format(worker_host, worker_port))
         signal.signal(signal.SIGINT, self.sigterm_handler)
 
     def start_client(self):
