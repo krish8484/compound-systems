@@ -1,15 +1,16 @@
-from scheduler import Scheduler
+from scheduler_client import SchedulerClient
+from worker_client import WorkerClient
+from Data.task import Task
+from logging_provider import logging
 
-def submit_task(task):
-    scheduler.submit_task(task)
-
-# Initialize the scheduler object
-scheduler = Scheduler("localhost", 8888)
 
 # Example usage
 if __name__ == "__main__":
-    while True:
-        task = input("Enter a task (or 'q' to quit): ")
-        if task.lower() == 'q':
-            break
-        submit_task(task)
+    schedulerClient = SchedulerClient("localhost", 50051)
+    future = schedulerClient.SubmitTask(Task(taskId="test id", taskDefintion="test definition", taskData="test".encode()))
+    logging.info(f"Received future: {future}")
+    workerClient = WorkerClient(future.host_name, future.port)
+    result = workerClient.GetResult(future)
+    logging.info(f"Result: {result}")
+    
+    

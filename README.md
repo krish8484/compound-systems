@@ -9,8 +9,9 @@ Subsequent versions will implement a specific distributed system for a RAG-LLM (
 Steps to Run
 
 1) Install miniconda from https://docs.anaconda.com/free/miniconda/
-2) conda create --name cs244b python=3.9
+2) conda create --name cs244b --file requirements.txt python=3.9
 3) conda activate cs244b
-4) Trigger driver from one terminal - python3 driver.py (this will start the scheduler as well)
-5) Start the worker in another terminal - python3 worker.py
-5) Submit tasks with the driver; they should be seen getting executed on the worker.
+4) Start the scheduler server from one terminal - python3 scheduler_server.py
+5) Start the worker server in another terminal - python3 worker_server.py
+6) Run driver for another terminal - python3 driver.py (There is an example code written under main for testing)
+7) Submit tasks with the driver; they should be seen getting executed on the worker.

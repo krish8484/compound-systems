@@ -2,6 +2,10 @@ import threading
 import queue
 import signal
 import sys
+import random
+from Data.task import Task
+from Data.future import Future
+from worker_client import WorkerClient
 from logging_provider import logging
 
 class Scheduler:
@@ -9,20 +13,21 @@ class Scheduler:
         self.task_queue = queue.Queue()
         self.completion_status = {}
         self.lock = threading.Lock()
-        self.workers = {}
+        self.workers = []
         signal.signal(signal.SIGINT, self.sigterm_handler)
 
-    def submit_task(self, task):
-        with self.lock:
-            self.task_queue.put(task)
-            self.completion_status[task] = False
-        logging.info("Task submitted to scheduler: {}".format(task))
+    def submit_task(self, task : Task) -> Future:
+        random_worker = random.choice(self.workers)
+        worker_client = WorkerClient(random_worker.split(":")[0], int(random_worker.split(":")[1]))
+        logging.info(f"Task {task} submitted to worker:{random_worker}")
+        return worker_client.ExecuteTask(task)
 
     def register_worker(self, worker_id):
-        self.workers[worker_id] = []
+        self.workers.append(worker_id)
+        logging.info(f"Worker {worker_id} registered")
 
     def task_completed(self, task_id, worker_id):
-        self.workers[worker_id].remove(task_id)
+        pass
 
     def assign_task(self):
         with self.lock:
@@ -42,5 +47,5 @@ class Scheduler:
                 self.get_task_completion(task)
 
     def sigterm_handler(self, signum, frame):
-        print("Exiting gracefully.")
+        logging.info("Exiting gracefully.")
         sys.exit(0)

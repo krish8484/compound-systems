@@ -13,10 +13,10 @@ class SchedulerClient:
         self.stub = api_pb2_grpc.SchedulerApiStub(self.channel)
 
     def SubmitTask(self, task: Task) -> Future:
-        _task = api_pb2.Task(taskId = task.task_id, taskDefinition = task.taskDefintion, taskData = task.taskData)
+        _task = api_pb2.Task(taskId = task.taskId, taskDefinition = task.taskDefintion, taskData = task.taskData)
         request = api_pb2.TaskRequest(task=_task)
         response = self.stub.SubmitTask(request)
-        return Future(result_location=response.future.resultLocation)
+        return Future(result_location=response.future.resultLocation, host_name=response.future.hostName, port=response.future.port)
     
     def TaskCompleted(self, task_id, worker_id) -> bool:
         request = api_pb2.TaskCompletedRequest(taskId = task_id, workerId = worker_id)
@@ -27,3 +27,5 @@ class SchedulerClient:
         request = api_pb2.RegisterWorkerRequest(workerId = worker_id)
         response = self.stub.RegisterWorker(request)
         return response.status.success
+    
+
