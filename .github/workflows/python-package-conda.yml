@@ -3,7 +3,7 @@ name: cs244b CI
 on: [push]
 
 jobs:
-  build-linux:
+  cs244b:
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 5
