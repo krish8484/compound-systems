@@ -23,10 +23,10 @@ class SchedulerClient:
         response = self.stub.TaskCompleted(request)
         return response.status.success
     
-    def RegisterWorker(self, worker_id) -> bool:
-        request = api_pb2.RegisterWorkerRequest(workerId = worker_id)
+    def RegisterWorker(self, host_name, port_number) -> int:
+        request = api_pb2.RegisterWorkerRequest(hostName = host_name, portNumber = port_number)
         response = self.stub.RegisterWorker(request)
-        return response.status.success
+        return response.workerIdAssignedByScheduler
     
 
 

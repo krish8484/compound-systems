@@ -12,8 +12,10 @@ class Scheduler:
     def __init__(self):
         self.task_queue = queue.Queue()
         self.completion_status = {}
-        self.lock = threading.Lock()
-        self.workers = []
+        self.workerConnectInfoLock = threading.Lock()
+        self.workerIdLock = threading.Lock()
+        self.workers = {} # Map that maintains the worker id to hostName,portNum 
+        self.globalIncrementalWorkerId = 0; # A globally incrementing worker id maintained by the scheduler
         signal.signal(signal.SIGINT, self.sigterm_handler)
 
     def submit_task(self, task : Task) -> Future:
@@ -22,9 +24,21 @@ class Scheduler:
         logging.info(f"Task {task} submitted to worker:{random_worker}")
         return worker_client.SubmitTask(task)
 
-    def register_worker(self, worker_id):
-        self.workers.append(worker_id)
-        logging.info(f"Worker {worker_id} registered")
+    def register_worker(self, host_name, port_number):
+        assignedWorkerId = 0;
+        
+        with self.workerIdLock:
+            assignedWorkerId = self.globalIncrementalWorkerId
+            self.globalIncrementalWorkerId +=1
+
+        workerConnectInfo = host_name + ',' + str(port_number)
+        
+        with self.workerConnectInfoLock:
+            self.workers[assignedWorkerId] = workerConnectInfo
+        
+        logging.info(f"Worker {assignedWorkerId} registered. ConnectionInfo: {workerConnectInfo}")
+
+        return assignedWorkerId
 
     def task_completed(self, task_id, worker_id):
         pass
