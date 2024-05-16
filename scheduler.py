@@ -40,6 +40,7 @@ class Scheduler:
 
         return assignedWorkerId
 
+
     def task_completed(self, task_id, worker_id):
         pass
 
