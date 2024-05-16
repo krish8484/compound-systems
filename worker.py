@@ -1,38 +1,47 @@
+import time
 import signal
 import sys
-import socket
+import uuid
+from scheduler_client import SchedulerClient
+from Data.future import Future
+from Data.task import Task
+from logging_provider import logging
+import multiprocessing
+import threading
 
 class Worker:
-    def __init__(self, scheduler_host, scheduler_port):
+    def __init__(self, scheduler_host, scheduler_port, worker_host, worker_port):
         self.scheduler_host = scheduler_host
         self.scheduler_port = scheduler_port
+        self.worker_host = worker_host
+        self.worker_port = worker_port
+        self.scheduler_client = SchedulerClient(self.scheduler_host, self.scheduler_port)
+        self.worker_id = "{}:{}".format(worker_host, worker_port)
+        self.scheduler_client.RegisterWorker(self.worker_id)
+
+        # Datastore for storing task result in memory. CREATED FOR TESTING FLOW -> NEED TO CHANGE TO FILE BASED SYSTEM LATER (Swarnim's PR)
+        self.dummyFileStore = {}
         signal.signal(signal.SIGINT, self.sigterm_handler)
 
-    def start_client(self):
-        worker_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        worker_socket.connect((self.scheduler_host, self.scheduler_port))
-        print("Worker connected to Scheduler.")
-        while True:
-            task = self.get_task(worker_socket)
-            if task:
-                self.execute_task(task)
-                self.notify_task_completion(task)
+    def submit_task(self, task: Task) -> Future:
+        resultLocation = str(uuid.uuid4())
+        self.dummyFileStore[resultLocation] = f"TASK {task.taskId} NOT COMPLETED".encode()
+        future = Future(resultLocation=resultLocation, hostName=self.worker_host, port=self.worker_port)
+        threading.Thread(target=self.execute_task, args=(task, future)).start()
+        logging.info(f"submitted task {task} to worker {self.worker_id}")
+        return future
 
-    def get_task(self, worker_socket):
-        return worker_socket.recv(1024).decode()
-
-    def execute_task(self, task):
-        print(f"executing task {task}")
-        pass
+    def execute_task(self, task: Task, future: Future):
+        logging.info(f"executing task {task}")
+        time.sleep(5)
+        self.dummyFileStore[future.resultLocation] = f"TASK {task.taskId} DONE".encode()
+    
+    def get_result(self, future: Future) -> bytes:
+        return self.dummyFileStore[future.resultLocation]
 
     def notify_task_completion(self, task):
         pass
 
     def sigterm_handler(self, signum, frame):
-        print("Exiting gracefully.")
+        logging.info("Exiting gracefully.")
         sys.exit(0)
-
-# Example usage
-if __name__ == "__main__":
-    worker = Worker("localhost", 8888)
-    worker.start_client()
