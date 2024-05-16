@@ -16,7 +16,7 @@ class SchedulerServer(api_pb2_grpc.SchedulerApiServicer):
 
     def SubmitTask(self, request, context):
         future = self.scheduler.submit_task(Task(taskId = request.task.taskId, taskDefintion = request.task.taskDefinition, taskData = request.task.taskData))
-        return api_pb2.TaskResponse(future=api_pb2.Future(resultLocation=future.result_location, hostName=future.host_name, port=future.port))
+        return api_pb2.TaskResponse(future=api_pb2.Future(resultLocation=future.resultLocation, hostName=future.hostName, port=future.port))
     
     def TaskCompleted(self, request, context):
         try:

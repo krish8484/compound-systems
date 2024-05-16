@@ -20,7 +20,7 @@ class Scheduler:
         random_worker = random.choice(self.workers)
         worker_client = WorkerClient(random_worker.split(":")[0], int(random_worker.split(":")[1]))
         logging.info(f"Task {task} submitted to worker:{random_worker}")
-        return worker_client.ExecuteTask(task)
+        return worker_client.SubmitTask(task)
 
     def register_worker(self, worker_id):
         self.workers.append(worker_id)
@@ -38,13 +38,6 @@ class Scheduler:
 
     def get_task_completion(self, task):
         pass
-
-    def handle_worker(self, client_socket):
-        while True:
-            task = self.assign_task()
-            if task:
-                client_socket.send(task.encode())
-                self.get_task_completion(task)
 
     def sigterm_handler(self, signum, frame):
         logging.info("Exiting gracefully.")

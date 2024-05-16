@@ -1,3 +1,4 @@
+import time
 import signal
 import sys
 import uuid
@@ -5,6 +6,8 @@ from scheduler_client import SchedulerClient
 from Data.future import Future
 from Data.task import Task
 from logging_provider import logging
+import multiprocessing
+import threading
 
 class Worker:
     def __init__(self, scheduler_host, scheduler_port, worker_host, worker_port):
@@ -20,15 +23,21 @@ class Worker:
         self.dummyFileStore = {}
         signal.signal(signal.SIGINT, self.sigterm_handler)
 
+    def submit_task(self, task: Task) -> Future:
+        resultLocation = str(uuid.uuid4())
+        self.dummyFileStore[resultLocation] = f"TASK {task.taskId} NOT COMPLETED".encode()
+        future = Future(resultLocation=resultLocation, hostName=self.worker_host, port=self.worker_port)
+        threading.Thread(target=self.execute_task, args=(task, future)).start()
+        logging.info(f"submitted task {task} to worker {self.worker_id}")
+        return future
 
-    def execute_task(self, task: Task) -> Future:
+    def execute_task(self, task: Task, future: Future):
         logging.info(f"executing task {task}")
-        resultLocation = str(uuid.uuid4()) #UniqueID
-        self.dummyFileStore[resultLocation] = "TASKDONE".encode()
-        return Future(result_location=resultLocation, host_name=self.worker_host, port=self.worker_port)
+        time.sleep(5)
+        self.dummyFileStore[future.resultLocation] = f"TASK {task.taskId} DONE".encode()
     
     def get_result(self, future: Future) -> bytes:
-        return self.dummyFileStore[future.result_location]
+        return self.dummyFileStore[future.resultLocation]
 
     def notify_task_completion(self, task):
         pass

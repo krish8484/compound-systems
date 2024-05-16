@@ -17,12 +17,12 @@ class WorkerServer(api_pb2_grpc.WorkerApiServicer):
         self.worker = Worker(SCHEDULER_HOST, SCHEDULER_PORT, WORKER_HOST, WORKER_PORT)
 
     def GetResult(self, request, context):
-        result = self.worker.get_result(Future(result_location= request.future.resultLocation, host_name=request.future.hostName, port=request.future.port))
+        result = self.worker.get_result(Future(resultLocation= request.future.resultLocation, hostName=request.future.hostName, port=request.future.port))
         return api_pb2.GetResultResponse(result=result)
 
-    def ExecuteTask(self, request, context):
-        future = self.worker.execute_task(Task(taskId=request.task.taskId, taskDefintion=request.task.taskDefinition, taskData=request.task.taskData))
-        return api_pb2.TaskResponse(future=api_pb2.Future(resultLocation=future.result_location, hostName=future.host_name, port=future.port))
+    def SubmitTask(self, request, context):
+        future = self.worker.submit_task(Task(taskId=request.task.taskId, taskDefintion=request.task.taskDefinition, taskData=request.task.taskData))
+        return api_pb2.TaskResponse(future=api_pb2.Future(resultLocation=future.resultLocation, hostName=future.hostName, port=future.port))
 
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor())

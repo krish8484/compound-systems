@@ -146,8 +146,8 @@ class WorkerApiStub(object):
                 request_serializer=api__pb2.GetResultRequest.SerializeToString,
                 response_deserializer=api__pb2.GetResultResponse.FromString,
                 )
-        self.ExecuteTask = channel.unary_unary(
-                '/api.WorkerApi/ExecuteTask',
+        self.SubmitTask = channel.unary_unary(
+                '/api.WorkerApi/SubmitTask',
                 request_serializer=api__pb2.TaskRequest.SerializeToString,
                 response_deserializer=api__pb2.TaskResponse.FromString,
                 )
@@ -162,7 +162,7 @@ class WorkerApiServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def ExecuteTask(self, request, context):
+    def SubmitTask(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -176,8 +176,8 @@ def add_WorkerApiServicer_to_server(servicer, server):
                     request_deserializer=api__pb2.GetResultRequest.FromString,
                     response_serializer=api__pb2.GetResultResponse.SerializeToString,
             ),
-            'ExecuteTask': grpc.unary_unary_rpc_method_handler(
-                    servicer.ExecuteTask,
+            'SubmitTask': grpc.unary_unary_rpc_method_handler(
+                    servicer.SubmitTask,
                     request_deserializer=api__pb2.TaskRequest.FromString,
                     response_serializer=api__pb2.TaskResponse.SerializeToString,
             ),
@@ -209,7 +209,7 @@ class WorkerApi(object):
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
-    def ExecuteTask(request,
+    def SubmitTask(request,
             target,
             options=(),
             channel_credentials=None,
@@ -219,7 +219,7 @@ class WorkerApi(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/api.WorkerApi/ExecuteTask',
+        return grpc.experimental.unary_unary(request, target, '/api.WorkerApi/SubmitTask',
             api__pb2.TaskRequest.SerializeToString,
             api__pb2.TaskResponse.FromString,
             options, channel_credentials,

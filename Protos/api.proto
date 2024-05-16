@@ -10,7 +10,7 @@ service SchedulerApi {
 
 service WorkerApi {
     rpc GetResult(GetResultRequest) returns (GetResultResponse) {}
-    rpc ExecuteTask(TaskRequest) returns (TaskResponse) {}
+    rpc SubmitTask(TaskRequest) returns (TaskResponse) {}
 }
 
 message TaskRequest {
