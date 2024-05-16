@@ -20,7 +20,7 @@ class Scheduler:
 
     def submit_task(self, task : Task) -> Future:
         random_worker = random.choice(self.workers)
-        worker_client = WorkerClient(random_worker.split(":")[0], int(random_worker.split(":")[1]))
+        worker_client = WorkerClient(random_worker.split(",")[0], int(random_worker.split(",")[1]))
         logging.info(f"Task {task} submitted to worker:{random_worker}")
         return worker_client.SubmitTask(task)
 
