@@ -27,12 +27,8 @@ class SchedulerServer(api_pb2_grpc.SchedulerApiServicer):
             return api_pb2.TaskCompletedResponse(status = api_pb2.Status(success = False))
     
     def RegisterWorker(self, request, context):
-        try:
-            self.scheduler.register_worker(request.workerId)
-            return api_pb2.RegisterWorkerResponse(status = api_pb2.Status(success = True))
-        except Exception as e:
-            logging.error(e)
-            return api_pb2.RegisterWorkerResponse(status = api_pb2.Status(success = False))
+        assignedWorkerId = self.scheduler.register_worker(request.hostName, request.portNumber)
+        return api_pb2.RegisterWorkerResponse(workerIdAssignedByScheduler = assignedWorkerId)
 
 def serve():
     scheduler_endpoint = f"{SCHEDULER_HOST}:{SCHEDULER_PORT}"

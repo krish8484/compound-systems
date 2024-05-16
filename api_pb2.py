@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\tapi.proto\x12\x03\x61pi\"&\n\x0bTaskRequest\x12\x17\n\x04task\x18\x01 \x01(\x0b\x32\t.api.Task\"+\n\x0cTaskResponse\x12\x1b\n\x06\x66uture\x18\x01 \x01(\x0b\x32\x0b.api.Future\"8\n\x14TaskCompletedRequest\x12\x0e\n\x06taskId\x18\x01 \x01(\t\x12\x10\n\x08workerId\x18\x02 \x01(\t\"4\n\x15TaskCompletedResponse\x12\x1b\n\x06status\x18\x01 \x01(\x0b\x32\x0b.api.Status\")\n\x15RegisterWorkerRequest\x12\x10\n\x08workerId\x18\x01 \x01(\t\"5\n\x16RegisterWorkerResponse\x12\x1b\n\x06status\x18\x01 \x01(\x0b\x32\x0b.api.Status\"/\n\x10GetResultRequest\x12\x1b\n\x06\x66uture\x18\x01 \x01(\x0b\x32\x0b.api.Future\"#\n\x11GetResultResponse\x12\x0e\n\x06result\x18\x01 \x01(\x0c\"@\n\x04Task\x12\x0e\n\x06taskId\x18\x01 \x01(\t\x12\x16\n\x0etaskDefinition\x18\x02 \x01(\t\x12\x10\n\x08taskData\x18\x03 \x01(\x0c\"@\n\x06\x46uture\x12\x16\n\x0eresultLocation\x18\x01 \x01(\t\x12\x10\n\x08hostName\x18\x02 \x01(\t\x12\x0c\n\x04port\x18\x03 \x01(\x05\"\x19\n\x06Status\x12\x0f\n\x07success\x18\x01 \x01(\x08\x32\xda\x01\n\x0cSchedulerApi\x12\x33\n\nSubmitTask\x12\x10.api.TaskRequest\x1a\x11.api.TaskResponse\"\x00\x12H\n\rTaskCompleted\x12\x19.api.TaskCompletedRequest\x1a\x1a.api.TaskCompletedResponse\"\x00\x12K\n\x0eRegisterWorker\x12\x1a.api.RegisterWorkerRequest\x1a\x1b.api.RegisterWorkerResponse\"\x00\x32~\n\tWorkerApi\x12<\n\tGetResult\x12\x15.api.GetResultRequest\x1a\x16.api.GetResultResponse\"\x00\x12\x33\n\nSubmitTask\x12\x10.api.TaskRequest\x1a\x11.api.TaskResponse\"\x00\x62\x06proto3'
+  serialized_pb=b'\n\tapi.proto\x12\x03\x61pi\"&\n\x0bTaskRequest\x12\x17\n\x04task\x18\x01 \x01(\x0b\x32\t.api.Task\"+\n\x0cTaskResponse\x12\x1b\n\x06\x66uture\x18\x01 \x01(\x0b\x32\x0b.api.Future\"8\n\x14TaskCompletedRequest\x12\x0e\n\x06taskId\x18\x01 \x01(\t\x12\x10\n\x08workerId\x18\x02 \x01(\t\"4\n\x15TaskCompletedResponse\x12\x1b\n\x06status\x18\x01 \x01(\x0b\x32\x0b.api.Status\"=\n\x15RegisterWorkerRequest\x12\x10\n\x08hostName\x18\x01 \x01(\t\x12\x12\n\nportNumber\x18\x02 \x01(\x05\"=\n\x16RegisterWorkerResponse\x12#\n\x1bworkerIdAssignedByScheduler\x18\x01 \x01(\x05\"/\n\x10GetResultRequest\x12\x1b\n\x06\x66uture\x18\x01 \x01(\x0b\x32\x0b.api.Future\"#\n\x11GetResultResponse\x12\x0e\n\x06result\x18\x01 \x01(\x0c\"@\n\x04Task\x12\x0e\n\x06taskId\x18\x01 \x01(\t\x12\x16\n\x0etaskDefinition\x18\x02 \x01(\t\x12\x10\n\x08taskData\x18\x03 \x01(\x0c\"@\n\x06\x46uture\x12\x16\n\x0eresultLocation\x18\x01 \x01(\t\x12\x10\n\x08hostName\x18\x02 \x01(\t\x12\x0c\n\x04port\x18\x03 \x01(\x05\"\x19\n\x06Status\x12\x0f\n\x07success\x18\x01 \x01(\x08\x32\xda\x01\n\x0cSchedulerApi\x12\x33\n\nSubmitTask\x12\x10.api.TaskRequest\x1a\x11.api.TaskResponse\"\x00\x12H\n\rTaskCompleted\x12\x19.api.TaskCompletedRequest\x1a\x1a.api.TaskCompletedResponse\"\x00\x12K\n\x0eRegisterWorker\x12\x1a.api.RegisterWorkerRequest\x1a\x1b.api.RegisterWorkerResponse\"\x00\x32~\n\tWorkerApi\x12<\n\tGetResult\x12\x15.api.GetResultRequest\x1a\x16.api.GetResultResponse\"\x00\x12\x33\n\nSubmitTask\x12\x10.api.TaskRequest\x1a\x11.api.TaskResponse\"\x00\x62\x06proto3'
 )
 
 
@@ -169,9 +169,16 @@ _REGISTERWORKERREQUEST = _descriptor.Descriptor(
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='workerId', full_name='api.RegisterWorkerRequest.workerId', index=0,
+      name='hostName', full_name='api.RegisterWorkerRequest.hostName', index=0,
       number=1, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='portNumber', full_name='api.RegisterWorkerRequest.portNumber', index=1,
+      number=2, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
@@ -188,7 +195,7 @@ _REGISTERWORKERREQUEST = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=215,
-  serialized_end=256,
+  serialized_end=276,
 )
 
 
@@ -201,9 +208,9 @@ _REGISTERWORKERRESPONSE = _descriptor.Descriptor(
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='status', full_name='api.RegisterWorkerResponse.status', index=0,
-      number=1, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
+      name='workerIdAssignedByScheduler', full_name='api.RegisterWorkerResponse.workerIdAssignedByScheduler', index=0,
+      number=1, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
@@ -219,8 +226,8 @@ _REGISTERWORKERRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=258,
-  serialized_end=311,
+  serialized_start=278,
+  serialized_end=339,
 )
 
 
@@ -251,8 +258,8 @@ _GETRESULTREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=313,
-  serialized_end=360,
+  serialized_start=341,
+  serialized_end=388,
 )
 
 
@@ -283,8 +290,8 @@ _GETRESULTRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=362,
-  serialized_end=397,
+  serialized_start=390,
+  serialized_end=425,
 )
 
 
@@ -329,8 +336,8 @@ _TASK = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=399,
-  serialized_end=463,
+  serialized_start=427,
+  serialized_end=491,
 )
 
 
@@ -375,8 +382,8 @@ _FUTURE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=465,
-  serialized_end=529,
+  serialized_start=493,
+  serialized_end=557,
 )
 
 
@@ -407,14 +414,13 @@ _STATUS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=531,
-  serialized_end=556,
+  serialized_start=559,
+  serialized_end=584,
 )
 
 _TASKREQUEST.fields_by_name['task'].message_type = _TASK
 _TASKRESPONSE.fields_by_name['future'].message_type = _FUTURE
 _TASKCOMPLETEDRESPONSE.fields_by_name['status'].message_type = _STATUS
-_REGISTERWORKERRESPONSE.fields_by_name['status'].message_type = _STATUS
 _GETRESULTREQUEST.fields_by_name['future'].message_type = _FUTURE
 DESCRIPTOR.message_types_by_name['TaskRequest'] = _TASKREQUEST
 DESCRIPTOR.message_types_by_name['TaskResponse'] = _TASKRESPONSE
@@ -515,8 +521,8 @@ _SCHEDULERAPI = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=559,
-  serialized_end=777,
+  serialized_start=587,
+  serialized_end=805,
   methods=[
   _descriptor.MethodDescriptor(
     name='SubmitTask',
@@ -561,8 +567,8 @@ _WORKERAPI = _descriptor.ServiceDescriptor(
   index=1,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=779,
-  serialized_end=905,
+  serialized_start=807,
+  serialized_end=933,
   methods=[
   _descriptor.MethodDescriptor(
     name='GetResult',

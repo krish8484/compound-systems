@@ -31,11 +31,12 @@ message TaskCompletedResponse {
 }
 
 message RegisterWorkerRequest {
-    string workerId = 1;
+    string hostName = 1;
+    int32 portNumber = 2;
 }
 
 message RegisterWorkerResponse {
-    Status status = 1;
+    int32 workerIdAssignedByScheduler = 1;
 }
 
 message GetResultRequest {

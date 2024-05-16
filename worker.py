@@ -16,8 +16,10 @@ class Worker:
         self.worker_host = worker_host
         self.worker_port = worker_port
         self.scheduler_client = SchedulerClient(self.scheduler_host, self.scheduler_port)
-        self.worker_id = "{}:{}".format(worker_host, worker_port)
-        self.scheduler_client.RegisterWorker(self.worker_id)
+
+        self.worker_id = self.scheduler_client.RegisterWorker(self.worker_host, self.worker_port)
+
+        logging.info(f"Registered worker - WorkerId assigned from scheduler is {self.worker_id}")
 
         # Datastore for storing task result in memory. CREATED FOR TESTING FLOW -> NEED TO CHANGE TO FILE BASED SYSTEM LATER (Swarnim's PR)
         self.dummyFileStore = {}
