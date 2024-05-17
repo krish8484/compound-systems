@@ -23,7 +23,6 @@ class Scheduler:
             random_worker_id = random.randint(0, self.globalIncrementalWorkerId - 1)
         else:
             random_worker_id = 0
-        print(random_worker_id)
         random_worker = self.workers[random_worker_id]
         worker_client = WorkerClient(random_worker.split(",")[0], int(random_worker.split(",")[1]))
         logging.info(f"Task {task} submitted to worker ID:{random_worker_id}")
