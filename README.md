@@ -15,5 +15,8 @@ Steps to Run
 5) Start the scheduler server from one terminal - python3 scheduler_server.py
 6) Start the worker server in another terminal - python3 worker_server.py <PortNumber>
     # Example Command: python3 worker_server.py 50054
+    # Example Command: python3 worker_server.py 50054 --addDelay
+
+    If --addDelay parameter is passed, delays are added randomly for the worker operations.
 7) Run driver for another terminal - python3 driver.py (There is an example code written under main for testing)
 8) Submit tasks with the driver; they should be seen getting executed on the worker.
