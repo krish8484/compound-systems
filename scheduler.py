@@ -7,6 +7,7 @@ from Data.task import Task
 from Data.future import Future
 from worker_client import WorkerClient
 from logging_provider import logging
+import grpc
 
 class Scheduler:
     def __init__(self):
@@ -22,7 +23,16 @@ class Scheduler:
         random_worker = random.choice(self.workers)
         worker_client = WorkerClient(random_worker.split(",")[0], int(random_worker.split(",")[1]))
         logging.info(f"Task {task} submitted to worker:{random_worker}")
-        return worker_client.SubmitTask(task)
+
+        try:
+            return worker_client.SubmitTask(task)
+        except grpc.RpcError as rpc_error:
+            if rpc_error.code() == grpc.StatusCode.CANCELLED:
+                logging.error(f"SubmitTask: RPC Cancelled. RPC Error: code={rpc_error.code()} message={rpc_error.details()}")
+            elif rpc_error.code() == grpc.StatusCode.UNAVAILABLE:
+                logging.error(f"SubmitTask: Worker Unavailable. RPC Error: code={rpc_error.code()} message={rpc_error.details()}")
+            else:
+                logging.error(f"SubmitTask: Unhandled RPC error: code={rpc_error.code()} message={rpc_error.details()}")
 
     def register_worker(self, host_name, port_number):
         assignedWorkerId = 0;

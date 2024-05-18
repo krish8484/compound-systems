@@ -23,11 +23,11 @@ class Worker:
             logging.info(f"Registered worker - WorkerId assigned from scheduler is {self.worker_id}")
         except grpc.RpcError as rpc_error:
             if rpc_error.code() == grpc.StatusCode.CANCELLED:
-                logging.error(f"Register Worker RPC Cancelled. RPC Error: code={rpc_error.code()} message={rpc_error.details()}")
+                logging.error(f"RegisterWorker: RPC Cancelled. RPC Error: code={rpc_error.code()} message={rpc_error.details()}")
             elif rpc_error.code() == grpc.StatusCode.UNAVAILABLE:
-                logging.error(f"Scheduler Unavailable. RPC Error: code={rpc_error.code()} message={rpc_error.details()}")
+                logging.error(f"RegisterWorker: Scheduler Unavailable. RPC Error: code={rpc_error.code()} message={rpc_error.details()}")
             else:
-                logging.error(f"Unhandled RPC error: code={rpc_error.code()} message={rpc_error.details()}")
+                logging.error(f"RegisterWorker: Unhandled RPC error: code={rpc_error.code()} message={rpc_error.details()}")
 
         # Datastore for storing task result in memory. CREATED FOR TESTING FLOW -> NEED TO CHANGE TO FILE BASED SYSTEM LATER (Swarnim's PR)
         self.dummyFileStore = {}
