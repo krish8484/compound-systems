@@ -2,19 +2,25 @@ from scheduler_client import SchedulerClient
 from worker_client import WorkerClient
 from Data.task import Task
 from logging_provider import logging
-
+import json
 
 # Example usage
 if __name__ == "__main__":
     schedulerClient = SchedulerClient("localhost", 50051)
-    future = schedulerClient.SubmitTask(Task(taskId="test id", taskDefintion="test definition", taskData="test".encode()))
-    logging.info(f"Received future: {future}")
-    workerClient = WorkerClient(future.hostName, future.port)
-    while True:
-        result = workerClient.GetResult(future)
-        logging.info(f"Result: {result}")
-        if input("Enter 'q' to quit or any other key to get result again from worker:") == 'q':
-            break
-    
-    
+    matrix1 = [[1, 2], [3, 4]]
+    matrix2 = [[5, 6], [7, 8]]
 
+    future = schedulerClient.SubmitTask(Task(taskId="0", taskDefintion="dot_product", taskData=json.dumps([matrix1, matrix2]).encode()))
+    future2 = schedulerClient.SubmitTask(Task(taskId="1", taskDefintion="mat_add", taskData=json.dumps([matrix1, matrix2]).encode()))
+    future3 = schedulerClient.SubmitTask(Task(taskId="2", taskDefintion="mat_subtract", taskData=json.dumps([matrix1, matrix2]).encode()))
+
+    logging.info(f"Received future: {future}")
+    logging.info(f"Received future: {future2}")
+    logging.info(f"Received future: {future3}")
+    workerClient = WorkerClient(future.hostName, future.port)
+    result = workerClient.GetResult(future)
+    logging.info(f"Result: {result}")
+    result = workerClient.GetResult(future2)
+    logging.info(f"Result: {result}")
+    result = workerClient.GetResult(future3)
+    logging.info(f"Result: {result}")
