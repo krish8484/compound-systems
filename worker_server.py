@@ -15,7 +15,6 @@ WORKER_PORT = 50052
 
 class WorkerServer(api_pb2_grpc.WorkerApiServicer):
     def __init__(self):
-        print(f"IN init {WORKER_PORT}")
         self.worker = Worker(SCHEDULER_HOST, SCHEDULER_PORT, WORKER_HOST, WORKER_PORT)
 
     def GetResult(self, request, context):
