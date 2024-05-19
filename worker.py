@@ -9,6 +9,9 @@ from logging_provider import logging
 import multiprocessing
 import threading
 from random import randrange
+import grpc
+import numpy as np
+import json
 
 class Worker:
     def __init__(
@@ -26,12 +29,25 @@ class Worker:
         self.add_delay = add_delay
 
         self.add_random_delay()
-        self.worker_id = self.scheduler_client.RegisterWorker(self.worker_host, self.worker_port)
-
-        logging.info(f"Registered worker - WorkerId assigned from scheduler is {self.worker_id}")
+        try:
+            self.worker_id = self.scheduler_client.RegisterWorker(self.worker_host, self.worker_port)
+            logging.info(f"Registered worker - WorkerId assigned from scheduler is {self.worker_id}")
+        except grpc.RpcError as rpc_error:
+            if rpc_error.code() == grpc.StatusCode.CANCELLED:
+                logging.error(f"RegisterWorker: RPC Cancelled. RPC Error: code={rpc_error.code()} message={rpc_error.details()}")
+            elif rpc_error.code() == grpc.StatusCode.UNAVAILABLE:
+                logging.error(f"RegisterWorker: Scheduler Unavailable. RPC Error: code={rpc_error.code()} message={rpc_error.details()}")
+            else:
+                logging.error(f"RegisterWorker: Unhandled RPC error: code={rpc_error.code()} message={rpc_error.details()}")
 
         # Datastore for storing task result in memory. CREATED FOR TESTING FLOW -> NEED TO CHANGE TO FILE BASED SYSTEM LATER (Swarnim's PR)
         self.dummyFileStore = {}
+        self.operations = {
+            "dot_product": self.dot_product,
+            "mat_add": self.mat_add,
+            "mat_subtract": self.mat_subtract,
+            # Add more functions as needed
+        }
         signal.signal(signal.SIGINT, self.sigterm_handler)
 
     def submit_task(self, task: Task) -> Future:
@@ -45,10 +61,19 @@ class Worker:
 
     def execute_task(self, task: Task, future: Future):
         logging.info(f"executing task {task}")
-        time.sleep(5)
+
         self.add_random_delay()
-        self.dummyFileStore[future.resultLocation] = f"TASK {task.taskId} DONE".encode()
-    
+        arguments = task.taskData[0:].decode('utf-8').strip()
+        function_name = task.taskDefintion
+
+        if function_name in self.operations:
+            arguments = self.decode_argument(arguments)
+            result = self.operations[function_name](*arguments)
+            self.dummyFileStore[future.resultLocation] = json.dumps(result).encode()
+
+        else:
+            logging.info("Unknown function:", function_name)
+
     def get_result(self, future: Future) -> bytes:
         self.add_random_delay()
         return self.dummyFileStore[future.resultLocation]
@@ -68,4 +93,22 @@ class Worker:
                 time.sleep(5)
             else:
                 logging.info(f"AddDelay is true but not adding any delay.")
+                
+    def decode_argument(self, arg):
+        # Convert bytes to NumPy array
+        return [np.array(matrix) for matrix in json.loads(arg)]
 
+    def dot_product(self, matrix1, matrix2):
+        # Perform dot product of the matrices
+        result = np.dot(matrix1, matrix2)
+        return result.tolist()
+
+    def mat_add(self, matrix1, matrix2):
+        # Perform matrix addition
+        result = np.add(matrix1, matrix2)
+        return result.tolist()
+
+    def mat_subtract(self, matrix1, matrix2):
+        # Perform matrix subtraction
+        result = np.subtract(matrix1, matrix2)
+        return result.tolist()

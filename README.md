@@ -18,5 +18,6 @@ Steps to Run
     # Example Command: python3 worker_server.py 50054 --addDelay
 
     If --addDelay parameter is passed, delays are added randomly for the worker operations.
+
 7) Run driver for another terminal - python3 driver.py (There is an example code written under main for testing)
 8) Submit tasks with the driver; they should be seen getting executed on the worker.
