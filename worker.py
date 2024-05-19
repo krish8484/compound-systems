@@ -8,6 +8,7 @@ from Data.task import Task
 from logging_provider import logging
 import multiprocessing
 import threading
+import grpc
 import numpy as np
 import json
 
@@ -19,9 +20,16 @@ class Worker:
         self.worker_port = worker_port
         self.scheduler_client = SchedulerClient(self.scheduler_host, self.scheduler_port)
 
-        self.worker_id = self.scheduler_client.RegisterWorker(self.worker_host, self.worker_port)
-
-        logging.info(f"Registered worker - WorkerId assigned from scheduler is {self.worker_id}")
+        try:
+            self.worker_id = self.scheduler_client.RegisterWorker(self.worker_host, self.worker_port)
+            logging.info(f"Registered worker - WorkerId assigned from scheduler is {self.worker_id}")
+        except grpc.RpcError as rpc_error:
+            if rpc_error.code() == grpc.StatusCode.CANCELLED:
+                logging.error(f"RegisterWorker: RPC Cancelled. RPC Error: code={rpc_error.code()} message={rpc_error.details()}")
+            elif rpc_error.code() == grpc.StatusCode.UNAVAILABLE:
+                logging.error(f"RegisterWorker: Scheduler Unavailable. RPC Error: code={rpc_error.code()} message={rpc_error.details()}")
+            else:
+                logging.error(f"RegisterWorker: Unhandled RPC error: code={rpc_error.code()} message={rpc_error.details()}")
 
         # Datastore for storing task result in memory. CREATED FOR TESTING FLOW -> NEED TO CHANGE TO FILE BASED SYSTEM LATER (Swarnim's PR)
         self.dummyFileStore = {}
