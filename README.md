@@ -13,6 +13,7 @@ Steps to Run
 3) conda activate cs244b
 4) Run compile_proto script based on your target machine from root repo folder (CS244B)
 5) Start the scheduler server from one terminal - python3 scheduler_server.py
-6) Start the worker server in another terminal - python3 worker_server.py
+6) Start the worker server in another terminal - python3 worker_server.py <PortNumber>
+    # Example Command: python3 worker_server.py 50054
 7) Run driver for another terminal - python3 driver.py (There is an example code written under main for testing)
 8) Submit tasks with the driver; they should be seen getting executed on the worker.

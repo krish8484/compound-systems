@@ -6,6 +6,7 @@ from logging_provider import logging
 from worker import Worker
 from Data.task import Task
 from Data.future import Future
+import argparse
 
 SCHEDULER_HOST = "localhost"
 SCHEDULER_PORT = 50051
@@ -27,10 +28,15 @@ class WorkerServer(api_pb2_grpc.WorkerApiServicer):
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor())
     api_pb2_grpc.add_WorkerApiServicer_to_server(WorkerServer(), server)
-    server.add_insecure_port('localhost:50052')
+    hostNamePortNumber = WORKER_HOST + ':' + str(WORKER_PORT)
+    server.add_insecure_port(hostNamePortNumber)
     server.start()
-    logging.info("Worker listening on {}:{}".format(WORKER_HOST, WORKER_PORT))
+    logging.info("Worker listening on {}".format(hostNamePortNumber))
     server.wait_for_termination()
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description = 'Please pass the port number.')
+    parser.add_argument('PortNumber', help='Please pass the portNumber on which you want the worker to listen.')
+    args = parser.parse_args()
+    WORKER_PORT = int(args.PortNumber)
     serve()
