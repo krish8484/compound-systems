@@ -25,24 +25,24 @@ jobs:
     - name: Create and activate environment
       run: |
         conda create --name cs244b-env python=3.9 -y
-        echo "conda activate cs244b-env" >> $GITHUB_ENV
+        echo "CONDA_ENV_NAME=cs244b-env" >> $GITHUB_ENV
       shell: bash
 
     - name: Install dependencies
       run: |
-        conda activate cs244b-env
+        conda activate $CONDA_ENV_NAME
         pip install -r requirements.txt
       shell: bash
 
     - name: Lint with flake8
       run: |
-        conda activate cs244b-env
+        conda activate $CONDA_ENV_NAME
         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
       shell: bash
 
     - name: Test with pytest
       run: |
-        conda activate cs244b-env
+        conda activate $CONDA_ENV_NAME
         pytest
       shell: bash
