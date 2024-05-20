@@ -1,16 +1,19 @@
-import time
 import signal
 import sys
 import uuid
 from scheduler_client import SchedulerClient
+from worker_client import WorkerClient
 from Data.future import Future
 from Data.task import Task
 from logging_provider import logging
-import multiprocessing
 import threading
 import grpc
-import numpy as np
 import json
+import time
+from operations import Operations
+import constants
+from exceptions import WorkerUnableToExecuteTaskError
+
 
 class Worker:
     def __init__(self, scheduler_host, scheduler_port, worker_host, worker_port):
@@ -33,17 +36,12 @@ class Worker:
 
         # Datastore for storing task result in memory. CREATED FOR TESTING FLOW -> NEED TO CHANGE TO FILE BASED SYSTEM LATER (Swarnim's PR)
         self.dummyFileStore = {}
-        self.operations = {
-            "dot_product": self.dot_product,
-            "mat_add": self.mat_add,
-            "mat_subtract": self.mat_subtract,
-            # Add more functions as needed
-        }
+        self.operations = Operations(self)
         signal.signal(signal.SIGINT, self.sigterm_handler)
 
     def submit_task(self, task: Task) -> Future:
         resultLocation = str(uuid.uuid4())
-        self.dummyFileStore[resultLocation] = f"TASK {task.taskId} NOT COMPLETED".encode()
+        self.dummyFileStore[resultLocation] = constants.NOTCOMPLETED
         future = Future(resultLocation=resultLocation, hostName=self.worker_host, port=self.worker_port)
         threading.Thread(target=self.execute_task, args=(task, future)).start()
         logging.info(f"submitted task {task} to worker {self.worker_id}")
@@ -51,14 +49,11 @@ class Worker:
 
     def execute_task(self, task: Task, future: Future):
         logging.info(f"executing task {task}")
-        arguments = task.taskData[0:].decode('utf-8').strip()
         function_name = task.taskDefintion
 
-        if function_name in self.operations:
-            arguments = self.decode_argument(arguments)
-            result = self.operations[function_name](*arguments)
+        if function_name in self.operations.operationsMapping:
+            result = self.operations.operationsMapping[function_name](*task.taskData)
             self.dummyFileStore[future.resultLocation] = json.dumps(result).encode()
-
         else:
             logging.info("Unknown function:", function_name)
 
@@ -68,25 +63,20 @@ class Worker:
     def notify_task_completion(self, task):
         pass
 
+    def get_result_from_worker(self, future: Future) -> bytes:
+        if (future.hostName == self.worker_host and future.port == self.worker_port):
+            return self.get_result(future)
+        workerClient = WorkerClient(future.hostName, future.port)
+        while True:
+            result = workerClient.GetResult(future=future)
+            if result == constants.NOTCOMPLETED:
+                time.sleep(constants.WAITTIMEFORPOLLINGRESULT)
+                continue
+            elif result == constants.ERROR:
+                raise WorkerUnableToExecuteTaskError(future)
+            else:
+                return result
+
     def sigterm_handler(self, signum, frame):
         logging.info("Exiting gracefully.")
         sys.exit(0)
-
-    def decode_argument(self, arg):
-        # Convert bytes to NumPy array
-        return [np.array(matrix) for matrix in json.loads(arg)]
-
-    def dot_product(self, matrix1, matrix2):
-        # Perform dot product of the matrices
-        result = np.dot(matrix1, matrix2)
-        return result.tolist()
-
-    def mat_add(self, matrix1, matrix2):
-        # Perform matrix addition
-        result = np.add(matrix1, matrix2)
-        return result.tolist()
-
-    def mat_subtract(self, matrix1, matrix2):
-        # Perform matrix subtraction
-        result = np.subtract(matrix1, matrix2)
-        return result.tolist()
