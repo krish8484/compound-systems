@@ -6,7 +6,6 @@ class Task:
     def __init__(self, taskId, taskDefintion, taskData):
         self.taskId = taskId
         self.taskDefintion = taskDefintion
-        print(type(taskData))
         if len(taskData)!=0 and not isinstance(taskData[0], api_pb2.TaskDataParam):
             self.taskData = taskData
         # Converts list of api_pb2.TaskDataParam to list of future and/or bytes
