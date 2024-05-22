@@ -79,7 +79,7 @@ class Worker:
         return self.dummyFileStore[future.resultLocation]
 
     def notify_task_completion(self, task):
-        self.add_delay()
+        self.add_random_delay()
         pass
 
     def sigterm_handler(self, signum, frame):
@@ -89,8 +89,9 @@ class Worker:
     def add_random_delay(self):
         if self.add_delay:
             if randrange(100) > 50:
-                logging.info(f"AddDelay is true - Adding delay of 5 seconds.")
-                time.sleep(5)
+                delayVal = randrange(10)
+                logging.info(f"AddDelay is true - Adding delay of {delayVal} seconds.")
+                time.sleep(delayVal)
             else:
                 logging.info(f"AddDelay is true but not adding any delay.")
                 

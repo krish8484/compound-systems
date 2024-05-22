@@ -14,8 +14,8 @@ Steps to Run
 4) Run compile_proto script based on your target machine from root repo folder (CS244B)
 5) Start the scheduler server from one terminal - python3 scheduler_server.py
 6) Start the worker server in another terminal - python3 worker_server.py <PortNumber>
-    # Example Command: python3 worker_server.py 50054
-    # Example Command: python3 worker_server.py 50054 --addDelay
+    Example Command: python3 worker_server.py 50054
+    Example Command: python3 worker_server.py 50054 --addDelay
 
     If --addDelay parameter is passed, delays are added randomly for the worker operations.
 
