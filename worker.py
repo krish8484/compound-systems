@@ -20,13 +20,17 @@ class Worker:
             scheduler_port,
             worker_host,
             worker_port,
-            add_delay):
+            add_delay,
+            max_workers_count,
+            gpu_enabled):
         self.scheduler_host = scheduler_host
         self.scheduler_port = scheduler_port
         self.worker_host = worker_host
         self.worker_port = worker_port
         self.scheduler_client = SchedulerClient(self.scheduler_host, self.scheduler_port)
         self.add_delay = add_delay
+        self.max_workers_count = max_workers_count
+        self.gpu_enabled = gpu_enabled
 
         self.add_random_delay()
         try:

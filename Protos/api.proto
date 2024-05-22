@@ -33,6 +33,8 @@ message TaskCompletedResponse {
 message RegisterWorkerRequest {
     string hostName = 1;
     int32 portNumber = 2;
+    int32 maxTaskAllowed = 3;
+    bool isGPUEnabled = 4;
 }
 
 message RegisterWorkerResponse {
