@@ -15,11 +15,12 @@ Steps to Run
 5) Start the scheduler server from one terminal - python3 scheduler_server.py
 6) Start the worker server in another terminal - python3 worker_server.py <PortNumber>
     Example Command: python3 worker_server.py 50054 5
-    Example Command: python3 worker_server.py 50054 5 --addDelay
+    Example Command: python3 worker_server.py 50053 --addDelay 5 --gpuEnabled
 
     First parameter is the port number
     Second parameter is the number of threads the worker can process
-    Third parameter is optional parameter. If --addDelay parameter is passed, delays are added randomly for the worker operations.
+    Third parameter is an optional parameter. If --addDelay parameter is passed, delays are added randomly for the worker operations.
+    Fourth parameter is an optional parameter. If --gpuEnabled parameter is passed, worker is treated as GPU Enabled.
 
 
 7) Run driver for another terminal - python3 driver.py (There is an example code written under main for testing)
