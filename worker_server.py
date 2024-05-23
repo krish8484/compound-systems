@@ -45,7 +45,7 @@ def serve():
     server.wait_for_termination()
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description = 'Please pass the port number and DelayFlag')
+    parser = argparse.ArgumentParser()
     parser.add_argument('PortNumber', help='Please pass the portNumber on which you want the worker to listen.')
     
     parser.add_argument("--addDelay", action="store_true", 

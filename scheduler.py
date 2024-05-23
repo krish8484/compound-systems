@@ -5,6 +5,7 @@ import sys
 import random
 from Data.task import Task
 from Data.future import Future
+from Data.WorkerInfo import WorkerInfo
 from worker_client import WorkerClient
 from logging_provider import logging
 import grpc
@@ -25,7 +26,7 @@ class Scheduler:
         else:
             random_worker_id = 0
         random_worker = self.workers[random_worker_id]
-        worker_client = WorkerClient(random_worker.split(",")[0], int(random_worker.split(",")[1]))
+        worker_client = WorkerClient(random_worker.hostName , int(random_worker.portNumber))
         logging.info(f"Task {task} submitted to worker:{random_worker}")
 
         try:
@@ -38,19 +39,18 @@ class Scheduler:
             else:
                 logging.error(f"SubmitTask: Unhandled RPC error: code={rpc_error.code()} message={rpc_error.details()}")
 
-    def register_worker(self, host_name, port_number):
+    def register_worker(self, workerInfo):
+        print("In register worker at scheduler")
         assignedWorkerId = 0
 
         with self.workerIdLock:
             assignedWorkerId = self.globalIncrementalWorkerId
             self.globalIncrementalWorkerId +=1
 
-        workerConnectInfo = host_name + ',' + str(port_number)
-
         with self.workerConnectInfoLock:
-            self.workers[assignedWorkerId] = workerConnectInfo
+            self.workers[assignedWorkerId] = workerInfo
 
-        logging.info(f"Worker {assignedWorkerId} registered. ConnectionInfo: {workerConnectInfo}")
+        logging.info(f"Worker {assignedWorkerId} registered. WorkerInfo: {workerInfo}")
 
         return assignedWorkerId
 

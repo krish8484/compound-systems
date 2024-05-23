@@ -5,6 +5,7 @@ import grpc
 from logging_provider import logging
 from scheduler import Scheduler
 from Data.task import Task
+from Data.WorkerInfo import WorkerInfo
 
 SCHEDULER_HOST = "localhost"
 SCHEDULER_PORT = 50051
@@ -27,7 +28,13 @@ class SchedulerServer(api_pb2_grpc.SchedulerApiServicer):
             return api_pb2.TaskCompletedResponse(status = api_pb2.Status(success = False))
     
     def RegisterWorker(self, request, context):
-        assignedWorkerId = self.scheduler.register_worker(request.hostName, request.portNumber)
+        print("In scheduler server")
+        assignedWorkerId = self.scheduler.register_worker(
+            WorkerInfo(
+                hostName = request.workerInfo.hostName,
+                portNumber=request.workerInfo.portNumber,
+                maxThreadCount=request.workerInfo.maxThreadCount,
+                isGPUEnabled=request.workerInfo.isGPUEnabled))
         return api_pb2.RegisterWorkerResponse(workerIdAssignedByScheduler = assignedWorkerId)
 
 def serve():
