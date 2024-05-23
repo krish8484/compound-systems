@@ -17,6 +17,7 @@ class Task:
                 else:
                     self.taskData.append(i.data)
 
+    # Converts the current Task object to a protobuf Task message (api_pb2.Task)
     def to_proto(self) -> api_pb2.Task:
         task = api_pb2.Task(taskId = self.taskId, taskDefinition = self.taskDefintion)
         for i in self.taskData:
