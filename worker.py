@@ -8,18 +8,27 @@ from Data.task import Task
 from logging_provider import logging
 import multiprocessing
 import threading
+from random import randrange
 import grpc
 import numpy as np
 import json
 
 class Worker:
-    def __init__(self, scheduler_host, scheduler_port, worker_host, worker_port):
+    def __init__(
+            self,
+            scheduler_host,
+            scheduler_port,
+            worker_host,
+            worker_port,
+            add_delay):
         self.scheduler_host = scheduler_host
         self.scheduler_port = scheduler_port
         self.worker_host = worker_host
         self.worker_port = worker_port
         self.scheduler_client = SchedulerClient(self.scheduler_host, self.scheduler_port)
+        self.add_delay = add_delay
 
+        self.add_random_delay()
         try:
             self.worker_id = self.scheduler_client.RegisterWorker(self.worker_host, self.worker_port)
             logging.info(f"Registered worker - WorkerId assigned from scheduler is {self.worker_id}")
@@ -42,6 +51,7 @@ class Worker:
         signal.signal(signal.SIGINT, self.sigterm_handler)
 
     def submit_task(self, task: Task) -> Future:
+        self.add_random_delay()
         resultLocation = str(uuid.uuid4())
         self.dummyFileStore[resultLocation] = f"TASK {task.taskId} NOT COMPLETED".encode()
         future = Future(resultLocation=resultLocation, hostName=self.worker_host, port=self.worker_port)
@@ -51,6 +61,8 @@ class Worker:
 
     def execute_task(self, task: Task, future: Future):
         logging.info(f"executing task {task}")
+
+        self.add_random_delay()
         arguments = task.taskData[0:].decode('utf-8').strip()
         function_name = task.taskDefintion
 
@@ -63,15 +75,26 @@ class Worker:
             logging.info("Unknown function:", function_name)
 
     def get_result(self, future: Future) -> bytes:
+        self.add_random_delay()
         return self.dummyFileStore[future.resultLocation]
 
     def notify_task_completion(self, task):
+        self.add_random_delay()
         pass
 
     def sigterm_handler(self, signum, frame):
         logging.info("Exiting gracefully.")
         sys.exit(0)
 
+    def add_random_delay(self):
+        if self.add_delay:
+            if randrange(100) > 50:
+                delayVal = randrange(10)
+                logging.info(f"AddDelay is true - Adding delay of {delayVal} seconds.")
+                time.sleep(delayVal)
+            else:
+                logging.info(f"AddDelay is true but not adding any delay.")
+                
     def decode_argument(self, arg):
         # Convert bytes to NumPy array
         return [np.array(matrix) for matrix in json.loads(arg)]
