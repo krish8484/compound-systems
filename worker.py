@@ -7,6 +7,7 @@ from Data.future import Future
 from Data.task import Task
 from logging_provider import logging
 import threading
+from random import randrange
 import grpc
 import json
 import time
@@ -16,13 +17,21 @@ from exceptions import WorkerUnableToExecuteTaskError
 
 
 class Worker:
-    def __init__(self, scheduler_host, scheduler_port, worker_host, worker_port):
+    def __init__(
+            self,
+            scheduler_host,
+            scheduler_port,
+            worker_host,
+            worker_port,
+            add_delay):
         self.scheduler_host = scheduler_host
         self.scheduler_port = scheduler_port
         self.worker_host = worker_host
         self.worker_port = worker_port
         self.scheduler_client = SchedulerClient(self.scheduler_host, self.scheduler_port)
+        self.add_delay = add_delay
 
+        self.add_random_delay()
         try:
             self.worker_id = self.scheduler_client.RegisterWorker(self.worker_host, self.worker_port)
             logging.info(f"Registered worker - WorkerId assigned from scheduler is {self.worker_id}")
@@ -40,6 +49,7 @@ class Worker:
         signal.signal(signal.SIGINT, self.sigterm_handler)
 
     def submit_task(self, task: Task) -> Future:
+        self.add_random_delay()
         resultLocation = str(uuid.uuid4())
         self.dummyFileStore[resultLocation] = constants.NOTCOMPLETED
         future = Future(resultLocation=resultLocation, hostName=self.worker_host, port=self.worker_port)
@@ -49,8 +59,8 @@ class Worker:
 
     def execute_task(self, task: Task, future: Future):
         logging.info(f"executing task {task}")
+        self.add_random_delay()
         function_name = task.taskDefintion
-
         if function_name in self.operations.operationsMapping:
             result = self.operations.operationsMapping[function_name](*task.taskData)
             self.dummyFileStore[future.resultLocation] = json.dumps(result).encode()
@@ -58,9 +68,11 @@ class Worker:
             logging.info("Unknown function:", function_name)
 
     def get_result(self, future: Future) -> bytes:
+        self.add_random_delay()
         return self.dummyFileStore[future.resultLocation]
 
     def notify_task_completion(self, task):
+        self.add_random_delay()
         pass
 
     def get_result_from_worker(self, future: Future) -> bytes:
@@ -80,3 +92,12 @@ class Worker:
     def sigterm_handler(self, signum, frame):
         logging.info("Exiting gracefully.")
         sys.exit(0)
+
+    def add_random_delay(self):
+        if self.add_delay:
+            if randrange(100) > 50:
+                delayVal = randrange(10)
+                logging.info(f"AddDelay is true - Adding delay of {delayVal} seconds.")
+                time.sleep(delayVal)
+            else:
+                logging.info(f"AddDelay is true but not adding any delay.")
