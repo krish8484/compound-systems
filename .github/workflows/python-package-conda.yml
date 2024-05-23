@@ -42,12 +42,10 @@ jobs:
       shell: bash
 
     - name: Start worker server
-      run: python3 worker_server.py 50054
-      background: true
+      run: python3 worker_server.py 50054 &
 
     - name: Start scheduler server
-      run: python3 scheduler_server.py
-      background: true
+      run: python3 scheduler_server.py &
 
     - name: Wait for servers to start
       run: sleep 10
