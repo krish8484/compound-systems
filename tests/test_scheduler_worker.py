@@ -50,6 +50,6 @@ def test_mat_subtract(scheduler_client, matrix1, matrix2):
     worker_client = WorkerClient(future.hostName, future.port)
     result = json.loads(worker_client.GetResult(future))  # Ensure result is deserialized from JSON
 
-    expected_result = [[-4, -4], [-4, -4]]
+    expected_result = [[-4, -4 ], [-4, -4]]
     assert result == expected_result, f"Expected {expected_result}, but got {result}"
     logging.info(f"Result: {result}")
