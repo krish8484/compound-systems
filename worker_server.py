@@ -52,7 +52,7 @@ if __name__ == '__main__':
                     help="Please pass the AddDelay parameter. This adds a random delay in worker operations.")
     
     parser.add_argument('MaxWorkerCount', help='Please pass the max thread that you want worker to spawn.')
-    parser.add_argument('--gpuEnabled', help='Please pass GPUEnabled flag. This makes the worker eligible for GPU enabled tasks.')
+    parser.add_argument('--gpuEnabled', action="store_true", help='Please pass GPUEnabled flag. This makes the worker eligible for GPU enabled tasks.')
 
     args = parser.parse_args()
     WORKER_PORT = int(args.PortNumber)
