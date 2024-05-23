@@ -41,8 +41,18 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
       shell: bash
 
+    - name: Start scheduler server
+      run: python3 scheduler_server.py &
+
+    - name: Start worker server
+      run: python3 worker_server.py 50054 &
+
+    - name: Wait for servers to start
+      run: sleep 10
+
     - name: Test with pytest
       run: |
         $CONDA/bin/activate $CONDA_ENV_NAME
+        cd tests
         pytest
       shell: bash
