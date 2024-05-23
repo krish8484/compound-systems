@@ -34,6 +34,9 @@ jobs:
         pip install -r requirements.txt
       shell: bash
 
+    - name: Compile protos
+      run: ./compile_proto.sh
+
     - name: Lint with flake8
       run: |
         $CONDA/bin/activate $CONDA_ENV_NAME

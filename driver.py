@@ -10,9 +10,9 @@ if __name__ == "__main__":
     matrix1 = [[1, 2], [3, 4]]
     matrix2 = [[5, 6], [7, 8]]
 
-    future = schedulerClient.SubmitTask(Task(taskId="0", taskDefintion="dot_product", taskData=json.dumps([matrix1, matrix2]).encode()))
-    future2 = schedulerClient.SubmitTask(Task(taskId="1", taskDefintion="mat_add", taskData=json.dumps([matrix1, matrix2]).encode()))
-    future3 = schedulerClient.SubmitTask(Task(taskId="2", taskDefintion="mat_subtract", taskData=json.dumps([matrix1, matrix2]).encode()))
+    future = schedulerClient.SubmitTask(Task(taskId="0", taskDefintion="dot_product", taskData=[json.dumps(matrix1).encode(), json.dumps(matrix2).encode()]))
+    future2 = schedulerClient.SubmitTask(Task(taskId="1", taskDefintion="mat_add", taskData=[json.dumps(matrix1).encode(), json.dumps(matrix2).encode()]))
+    future3 = schedulerClient.SubmitTask(Task(taskId="2", taskDefintion="mat_subtract", taskData=[future, future2]))
 
     logging.info(f"Received future: {future}")
     logging.info(f"Received future: {future2}")
