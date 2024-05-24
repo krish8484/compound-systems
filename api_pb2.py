@@ -169,16 +169,9 @@ _REGISTERWORKERREQUEST = _descriptor.Descriptor(
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='hostName', full_name='api.RegisterWorkerRequest.hostName', index=0,
-      number=1, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='portNumber', full_name='api.RegisterWorkerRequest.portNumber', index=1,
-      number=2, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
+      name='workerInfo', full_name='api.RegisterWorkerRequest.workerInfo', index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
@@ -195,7 +188,7 @@ _REGISTERWORKERREQUEST = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=215,
-  serialized_end=276,
+  serialized_end=275,
 )
 
 
@@ -226,8 +219,8 @@ _REGISTERWORKERRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=278,
-  serialized_end=339,
+  serialized_start=277,
+  serialized_end=338,
 )
 
 
@@ -258,8 +251,8 @@ _GETRESULTREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=341,
-  serialized_end=388,
+  serialized_start=340,
+  serialized_end=387,
 )
 
 
@@ -290,8 +283,8 @@ _GETRESULTRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=390,
-  serialized_end=425,
+  serialized_start=389,
+  serialized_end=424,
 )
 
 
@@ -414,6 +407,14 @@ _STATUS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
+  serialized_start=558,
+  serialized_end=583,
+)
+
+
+_WORKERINFO = _descriptor.Descriptor(
+  name='WorkerInfo',
+  full_name='api.WorkerInfo',
   serialized_start=579,
   serialized_end=604,
 )
@@ -428,6 +429,9 @@ _TASKDATAPARAM = _descriptor.Descriptor(
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
+      name='hostName', full_name='api.WorkerInfo.hostName', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
       name='future', full_name='api.TaskDataParam.future', index=0,
       number=1, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
@@ -435,6 +439,23 @@ _TASKDATAPARAM = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
+      name='portNumber', full_name='api.WorkerInfo.portNumber', index=1,
+      number=2, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='maxThreadCount', full_name='api.WorkerInfo.maxThreadCount', index=2,
+      number=3, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='isGPUEnabled', full_name='api.WorkerInfo.isGPUEnabled', index=3,
+      number=4, type=8, cpp_type=7, label=1,
+      has_default_value=False, default_value=False,
       name='data', full_name='api.TaskDataParam.data', index=1,
       number=2, type=12, cpp_type=9, label=1,
       has_default_value=False, default_value=b"",
@@ -452,6 +473,8 @@ _TASKDATAPARAM = _descriptor.Descriptor(
   syntax='proto3',
   extension_ranges=[],
   oneofs=[
+  ],
+  serialized_start=585,
     _descriptor.OneofDescriptor(
       name='dataParam', full_name='api.TaskDataParam.dataParam',
       index=0, containing_type=None,
@@ -465,6 +488,7 @@ _TASKDATAPARAM = _descriptor.Descriptor(
 _TASKREQUEST.fields_by_name['task'].message_type = _TASK
 _TASKRESPONSE.fields_by_name['future'].message_type = _FUTURE
 _TASKCOMPLETEDRESPONSE.fields_by_name['status'].message_type = _STATUS
+_REGISTERWORKERREQUEST.fields_by_name['workerInfo'].message_type = _WORKERINFO
 _GETRESULTREQUEST.fields_by_name['future'].message_type = _FUTURE
 _TASK.fields_by_name['taskData'].message_type = _TASKDATAPARAM
 _TASKDATAPARAM.fields_by_name['future'].message_type = _FUTURE
@@ -485,6 +509,7 @@ DESCRIPTOR.message_types_by_name['GetResultResponse'] = _GETRESULTRESPONSE
 DESCRIPTOR.message_types_by_name['Task'] = _TASK
 DESCRIPTOR.message_types_by_name['Future'] = _FUTURE
 DESCRIPTOR.message_types_by_name['Status'] = _STATUS
+DESCRIPTOR.message_types_by_name['WorkerInfo'] = _WORKERINFO
 DESCRIPTOR.message_types_by_name['TaskDataParam'] = _TASKDATAPARAM
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
@@ -565,6 +590,12 @@ Status = _reflection.GeneratedProtocolMessageType('Status', (_message.Message,),
   })
 _sym_db.RegisterMessage(Status)
 
+WorkerInfo = _reflection.GeneratedProtocolMessageType('WorkerInfo', (_message.Message,), {
+  'DESCRIPTOR' : _WORKERINFO,
+  '__module__' : 'api_pb2'
+  # @@protoc_insertion_point(class_scope:api.WorkerInfo)
+  })
+_sym_db.RegisterMessage(WorkerInfo)
 TaskDataParam = _reflection.GeneratedProtocolMessageType('TaskDataParam', (_message.Message,), {
   'DESCRIPTOR' : _TASKDATAPARAM,
   '__module__' : 'api_pb2'

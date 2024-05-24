@@ -48,7 +48,7 @@ jobs:
       run: python3 scheduler_server.py &
 
     - name: Start worker server
-      run: python3 worker_server.py 50054 &
+      run: python3 worker_server.py --PortNumber 50052 --MaxThreadCount 2 &
 
     - name: Wait for servers to start
       run: sleep 10

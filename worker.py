@@ -5,6 +5,7 @@ from scheduler_client import SchedulerClient
 from worker_client import WorkerClient
 from Data.future import Future
 from Data.task import Task
+from Data.WorkerInfo import WorkerInfo
 from logging_provider import logging
 import threading
 from random import randrange
@@ -23,17 +24,27 @@ class Worker:
             scheduler_port,
             worker_host,
             worker_port,
-            add_delay):
+            add_delay,
+            max_thread_count,
+            gpu_enabled):
         self.scheduler_host = scheduler_host
         self.scheduler_port = scheduler_port
         self.worker_host = worker_host
         self.worker_port = worker_port
         self.scheduler_client = SchedulerClient(self.scheduler_host, self.scheduler_port)
         self.add_delay = add_delay
+        self.max_thread_count = max_thread_count
+        self.gpu_enabled = gpu_enabled
 
         self.add_random_delay()
+        workerInfo = WorkerInfo(
+            self.worker_host,
+            self.worker_port,
+            self.max_thread_count,
+            self.gpu_enabled)
+        
         try:
-            self.worker_id = self.scheduler_client.RegisterWorker(self.worker_host, self.worker_port)
+            self.worker_id = self.scheduler_client.RegisterWorker(workerInfo)
             logging.info(f"Registered worker - WorkerId assigned from scheduler is {self.worker_id}")
         except grpc.RpcError as rpc_error:
             if rpc_error.code() == grpc.StatusCode.CANCELLED:

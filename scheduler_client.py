@@ -3,6 +3,7 @@ import api_pb2
 import grpc
 from Data.future import Future
 from Data.task import Task
+from Data.WorkerInfo import WorkerInfo
 
 class SchedulerClient:
 
@@ -23,7 +24,12 @@ class SchedulerClient:
         response = self.stub.TaskCompleted(request)
         return response.status.success
     
-    def RegisterWorker(self, host_name, port_number) -> int:
-        request = api_pb2.RegisterWorkerRequest(hostName = host_name, portNumber = port_number)
+    def RegisterWorker(self, workerInfo: WorkerInfo) -> int:
+        _workerInfo = api_pb2.WorkerInfo(
+            hostName = workerInfo.hostName,
+            portNumber = workerInfo.portNumber,
+            maxThreadCount = workerInfo.maxThreadCount,
+            isGPUEnabled = workerInfo.isGPUEnabled)
+        request = api_pb2.RegisterWorkerRequest(workerInfo = _workerInfo)
         response = self.stub.RegisterWorker(request)
         return response.workerIdAssignedByScheduler

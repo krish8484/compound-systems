@@ -31,8 +31,7 @@ message TaskCompletedResponse {
 }
 
 message RegisterWorkerRequest {
-    string hostName = 1;
-    int32 portNumber = 2;
+    WorkerInfo workerInfo = 1;
 }
 
 message RegisterWorkerResponse {
@@ -64,6 +63,14 @@ message Future {
 
 message Status {
     bool success = 1;
+}
+
+
+message WorkerInfo {
+    string hostName = 1;
+    int32 portNumber = 2;
+    int32 maxThreadCount = 3;
+    bool isGPUEnabled = 4;
 }
 
 /*
