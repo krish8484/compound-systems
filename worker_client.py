@@ -18,7 +18,7 @@ class WorkerClient:
         return response.result
 
     def SubmitTask(self, task: Task) -> Future:
-        _task = api_pb2.Task(taskId = task.taskId, taskDefinition = task.taskDefintion, taskData = task.taskData)
+        _task = task.to_proto()
         request = api_pb2.TaskRequest(task=_task)
         response = self.stub.SubmitTask(request)
         return Future(resultLocation=response.future.resultLocation, hostName=response.future.hostName, port=response.future.port)

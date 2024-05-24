@@ -15,7 +15,7 @@ class SchedulerClient:
         self.stub = api_pb2_grpc.SchedulerApiStub(self.channel)
 
     def SubmitTask(self, task: Task) -> Future:
-        _task = api_pb2.Task(taskId = task.taskId, taskDefinition = task.taskDefintion, taskData = task.taskData)
+        _task = task.to_proto()
         request = api_pb2.TaskRequest(task=_task)
         response = self.stub.SubmitTask(request)
         return Future(resultLocation=response.future.resultLocation, hostName=response.future.hostName, port=response.future.port)
@@ -34,6 +34,3 @@ class SchedulerClient:
         request = api_pb2.RegisterWorkerRequest(workerInfo = _workerInfo)
         response = self.stub.RegisterWorker(request)
         return response.workerIdAssignedByScheduler
-    
-
-

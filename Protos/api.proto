@@ -46,10 +46,13 @@ message GetResultResponse {
     bytes result = 1;
 }
 
+/*
+taskData is a list of bytes and/or futures.
+*/
 message Task {
     string taskId = 1;
     string taskDefinition = 2;
-    bytes taskData = 3;
+    repeated TaskDataParam taskData = 3;
 }
 
 message Future {
@@ -62,9 +65,20 @@ message Status {
     bool success = 1;
 }
 
+
 message WorkerInfo {
     string hostName = 1;
     int32 portNumber = 2;
     int32 maxThreadCount = 3;
     bool isGPUEnabled = 4;
+
+/*
+TaskDataParam can either have a future or bytes but not both.
+Read this for more details: https://developers.google.com/protocol-buffers/docs/proto3#oneof
+*/
+message TaskDataParam {
+    oneof dataParam {
+        Future future = 1;
+        bytes data = 2;
+    }
 }
