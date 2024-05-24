@@ -13,7 +13,7 @@ SCHEDULER_PORT = 50051
 WORKER_HOST = "localhost"
 WORKER_PORT = 50052
 ADD_DELAY = False
-MAX_WORKERS = 2
+MAX_THREAD_COUNT = 2
 GPU_ENABLED = False
 
 class WorkerServer(api_pb2_grpc.WorkerApiServicer):

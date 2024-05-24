@@ -28,7 +28,6 @@ class SchedulerServer(api_pb2_grpc.SchedulerApiServicer):
             return api_pb2.TaskCompletedResponse(status = api_pb2.Status(success = False))
     
     def RegisterWorker(self, request, context):
-        print("In scheduler server")
         assignedWorkerId = self.scheduler.register_worker(
             WorkerInfo(
                 hostName = request.workerInfo.hostName,
