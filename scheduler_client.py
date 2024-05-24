@@ -26,7 +26,6 @@ class SchedulerClient:
         return response.status.success
     
     def RegisterWorker(self, workerInfo: WorkerInfo) -> int:
-        print("In scheduler client")
         _workerInfo = api_pb2.WorkerInfo(
             hostName = workerInfo.hostName,
             portNumber = workerInfo.portNumber,
