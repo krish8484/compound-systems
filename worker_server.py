@@ -24,7 +24,7 @@ class WorkerServer(api_pb2_grpc.WorkerApiServicer):
             WORKER_HOST,
             WORKER_PORT,
             ADD_DELAY,
-            MAX_WORKERS_COUNT,
+            MAX_THREAD_COUNT,
             GPU_ENABLED)
 
     def GetResult(self, request, context):
@@ -36,7 +36,7 @@ class WorkerServer(api_pb2_grpc.WorkerApiServicer):
         return api_pb2.TaskResponse(future=api_pb2.Future(resultLocation=future.resultLocation, hostName=future.hostName, port=future.port))
 
 def serve():
-    server = grpc.server(futures.ThreadPoolExecutor(max_workers = MAX_WORKERS_COUNT))
+    server = grpc.server(futures.ThreadPoolExecutor(max_workers = MAX_THREAD_COUNT))
     api_pb2_grpc.add_WorkerApiServicer_to_server(WorkerServer(), server)
     hostNamePortNumber = WORKER_HOST + ':' + str(WORKER_PORT)
     server.add_insecure_port(hostNamePortNumber)
@@ -46,17 +46,35 @@ def serve():
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('PortNumber', help='Please pass the portNumber on which you want the worker to listen.')
-    
-    parser.add_argument("--addDelay", action="store_true", 
-                    help="Please pass the AddDelay parameter. This adds a random delay in worker operations.")
-    
-    parser.add_argument('MaxWorkerCount', help='Please pass the max thread that you want worker to spawn.')
-    parser.add_argument('--gpuEnabled', action="store_true", help='Please pass GPUEnabled flag. This makes the worker eligible for GPU enabled tasks.')
 
+    parser.add_argument(
+        "-p",
+        "--PortNumber",
+        type=int,
+        help="Please pass the port number.",
+        required=True)
+
+    parser.add_argument(
+        "-m",
+        "--MaxThreadCount",
+        type=int,
+        help="Please pass the max thread that you want worker to spawn.",
+        required=False,
+        default=5)
+
+    parser.add_argument(
+        '--gpuEnabled',
+        action="store_true",
+        help='Please pass GPUEnabled flag. This makes the worker eligible for GPU enabled tasks.')
+
+    parser.add_argument(
+        "--addDelay",
+        action="store_true", 
+        help="Please pass the AddDelay parameter. This adds a random delay in worker operations.")
+    
     args = parser.parse_args()
     WORKER_PORT = int(args.PortNumber)
-    MAX_WORKERS_COUNT = int(args.MaxWorkerCount)
+    MAX_THREAD_COUNT = int(args.MaxThreadCount)
 
     if args.addDelay: 
         ADD_DELAY = True

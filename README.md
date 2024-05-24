@@ -13,15 +13,14 @@ Steps to Run
 3) conda activate cs244b
 4) Run compile_proto script based on your target machine from root repo folder (CS244B)
 5) Start the scheduler server from one terminal - python3 scheduler_server.py
-6) Start the worker server in another terminal - python3 worker_server.py <PortNumber>
-    Example Command: python3 worker_server.py 50054 5
-    Example Command: python3 worker_server.py 50053 --addDelay 5 --gpuEnabled
+6) Start the worker server in another terminal - python3 worker_server.py --PortNumber <PortNumber> --MaxThreadCount <MaxThreadCount>
+    Example Command:
+    python3 worker_server.py --PortNumber 50052 --MaxThreadCount 2 --gpuEnabled --addDelay
 
     First parameter is the port number
     Second parameter is the number of threads the worker can process
-    Third parameter is an optional parameter. If --addDelay parameter is passed, delays are added randomly for the worker operations.
-    Fourth parameter is an optional parameter. If --gpuEnabled parameter is passed, worker is treated as GPU Enabled.
-
+    Third parameter is an optional parameter. If --gpuEnabled parameter is passed, worker is treated as GPU Enabled.
+    Fourth parameter is an optional parameter. If --addDelay parameter is passed, delays are added randomly for the worker operations.
 
 7) Run driver for another terminal - python3 driver.py (There is an example code written under main for testing)
 8) Submit tasks with the driver; they should be seen getting executed on the worker.

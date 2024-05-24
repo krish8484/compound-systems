@@ -4,7 +4,6 @@ import grpc
 from Data.future import Future
 from Data.task import Task
 from Data.WorkerInfo import WorkerInfo
-from Data.WorkerInfo import WorkerInfo
 
 class SchedulerClient:
 
