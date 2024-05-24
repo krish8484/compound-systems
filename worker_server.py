@@ -36,7 +36,7 @@ class WorkerServer(api_pb2_grpc.WorkerApiServicer):
         return api_pb2.TaskResponse(future=api_pb2.Future(resultLocation=future.resultLocation, hostName=future.hostName, port=future.port))
 
 def serve():
-    server = grpc.server(futures.ThreadPoolExecutor(max_workers = MAX_THREAD_COUNT))
+    server = grpc.server(futures.ThreadPoolExecutor())
     api_pb2_grpc.add_WorkerApiServicer_to_server(WorkerServer(), server)
     hostNamePortNumber = WORKER_HOST + ':' + str(WORKER_PORT)
     server.add_insecure_port(hostNamePortNumber)
