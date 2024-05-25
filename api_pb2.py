@@ -474,6 +474,9 @@ _TASKDATAPARAM = _descriptor.Descriptor(
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
+      name='hostName', full_name='api.WorkerInfo.hostName', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
       name='future', full_name='api.TaskDataParam.future', index=0,
       number=1, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
@@ -481,6 +484,23 @@ _TASKDATAPARAM = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
+      name='portNumber', full_name='api.WorkerInfo.portNumber', index=1,
+      number=2, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='maxThreadCount', full_name='api.WorkerInfo.maxThreadCount', index=2,
+      number=3, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='isGPUEnabled', full_name='api.WorkerInfo.isGPUEnabled', index=3,
+      number=4, type=8, cpp_type=7, label=1,
+      has_default_value=False, default_value=False,
       name='data', full_name='api.TaskDataParam.data', index=1,
       number=2, type=12, cpp_type=9, label=1,
       has_default_value=False, default_value=b"",
@@ -498,6 +518,8 @@ _TASKDATAPARAM = _descriptor.Descriptor(
   syntax='proto3',
   extension_ranges=[],
   oneofs=[
+  ],
+  serialized_start=585,
     _descriptor.OneofDescriptor(
       name='dataParam', full_name='api.TaskDataParam.dataParam',
       index=0, containing_type=None,
@@ -619,7 +641,10 @@ WorkerInfo = _reflection.GeneratedProtocolMessageType('WorkerInfo', (_message.Me
   # @@protoc_insertion_point(class_scope:api.WorkerInfo)
   })
 _sym_db.RegisterMessage(WorkerInfo)
+<<<<<<< HEAD
 
+=======
+>>>>>>> main
 TaskDataParam = _reflection.GeneratedProtocolMessageType('TaskDataParam', (_message.Message,), {
   'DESCRIPTOR' : _TASKDATAPARAM,
   '__module__' : 'api_pb2'
