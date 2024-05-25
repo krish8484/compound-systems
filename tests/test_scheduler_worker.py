@@ -31,13 +31,14 @@ def test_dot_product(scheduler_client, matrix1, matrix2):
 
     expected_result = [[19, 22], [43, 50]]
     while True:
-        result = json.loads(worker_client.GetResult(future=future))
+        result = worker_client.GetResult(future=future)
         if result == constants.NOTCOMPLETED:
             time.sleep(constants.WAITTIMEFORPOLLINGRESULT)
             continue
         elif result == constants.ERROR:
             assert 1 == 2
         else:
+            result = json.loads(result)
             break
     assert result == expected_result, f"Expected {expected_result}, but got {result}"
     logging.info(f"Result: {result}")
@@ -51,13 +52,14 @@ def test_mat_add(scheduler_client, matrix1, matrix2):
 
     expected_result = [[6, 8], [10, 12]]
     while True:
-        result = json.loads(worker_client.GetResult(future=future))
+        result = worker_client.GetResult(future=future)
         if result == constants.NOTCOMPLETED:
             time.sleep(constants.WAITTIMEFORPOLLINGRESULT)
             continue
         elif result == constants.ERROR:
             assert 1 == 2
         else:
+            result = json.loads(result)
             break
     assert result == expected_result, f"Expected {expected_result}, but got {result}"
     logging.info(f"Result: {result}")
@@ -71,13 +73,14 @@ def test_mat_subtract(scheduler_client, matrix1, matrix2):
 
     expected_result = [[-4, -4 ], [-4, -4]]
     while True:
-        result = json.loads(worker_client.GetResult(future=future))
+        result = worker_client.GetResult(future=future)
         if result == constants.NOTCOMPLETED:
             time.sleep(constants.WAITTIMEFORPOLLINGRESULT)
             continue
         elif result == constants.ERROR:
             assert 1 == 2
         else:
+            result = json.loads(result)
             break
     assert result == expected_result, f"Expected {expected_result}, but got {result}"
     logging.info(f"Result: {result}")
