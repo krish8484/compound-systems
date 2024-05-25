@@ -42,21 +42,13 @@ class Worker:
         self.add_delay = add_delay
         self.max_thread_count = max_thread_count
         self.gpu_enabled = gpu_enabled
-<<<<<<< HEAD
         self.generator = UniqueIDGenerator()
-=======
-
->>>>>>> main
         self.add_random_delay()
         workerInfo = WorkerInfo(
             self.worker_host,
             self.worker_port,
             self.max_thread_count,
             self.gpu_enabled)
-<<<<<<< HEAD
-=======
-        
->>>>>>> main
         try:
             self.worker_id = self.scheduler_client.RegisterWorker(workerInfo)
             logging.info(f"Registered worker - WorkerId assigned from scheduler is {self.worker_id}")
