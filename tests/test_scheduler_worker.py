@@ -41,7 +41,6 @@ def test_dot_product(scheduler_client, matrix1, matrix2):
     future = scheduler_client.SubmitTask(task)
 
     worker_client = WorkerClient(future.hostName, future.port)
-    result = json.loads(worker_client.GetResult(future))  # Ensure result is deserialized from JSON
 
     expected_result = [[19, 22], [43, 50]]
     poll_for_result(worker_client, future, expected_result)
@@ -52,7 +51,6 @@ def test_mat_add(scheduler_client, matrix1, matrix2):
     future = scheduler_client.SubmitTask(task)
 
     worker_client = WorkerClient(future.hostName, future.port)
-    result = json.loads(worker_client.GetResult(future))  # Ensure result is deserialized from JSON
 
     expected_result = [[6, 8], [10, 12]]
     poll_for_result(worker_client, future, expected_result)
@@ -62,7 +60,6 @@ def test_mat_subtract(scheduler_client, matrix1, matrix2):
     future = scheduler_client.SubmitTask(task)
 
     worker_client = WorkerClient(future.hostName, future.port)
-    result = json.loads(worker_client.GetResult(future))  # Ensure result is deserialized from JSON
 
     expected_result = [[-4, -4 ], [-4, -4]]
     poll_for_result(worker_client, future, expected_result)
