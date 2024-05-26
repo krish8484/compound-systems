@@ -56,7 +56,8 @@ class Scheduler:
 
 
     def task_completed(self, task_id, worker_id):
-        pass
+        logging.info(f"Scheduler recevied message of completion {task_id} from {worker_id}")
+        return True;
 
     def assign_task(self):
         with self.lock:
