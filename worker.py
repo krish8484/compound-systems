@@ -16,7 +16,10 @@ from operations import Operations
 import constants
 from exceptions import WorkerUnableToExecuteTaskError
 
+class UniqueIDGenerator:
 
+    def get_unique_id(self):
+        return uuid.uuid4()
 class Worker:
     def __init__(
             self,
@@ -35,14 +38,13 @@ class Worker:
         self.add_delay = add_delay
         self.max_thread_count = max_thread_count
         self.gpu_enabled = gpu_enabled
-
+        self.generator = UniqueIDGenerator()
         self.add_random_delay()
         workerInfo = WorkerInfo(
             self.worker_host,
             self.worker_port,
             self.max_thread_count,
             self.gpu_enabled)
-        
         try:
             self.worker_id = self.scheduler_client.RegisterWorker(workerInfo)
             logging.info(f"Registered worker - WorkerId assigned from scheduler is {self.worker_id}")
@@ -61,7 +63,7 @@ class Worker:
 
     def submit_task(self, task: Task) -> Future:
         self.add_random_delay()
-        resultLocation = str(uuid.uuid4())
+        resultLocation = str(self.generator.get_unique_id())
         self.dummyFileStore[resultLocation] = constants.NOTCOMPLETED
         future = Future(resultLocation=resultLocation, hostName=self.worker_host, port=self.worker_port)
         threading.Thread(target=self.execute_task, args=(task, future)).start()

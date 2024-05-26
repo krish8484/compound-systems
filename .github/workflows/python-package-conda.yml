@@ -47,8 +47,11 @@ jobs:
     - name: Start scheduler server
       run: python3 scheduler_server.py &
 
-    - name: Start worker server
+    - name: Start first worker server
       run: python3 worker_server.py --PortNumber 50052 --MaxThreadCount 2 &
+
+    - name: Start second worker server
+      run: python3 worker_server.py --PortNumber 50053 --MaxThreadCount 5 &
 
     - name: Wait for servers to start
       run: sleep 10
@@ -57,5 +60,5 @@ jobs:
       run: |
         $CONDA/bin/activate $CONDA_ENV_NAME
         cd tests
-        pytest
+        pytest --count=20
       shell: bash

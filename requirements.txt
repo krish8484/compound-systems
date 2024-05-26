@@ -4,3 +4,4 @@ grpcio-tools==1.42.0
 numpy==1.26.4
 flake8==7.0.0
 pytest==7.4.0
+pytest-repeat==0.9.3
