@@ -17,13 +17,9 @@ import constants
 from exceptions import WorkerUnableToExecuteTaskError
 
 class UniqueIDGenerator:
-    def __init__(self):
-        self.counter = 0
 
     def get_unique_id(self):
-        self.counter += 1
-        return self.counter
-
+        return uuid.uuid4()
 class Worker:
     def __init__(
             self,
