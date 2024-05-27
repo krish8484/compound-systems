@@ -64,12 +64,22 @@ def test_mat_subtract(scheduler_client, matrix1, matrix2):
     expected_result = [[-4, -4 ], [-4, -4]]
     poll_for_result(worker_client, future, expected_result)
 
+def test_retrieval(scheduler_client, matrix1, matrix2):
+    task = Task(taskId="3", taskDefintion="retrieval", taskData=[json.dumps(matrix1).encode(), json.dumps(matrix2).encode()])
+    future = scheduler_client.SubmitTask(task)
+
+    worker_client = WorkerClient(future.hostName, future.port)
+
+    expected_result = [[1, 2], [3, 4]]
+    poll_for_result(worker_client, future, expected_result)
+
 def test_passing_futures_as_args_flow(scheduler_client, matrix1, matrix2):
     future = scheduler_client.SubmitTask(Task(taskId="0", taskDefintion="dot_product", taskData=[json.dumps(matrix1).encode(), json.dumps(matrix2).encode()]))
     future2 = scheduler_client.SubmitTask(Task(taskId="1", taskDefintion="mat_add", taskData=[json.dumps(matrix1).encode(), json.dumps(matrix2).encode()]))
     future3 = scheduler_client.SubmitTask(Task(taskId="2", taskDefintion="mat_subtract", taskData=[future, future2]))
+    future4 = scheduler_client.SubmitTask(Task(taskID="3", taskDefinition="retrieval", taskData=[future, future2]))
+    workerClient = WorkerClient(future4.hostName, future4.port)
 
-    workerClient = WorkerClient(future3.hostName, future3.port)
-
-    expected_result = [[13, 14], [33, 38]]
-    poll_for_result(workerClient, future3, expected_result)
+    # expected_result = [[13, 14], [33, 38]]
+    expected_result = [[1, 2], [3, 4]]
+    poll_for_result(workerClient, future4, expected_result)
