@@ -7,6 +7,7 @@ from scheduler import Scheduler
 from Data.task import Task
 from Data.WorkerInfo import WorkerInfo
 import argparse
+import constants
 
 SCHEDULER_HOST = "localhost"
 SCHEDULER_PORT = 50051
@@ -72,9 +73,9 @@ if __name__ == '__main__':
     SCHEDULER_PORT = int(args.PortNumber)
     SCHEDULER_MODE = args.SchedulerMode
 
-    if SCHEDULER_MODE == 'Random':
+    if SCHEDULER_MODE == constants.SCHEDULINGMODE_RANDOM:
         logging.info("Random scheduling mode selected..")
-    elif SCHEDULER_MODE == 'RoundRobin':
+    elif SCHEDULER_MODE == constants.SCHEDULINGMODE_ROUNDROBIN:
         logging.info("RoundRobin scheduling mode selected..")
     
     serve()
