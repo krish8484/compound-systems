@@ -66,6 +66,20 @@ class Operations:
         except Exception as e:
             logging.error("Unexpected error:", e)
         return constants.ERROR
+    
+    def retrieval(self, matrix1, matrix2, top_k=1):
+        try:
+            # similarities as dot products
+            # matrix1 are documents, matrix2 are embeddings
+            dot_prod = self.dot_product(matrix1, matrix2)
+            mag_1 = np.linalg.norm(matrix1)
+            mag_2 = np.linalg.norm(matrix2)
+            sim = dot_prod / (mag_1 * mag_2) 
+            top_indices = np.argsort(sim)[-top_k:][::-1]
+            return [matrix1[i] for i in top_indices]
+        except Exception as e:
+            logging.error("Unexpected error:", e)
+        return constants.ERROR
 
-
-
+	
+ 
