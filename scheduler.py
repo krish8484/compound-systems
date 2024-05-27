@@ -18,11 +18,16 @@ class Scheduler:
         self.task_queue = queue.Queue()
         self.completion_status = {}
         self.workerIdLock = threading.Lock()
-        self.workerMapLock = threading.Lock()
-        self.workers = {} # Map that maintains the worker id to hostName,portNum - Only used when scheduling mode is Random
-        self.workerQueue = queue.Queue() # Thread Safe Queue - Only used when scheduling mode is round robin
-        self.globalIncrementalWorkerId = 0; # A globally incrementing worker id maintained by the scheduler
         self.schedulerMode = scheduler_mode
+
+        if self.schedulerMode == constants.SCHEDULINGMODE_RANDOM:
+            self.workerMapLock = threading.Lock()
+            self.workers = {} # Map that maintains the worker id to hostName,portNum - Only used when scheduling mode is Random
+        elif self.schedulerMode == constants.SCHEDULINGMODE_ROUNDROBIN:
+            self.workerQueue = queue.Queue() # Thread Safe Queue - Only used when scheduling mode is round robin
+        
+        self.globalIncrementalWorkerId = 0; # A globally incrementing worker id maintained by the scheduler
+       
         signal.signal(signal.SIGINT, self.sigterm_handler)
 
     def submit_task(self, task : Task) -> Future:
