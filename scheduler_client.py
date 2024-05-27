@@ -20,10 +20,11 @@ class SchedulerClient:
         return Future(resultLocation=response.future.resultLocation, hostName=response.future.hostName, port=response.future.port)
     
     def TaskCompleted(self, task_id, worker_id, _status) -> bool:
+        _protoStatus = _status.to_proto()
         request = api_pb2.TaskCompletedRequest(
             taskId = task_id,
             workerId = worker_id,
-            status = _status)
+            status = _protoStatus)
         response = self.stub.TaskCompleted(request)
         return response.status.success
     

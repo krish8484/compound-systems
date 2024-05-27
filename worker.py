@@ -92,14 +92,17 @@ class Worker:
 
     def get_result(self, future: Future) -> bytes:
         self.add_random_delay()
+        logging.info(f"Get Result called on {future.resultLocation}")
         return self.dummyFileStore[future.resultLocation]
 
     def notify_task_completion(self, _task: Task, _success: bool):
         self.add_random_delay()
+        _status = Status(status= _success)
+        logging.info(f"Notifying task completion {_task.taskId} - Success {_status}")
         tmp = self.scheduler_client.TaskCompleted(
             _task.taskId,
             self.worker_id,
-            Status(success= _success))
+            _status)
         logging.info(f"Notified the scheduler on task completion {_task.taskId} - {tmp}")
 
 

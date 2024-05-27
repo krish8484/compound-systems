@@ -11,21 +11,20 @@ from logging_provider import logging
 import grpc
 
 class Scheduler:
-    def __init__(self):
+    def __init__(self, scheduler_mode):
         self.task_queue = queue.Queue()
         self.completion_status = {}
         self.workerConnectInfoLock = threading.Lock()
         self.workerIdLock = threading.Lock()
         self.workers = {} # Map that maintains the worker id to hostName,portNum
+        self.workerQueue = [] # Queue for round robin scheduling
+        self.workerQueueLock = threading.Lock()
         self.globalIncrementalWorkerId = 0; # A globally incrementing worker id maintained by the scheduler
+        self.schedulerMode = scheduler_mode
         signal.signal(signal.SIGINT, self.sigterm_handler)
 
     def submit_task(self, task : Task) -> Future:
-        if self.globalIncrementalWorkerId > 1:
-            random_worker_id = random.randint(0, self.globalIncrementalWorkerId - 1)
-        else:
-            random_worker_id = 0
-        random_worker = self.workers[random_worker_id]
+        random_worker = self.get_worker()
         worker_client = WorkerClient(random_worker.hostName , int(random_worker.portNumber))
         logging.info(f"Task {task} submitted to worker:{random_worker}")
 
@@ -52,12 +51,13 @@ class Scheduler:
 
         logging.info(f"Worker {assignedWorkerId} registered. WorkerInfo: {workerInfo}")
 
+        self.workerQueue.append(assignedWorkerId) #lock free addition
         return assignedWorkerId
 
 
-    def task_completed(self, task_id, worker_id):
-        logging.info(f"Scheduler recevied message of completion {task_id} from {worker_id}")
-        return True;
+    def task_completed(self, task_id, worker_id, status):
+        logging.info(f"Scheduler recevied message of completion {task_id} from {worker_id} - Success {status}")
+        return True
 
     def assign_task(self):
         with self.lock:
@@ -72,3 +72,24 @@ class Scheduler:
     def sigterm_handler(self, signum, frame):
         logging.info("Exiting gracefully.")
         sys.exit(0)
+
+    def get_worker(self):
+        if self.schedulerMode == 'Random':
+            if self.globalIncrementalWorkerId > 1:
+                random_worker_id = random.randint(0, self.globalIncrementalWorkerId - 1)
+            else:
+                random_worker_id = 0
+
+            return self.workers[random_worker_id]
+        
+        elif self.schedulerMode == 'RoundRobin':
+            if len(self.workerQueue) > 0:
+                with self.workerQueueLock:
+                    assignedWorkerId = self.workerQueue.pop(0)
+            else:
+                logging.info(f"No worker found.")
+                return None
+        
+            worker =  self.workers[assignedWorkerId]
+            self.workerQueue.append(assignedWorkerId) # Assign the worker id back into queue at the end
+            return worker
