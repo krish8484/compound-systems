@@ -51,7 +51,7 @@ class Scheduler:
 
         with self.workerIdLock:
             assignedWorkerId = self.globalIncrementalWorkerId
-            self.globalIncrementalWorkerId +=1
+            self.globalIncrementalWorkerId +=1      
 
         if self.schedulerMode == constants.SCHEDULINGMODE_RANDOM:
             with self.workerMapLock:
@@ -89,6 +89,9 @@ class Scheduler:
                 random_worker_id = random.randint(0, self.globalIncrementalWorkerId - 1)
                 with self.workerMapLock:
                     return self.workers[random_worker_id]
+            elif self.globalIncrementalWorkerId == 1:
+                with self.workerMapLock:
+                    return self.workers[0]
             else:
                 logging.info(f"No worker found.")
                 raise NoWorkerAvailableError(self.schedulerMode)
