@@ -3,7 +3,6 @@ from worker_client import WorkerClient
 from Data.task import Task
 from logging_provider import logging
 import json
-import grpc
 
 # Example usage
 if __name__ == "__main__":
