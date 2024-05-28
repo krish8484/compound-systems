@@ -23,7 +23,8 @@ message TaskResponse {
 
 message TaskCompletedRequest {
     string taskId = 1;
-    string workerId = 2;
+    int32 workerId = 2;
+    Status status = 3;
 }
 
 message TaskCompletedResponse {

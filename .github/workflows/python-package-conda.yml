@@ -45,7 +45,7 @@ jobs:
       shell: bash
 
     - name: Start scheduler server
-      run: python3 scheduler_server.py &
+      run: python3 scheduler_server.py --PortNumber 50051 --SchedulerMode Random &
 
     - name: Start first worker server
       run: python3 worker_server.py --PortNumber 50052 --MaxThreadCount 2 &
