@@ -4,6 +4,7 @@ import numpy as np
 import json
 import constants
 from exceptions import WorkerUnableToExecuteTaskError
+from simple_transformer import SimpleTransformer
 
 class Operations:
     def __init__(self, worker):
@@ -12,6 +13,7 @@ class Operations:
             "mat_add": self.mat_add,
             "mat_subtract": self.mat_subtract,
             "retrieval": self.retrieval,
+            "generation": self.generation,
             # Add more functions as needed
         }
         self.workerObj = worker
@@ -33,7 +35,6 @@ class Operations:
             logging.error("Unexpected error:", e)
         return constants.ERROR
         
-
     def mat_add(self, matrix1, matrix2):
         # Perform matrix addition
         try:
@@ -89,4 +90,14 @@ class Operations:
             logging.error("Unexpected error:", e)
         return constants.ERROR
 
-
+    def generation(self, matrix1):
+        try:
+            if matrix1 == type(Future):
+                matrix1 = self.workerObj.get_result_from_worker(matrix1)
+            matrix1 = np.array(json.loads(matrix1))
+            model = SimpleTransformer(vocab_size=10, d_model=matrix1.shape[0])
+            result = model.gen(matrix1)
+            return result.toList()
+        except Exception as e:
+            logging.error("Unexpected error:", e)
+        return constants.ERROR
