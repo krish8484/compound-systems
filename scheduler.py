@@ -12,13 +12,15 @@ from logging_provider import logging
 from exceptions import NoWorkerAvailableError
 import grpc
 import constants
+from typing import Union
 
 class Scheduler:
-    def __init__(self, scheduler_mode):
+    def __init__(self, scheduler_mode, assigned_workers_per_task):
         self.task_queue = queue.Queue()
         self.completion_status = {}
         self.workerIdLock = threading.Lock()
         self.schedulerMode = scheduler_mode
+        self.assigned_workers_per_task = assigned_workers_per_task
 
         if self.schedulerMode == constants.SCHEDULINGMODE_RANDOM:
             self.workerMapLock = threading.Lock()
@@ -30,22 +32,37 @@ class Scheduler:
        
         signal.signal(signal.SIGINT, self.sigterm_handler)
 
-    def submit_task(self, task : Task) -> Future:
-        random_worker = self.get_worker()
-        worker_client = WorkerClient(random_worker.hostName , int(random_worker.portNumber))
-        logging.info(f"Task {task} submitted to worker:{random_worker}")
+    def submit_task(self, task : Task) -> list[Future]:
+        futures = []
+        threads = [threading.Thread(target=self.submit_task_to_worker, args=(task, futures)) for _ in range(self.assigned_workers_per_task)]
+        for thread in threads:
+            thread.start()
+        for thread in threads:
+            thread.join()
+        if len(futures) == 0:
+            logging.error(f"No workers found to submit task {task}")
+            raise NoWorkerAvailableError(self.schedulerMode)
+        return futures
 
+    def submit_task_to_worker(self, task, futures):
         try:
-            return worker_client.SubmitTask(task)
+            worker = self.get_worker()
+            worker_client = WorkerClient(worker.hostName , int(worker.portNumber))
+            logging.info(f"Task {task} submitted to worker:{worker}")
+            futures.append(worker_client.SubmitTask(task, timeout=constants.WAIT_TIME_FOR_FUTURE_FROM_WORKER))
+        except NoWorkerAvailableError as noWorkerAvailableError:
+            logging.error(f"SubmitTask: No worker available. Scheduler mode: {noWorkerAvailableError.schedulerMode}")
         except grpc.RpcError as rpc_error:
             if rpc_error.code() == grpc.StatusCode.CANCELLED:
                 logging.error(f"SubmitTask: RPC Cancelled. RPC Error: code={rpc_error.code()} message={rpc_error.details()}")
             elif rpc_error.code() == grpc.StatusCode.UNAVAILABLE:
                 logging.error(f"SubmitTask: Worker Unavailable. RPC Error: code={rpc_error.code()} message={rpc_error.details()}")
+            elif rpc_error.code() == grpc.StatusCode.DEADLINE_EXCEEDED:
+                logging.error(f"SubmitTask: Deadline Exceeded. RPC Error: code={rpc_error.code()} message={rpc_error.details()}")
             else:
                 logging.error(f"SubmitTask: Unhandled RPC error: code={rpc_error.code()} message={rpc_error.details()}")
 
-    def register_worker(self, workerInfo):
+    def register_worker(self, workerInfo: WorkerInfo) -> int:
         print("In register worker at scheduler")
         assignedWorkerId = 0
 
@@ -65,7 +82,7 @@ class Scheduler:
 
 
     def task_completed(self, task_id, worker_id, status):
-        logging.info(f"Scheduler recevied message of completion {task_id} from {worker_id} - Success {status}")
+        logging.info(f"Scheduler recevied message of completion of Task ID:{task_id} from Worker ID:{worker_id} - Success {status}")
         return True
 
     def assign_task(self):
@@ -82,7 +99,7 @@ class Scheduler:
         logging.info("Exiting gracefully.")
         sys.exit(0)
 
-    def get_worker(self):
+    def get_worker(self) -> Union[WorkerInfo, WorkerInfoWrapper]:
         if self.schedulerMode == constants.SCHEDULINGMODE_RANDOM:
             logging.info(f"Getting worker for {self.schedulerMode}")
             if self.globalIncrementalWorkerId > 1:
@@ -106,5 +123,3 @@ class Scheduler:
                 logging.info(f"No worker found.")
                 raise NoWorkerAvailableError(self.schedulerMode)
         
-            
-            

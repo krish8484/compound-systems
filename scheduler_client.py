@@ -13,11 +13,11 @@ class SchedulerClient:
         self.channel = grpc.insecure_channel('{}:{}'.format(self.host, self.port))
         self.stub = api_pb2_grpc.SchedulerApiStub(self.channel)
 
-    def SubmitTask(self, task: Task) -> Future:
+    def SubmitTask(self, task: Task) -> list[Future]:
         _task = task.to_proto()
         request = api_pb2.TaskRequest(task=_task)
         response = self.stub.SubmitTask(request)
-        return Future(resultLocation=response.future.resultLocation, hostName=response.future.hostName, port=response.future.port)
+        return [Future(resultLocation=future.resultLocation, hostName=future.hostName, port=future.port) for future in response.futures]
     
     def TaskCompleted(self, task_id, worker_id, _status) -> bool:
         _protoStatus = _status.to_proto()

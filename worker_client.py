@@ -11,14 +11,20 @@ class WorkerClient:
         self.channel = grpc.insecure_channel('{}:{}'.format(self.host, self.port))
         self.stub = api_pb2_grpc.WorkerApiStub(self.channel)
 
-    def GetResult(self, future: Future) -> bytes:
+    def GetResult(self, future: Future, timeout = None) -> bytes:
         _future = api_pb2.Future(resultLocation = future.resultLocation, hostName = future.hostName, port = future.port)
         request = api_pb2.GetResultRequest(future=_future)
-        response = self.stub.GetResult(request)
+        if (timeout != None):
+            response = self.stub.GetResult(request, timeout = float(timeout))
+        else:
+            response = self.stub.GetResult(request)
         return response.result
 
-    def SubmitTask(self, task: Task) -> Future:
+    def SubmitTask(self, task: Task, timeout = None) -> Future:
         _task = task.to_proto()
         request = api_pb2.TaskRequest(task=_task)
-        response = self.stub.SubmitTask(request)
+        if (timeout != None):
+            response = self.stub.SubmitTask(request, timeout = float(timeout))
+        else:
+            response = self.stub.SubmitTask(request)
         return Future(resultLocation=response.future.resultLocation, hostName=response.future.hostName, port=response.future.port)
