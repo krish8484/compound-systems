@@ -179,7 +179,7 @@ class Scheduler:
         with self.WorkersTaskFinishedCountLock and queueLock:
             for workerIdFromMap in self.WorkersTaskFinishedCount:
                 workerInfoFromMap = self.WorkersTaskFinishedCount[workerIdFromMap]
-                if currentMapWorkerInfo.isGPUEnabled is GPUEnabledTask:
+                if workerInfoFromMap.isGPUEnabled is GPUEnabledTask:
                     currentMapWorkerInfo = workerInfoFromMap
                     self.update_priorityQueueWithLockAcquired(queueName, workerInfoFromMap)
                     currentMapWorkerInfo.currentAvailableCap = 0 # Reset the value to 0
