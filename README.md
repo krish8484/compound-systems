@@ -14,14 +14,15 @@ Steps to Run
 4) Run compile_proto script based on your target machine from root repo folder (CS244B)
 5) Start the scheduler server from one terminal - 
     python3 scheduler_server.py --PortNumber 50051 --SchedulerMode Random
-6) Start the worker server in another terminal - python3 worker_server.py --PortNumber <PortNumber> --MaxThreadCount <MaxThreadCount>
+6) Start multiple worker servers in another terminal - python3 worker_server.py --PortNumber <PortNumber> --MaxThreadCount <MaxThreadCount> --HardwareGeneration <HardwareGeneration>
     Example Command:
-    python3 worker_server.py --PortNumber 50052 --MaxThreadCount 2 --gpuEnabled --addDelay
+    python3 worker_server.py --PortNumber 50055 --MaxThreadCount 2 --HardwareGeneration Gen2 --gpuEnabled
 
     First parameter is the port number
     Second parameter is the number of threads the worker can process
-    Third parameter is an optional parameter. If --gpuEnabled parameter is passed, worker is treated as GPU Enabled.
-    Fourth parameter is an optional parameter. If --addDelay parameter is passed, delays are added randomly for the worker operations.
+    Third parameter is the hardware generation parameter which determines if scheduler would send more requests to this worker in LoadAware scheduling mode
+    Fourth parameter is an optional parameter. If --gpuEnabled parameter is passed, worker is treated as GPU Enabled.
+    Fifth parameter is an optional parameter. If --addDelay parameter is passed, delays are added randomly for the worker operations.
 
 7) Run driver for another terminal - python3 driver.py (There is an example code written under main for testing)
 8) Submit tasks with the driver; they should be seen getting executed on the worker.
