@@ -76,7 +76,7 @@ def test_mat_subtract(scheduler_client, matrix1, matrix2):
 def test_char_count(scheduler_client, words):
     for word in words:
         task = Task(taskId="3", taskDefintion="print_char_count", taskData=[json.dumps(word).encode()])
-        future = scheduler_client.SubmitTask(task)
+        future = scheduler_client.SubmitTask(task)[0]
 
         worker_client = WorkerClient(future.hostName, future.port)
 
@@ -85,7 +85,7 @@ def test_char_count(scheduler_client, words):
 
 def test_addition(scheduler_client, numbers):
         task = Task(taskId="4", taskDefintion="sum_of_integers", taskData=[json.dumps(numbers).encode()])
-        future = scheduler_client.SubmitTask(task)
+        future = scheduler_client.SubmitTask(task)[0]
 
         worker_client = WorkerClient(future.hostName, future.port)
 
