@@ -74,7 +74,7 @@ def test_passing_futures_as_args_flow(scheduler_client, matrix1, matrix2):
     expected_result = [[13, 14], [33, 38]]
     poll_for_result(workerClient, future3, expected_result)
 
-# Multiple workers here doensn't guarantee that the task will be assigned to different workers. It depends on the scheduling mode and the number of workers registered.
+# Multiple workers here doesn't guarantee that the task will be assigned to different workers. It depends on the scheduling mode and the number of workers registered.
 # Make sure --AssingedWorkersPerTask is set to more than 1 to ideally test this(not assigning would still work).
 def test_assign_task_to_multiple_workers(scheduler_client, matrix1, matrix2):
     futures = scheduler_client.SubmitTask(Task(taskId="0", taskDefintion="dot_product", taskData=[json.dumps(matrix1).encode(), json.dumps(matrix2).encode()]))

@@ -49,7 +49,7 @@ class Scheduler:
             worker = self.get_worker()
             worker_client = WorkerClient(worker.hostName , int(worker.portNumber))
             logging.info(f"Task {task} submitted to worker:{worker}")
-            futures.append(worker_client.SubmitTask(task, timeout=constants.WAIT_TIME_FOR_FUTURE_FROM_WORKER))
+            futures.append(worker_client.SubmitTask(task, timeout=constants.SCHEDULER_TIMEOUT_TO_RECEIVE_FUTURE_FROM_WORKER))
         except NoWorkerAvailableError as noWorkerAvailableError:
             logging.error(f"SubmitTask: No worker available. Scheduler mode: {noWorkerAvailableError.schedulerMode}")
         except grpc.RpcError as rpc_error:
@@ -63,7 +63,6 @@ class Scheduler:
                 logging.error(f"SubmitTask: Unhandled RPC error: code={rpc_error.code()} message={rpc_error.details()}")
 
     def register_worker(self, workerInfo: WorkerInfo) -> int:
-        print("In register worker at scheduler")
         assignedWorkerId = 0
 
         with self.workerIdLock:

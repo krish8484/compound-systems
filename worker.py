@@ -65,7 +65,6 @@ class Worker:
 
     def submit_task(self, task: Task) -> Future:
         self.add_random_delay()
-        
         if task.taskDefintion not in self.operations.operationsMapping:
             logging.info("Unknown function:", task.taskDefintion)
             raise grpc.RpcError(grpc.StatusCode.INVALID_ARGUMENT, 'The function name is unknown')
