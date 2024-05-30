@@ -86,6 +86,8 @@ class Operations:
             top_indices = np.argsort(sim)[-top_k:][::-1][0]
             result = [matrix1[i] for i in top_indices]
             return result
+        except WorkerUnableToExecuteTaskError as e:
+            logging.error("Unable to get result for future:", e.future)    
         except Exception as e:
             logging.error("Unexpected error:", e)
         return constants.ERROR
@@ -98,6 +100,8 @@ class Operations:
             model = SimpleTransformer(vocab_size=10, d_model=matrix1.shape[0])
             result = model.gen(matrix1)
             return result.toList()
+        except WorkerUnableToExecuteTaskError as e:
+            logging.error("Unable to get result for future:", e.future)
         except Exception as e:
             logging.error("Unexpected error:", e)
         return constants.ERROR
