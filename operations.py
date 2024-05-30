@@ -11,6 +11,8 @@ class Operations:
             "dot_product": self.dot_product,
             "mat_add": self.mat_add,
             "mat_subtract": self.mat_subtract,
+            "print_char_count": self.print_char_count,
+            "sum_of_integers": self.sum_of_integers,
             # Add more functions as needed
         }
         self.workerObj = worker
@@ -31,7 +33,6 @@ class Operations:
         except Exception as e:
             logging.error("Unexpected error:", e)
         return constants.ERROR
-        
 
     def mat_add(self, matrix1, matrix2):
         # Perform matrix addition
@@ -66,6 +67,42 @@ class Operations:
         except Exception as e:
             logging.error("Unexpected error:", e)
         return constants.ERROR
+
+    def print_char_count(self, variable):
+        try:
+            if isinstance(variable, Future):
+                variable = self.workerObj.get_result_from_worker(variable)
+            if isinstance(variable, bytes):
+                variable = variable.decode('utf-8')
+            if not isinstance(variable, str):
+                raise ValueError("Input must be a string or bytes.")
+            char_count = len(variable.strip('"'))
+            return char_count
+        except WorkerUnableToExecuteTaskError as e:
+            logging.error("Unable to get result for future:", e.future)
+        except Exception as e:
+            logging.error("Unexpected error:", e)
+            return constants.ERROR
+
+    def sum_of_integers(self, args):
+        try:
+            if isinstance(args, Future):
+                args = self.workerObj.get_result_from_worker(args)
+            if isinstance(args, bytes):
+                args = args.decode('utf-8')
+                args = eval(args)  # Convert string representation of list back to list
+            if not isinstance(args, list):
+                raise ValueError("Input must be a list or bytes representing a list.")
+            if not all(isinstance(item, int) for item in args):
+                raise ValueError("All elements in the list must be integers.")
+            total_sum = sum(args)
+            return total_sum
+        except WorkerUnableToExecuteTaskError as e:
+            logging.error("Unable to get result for future:", e.future)
+        except Exception as e:
+            logging.error("Unexpected error:", e)
+            return constants.ERROR
+
 
 
 

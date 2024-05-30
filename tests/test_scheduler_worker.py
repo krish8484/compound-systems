@@ -36,6 +36,15 @@ def matrix1():
 def matrix2():
     return [[5, 6], [7, 8]]
 
+@pytest.fixture
+def words():
+    return ["hello", "world", "python", "multiple words", "with spaces", "complex_phrases!", "1234567890"]
+
+@pytest.fixture
+def numbers():
+    return [1, 2, 3, 4, 5, 6, 7, 8]
+
+
 def test_dot_product(scheduler_client, matrix1, matrix2):
     task = Task(taskId="0", taskDefintion="dot_product", taskData=[json.dumps(matrix1).encode(), json.dumps(matrix2).encode()])
     future = scheduler_client.SubmitTask(task)
@@ -63,6 +72,25 @@ def test_mat_subtract(scheduler_client, matrix1, matrix2):
 
     expected_result = [[-4, -4 ], [-4, -4]]
     poll_for_result(worker_client, future, expected_result)
+
+def test_char_count(scheduler_client, words):
+    for word in words:
+        task = Task(taskId="3", taskDefintion="print_char_count", taskData=[json.dumps(word).encode()])
+        future = scheduler_client.SubmitTask(task)
+
+        worker_client = WorkerClient(future.hostName, future.port)
+
+        expected_result = len(word)
+        poll_for_result(worker_client, future, expected_result)
+
+def test_addition(scheduler_client, numbers):
+        task = Task(taskId="4", taskDefintion="sum_of_integers", taskData=[json.dumps(numbers).encode()])
+        future = scheduler_client.SubmitTask(task)
+
+        worker_client = WorkerClient(future.hostName, future.port)
+
+        expected_result = sum(numbers)
+        poll_for_result(worker_client, future, expected_result)
 
 def test_passing_futures_as_args_flow(scheduler_client, matrix1, matrix2):
     future = scheduler_client.SubmitTask(Task(taskId="0", taskDefintion="dot_product", taskData=[json.dumps(matrix1).encode(), json.dumps(matrix2).encode()]))
