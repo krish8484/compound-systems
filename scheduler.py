@@ -6,26 +6,32 @@ import random
 from Data.task import Task
 from Data.future import Future
 from Data.WorkerInfo import WorkerInfo
+from Data.WorkerInfoWrapper import WorkerInfoWrapper
 from worker_client import WorkerClient
 from logging_provider import logging
+from exceptions import NoWorkerAvailableError
 import grpc
+import constants
 
 class Scheduler:
-    def __init__(self):
+    def __init__(self, scheduler_mode):
         self.task_queue = queue.Queue()
         self.completion_status = {}
-        self.workerConnectInfoLock = threading.Lock()
         self.workerIdLock = threading.Lock()
-        self.workers = {} # Map that maintains the worker id to hostName,portNum
+        self.schedulerMode = scheduler_mode
+
+        if self.schedulerMode == constants.SCHEDULINGMODE_RANDOM:
+            self.workerMapLock = threading.Lock()
+            self.workers = {} # Map that maintains the worker id to hostName,portNum - Only used when scheduling mode is Random
+        elif self.schedulerMode == constants.SCHEDULINGMODE_ROUNDROBIN:
+            self.workerQueue = queue.Queue() # Thread Safe Queue - Only used when scheduling mode is round robin
+        
         self.globalIncrementalWorkerId = 0; # A globally incrementing worker id maintained by the scheduler
+       
         signal.signal(signal.SIGINT, self.sigterm_handler)
 
     def submit_task(self, task : Task) -> Future:
-        if self.globalIncrementalWorkerId > 1:
-            random_worker_id = random.randint(0, self.globalIncrementalWorkerId - 1)
-        else:
-            random_worker_id = 0
-        random_worker = self.workers[random_worker_id]
+        random_worker = self.get_worker()
         worker_client = WorkerClient(random_worker.hostName , int(random_worker.portNumber))
         logging.info(f"Task {task} submitted to worker:{random_worker}")
 
@@ -45,18 +51,22 @@ class Scheduler:
 
         with self.workerIdLock:
             assignedWorkerId = self.globalIncrementalWorkerId
-            self.globalIncrementalWorkerId +=1
+            self.globalIncrementalWorkerId +=1      
 
-        with self.workerConnectInfoLock:
-            self.workers[assignedWorkerId] = workerInfo
+        if self.schedulerMode == constants.SCHEDULINGMODE_RANDOM:
+            with self.workerMapLock:
+                self.workers[assignedWorkerId] = workerInfo
+        elif self.schedulerMode == constants.SCHEDULINGMODE_ROUNDROBIN:
+            workerInfoWithWorkerId = WorkerInfoWrapper(workerInfo, assignedWorkerId)
+            self.workerQueue.put(workerInfoWithWorkerId)
 
-        logging.info(f"Worker {assignedWorkerId} registered. WorkerInfo: {workerInfo}")
-
+        logging.info(f"Worker {assignedWorkerId} registered. WorkerInfo: {workerInfo}")   
         return assignedWorkerId
 
 
-    def task_completed(self, task_id, worker_id):
-        pass
+    def task_completed(self, task_id, worker_id, status):
+        logging.info(f"Scheduler recevied message of completion {task_id} from {worker_id} - Success {status}")
+        return True
 
     def assign_task(self):
         with self.lock:
@@ -71,3 +81,30 @@ class Scheduler:
     def sigterm_handler(self, signum, frame):
         logging.info("Exiting gracefully.")
         sys.exit(0)
+
+    def get_worker(self):
+        if self.schedulerMode == constants.SCHEDULINGMODE_RANDOM:
+            logging.info(f"Getting worker for {self.schedulerMode}")
+            if self.globalIncrementalWorkerId > 1:
+                random_worker_id = random.randint(0, self.globalIncrementalWorkerId - 1)
+                with self.workerMapLock:
+                    return self.workers[random_worker_id]
+            elif self.globalIncrementalWorkerId == 1:
+                with self.workerMapLock:
+                    return self.workers[0]
+            else:
+                logging.info(f"No worker found.")
+                raise NoWorkerAvailableError(self.schedulerMode)
+        elif self.schedulerMode == constants.SCHEDULINGMODE_ROUNDROBIN:
+            logging.info(f"Getting worker for {self.schedulerMode}")
+            if self.workerQueue.qsize() > 0:
+                # dequeue and enqueue again and return the wrapped worker info object
+                wrappedWorkerInfo = self.workerQueue.get()
+                self.workerQueue.put(wrappedWorkerInfo)
+                return wrappedWorkerInfo
+            else:
+                logging.info(f"No worker found.")
+                raise NoWorkerAvailableError(self.schedulerMode)
+        
+            
+            

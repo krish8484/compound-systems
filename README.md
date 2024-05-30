@@ -12,7 +12,8 @@ Steps to Run
 2) conda create --name cs244b --file requirements.txt python=3.9
 3) conda activate cs244b
 4) Run compile_proto script based on your target machine from root repo folder (CS244B)
-5) Start the scheduler server from one terminal - python3 scheduler_server.py
+5) Start the scheduler server from one terminal - 
+    python3 scheduler_server.py --PortNumber 50051 --SchedulerMode Random
 6) Start the worker server in another terminal - python3 worker_server.py --PortNumber <PortNumber> --MaxThreadCount <MaxThreadCount>
     Example Command:
     python3 worker_server.py --PortNumber 50052 --MaxThreadCount 2 --gpuEnabled --addDelay
