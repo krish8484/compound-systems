@@ -44,19 +44,49 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
       shell: bash
 
-    - name: Start scheduler server
+    - name: Start scheduler server (Random mode)
       run: python3 scheduler_server.py --PortNumber 50051 --SchedulerMode Random &
 
-    - name: Start first worker server
+    - name: Start first worker server (Random mode)
       run: python3 worker_server.py --PortNumber 50052 --MaxThreadCount 2 &
 
-    - name: Start second worker server
+    - name: Start second worker server (Random mode)
       run: python3 worker_server.py --PortNumber 50053 --MaxThreadCount 5 &
 
-    - name: Wait for servers to start
+    - name: Wait for servers to start (Random mode)
       run: sleep 10
 
-    - name: Test with pytest
+    - name: Test with pytest (Random mode)
+      run: |
+        $CONDA/bin/activate $CONDA_ENV_NAME
+        cd tests
+        pytest --count=20
+      shell: bash
+
+    - name: Stop scheduler server (Random mode)
+      run: pkill -f scheduler_server.py
+      shell: bash
+
+    - name: Stop worker servers (Random mode)
+      run: pkill -f worker_server.py
+      shell: bash
+
+    - name: Start scheduler server (RoundRobin mode)
+      run: python3 scheduler_server.py --PortNumber 50051 --SchedulerMode RoundRobin &
+
+    - name: Start first worker server (RoundRobin mode)
+      run: python3 worker_server.py --PortNumber 50052 --MaxThreadCount 2 &
+
+    - name: Start second worker server (RoundRobin mode)
+      run: python3 worker_server.py --PortNumber 50053 --MaxThreadCount 5 &
+
+    - name: Start third worker server (RoundRobin mode)
+      run: python3 worker_server.py --PortNumber 50054 --MaxThreadCount 5 &
+
+    - name: Wait for servers to start (RoundRobin mode)
+      run: sleep 10
+
+    - name: Test with pytest (RoundRobin mode)
       run: |
         $CONDA/bin/activate $CONDA_ENV_NAME
         cd tests
