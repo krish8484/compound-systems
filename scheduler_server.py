@@ -12,15 +12,17 @@ import constants
 SCHEDULER_HOST = "localhost"
 SCHEDULER_PORT = 50051
 SCHEDULER_MODE = "Random"
+ASSINGED_WORKERS_PER_TASK = 1
 
 class SchedulerServer(api_pb2_grpc.SchedulerApiServicer):
 
     def __init__(self):
-        self.scheduler = Scheduler(SCHEDULER_MODE)
+        self.scheduler = Scheduler(SCHEDULER_MODE, ASSINGED_WORKERS_PER_TASK)
 
     def SubmitTask(self, request, context):
-        future = self.scheduler.submit_task(Task(taskId = request.task.taskId, taskDefintion = request.task.taskDefinition, taskData = request.task.taskData))
-        return api_pb2.TaskResponse(future=api_pb2.Future(resultLocation=future.resultLocation, hostName=future.hostName, port=future.port))
+        futures = self.scheduler.submit_task(Task(taskId = request.task.taskId, taskDefintion = request.task.taskDefinition, taskData = request.task.taskData))
+        proto_futures = [api_pb2.Future(resultLocation=future.resultLocation, hostName=future.hostName, port=future.port) for future in futures]
+        return api_pb2.SubmitTaskToSchedulerResponse(futures=proto_futures)
     
     def TaskCompleted(self, request, context):
         logging.info(f"Received request of task completion")
@@ -68,10 +70,19 @@ if __name__ == '__main__':
         choices=['Random', 'RoundRobin'],
         help="Choose 'Random' or 'RoundRobin' mode",
         required=True)
+    
+    parser.add_argument(
+        "-w",
+        "--AssingedWorkersPerTask",
+        type=int,
+        help="Please pass the no of workers to assign per task submitted to scheduler",
+        required=False,
+        default=1)
    
     args = parser.parse_args()
     SCHEDULER_PORT = int(args.PortNumber)
     SCHEDULER_MODE = args.SchedulerMode
+    ASSINGED_WORKERS_PER_TASK = int(args.AssingedWorkersPerTask)
 
     if SCHEDULER_MODE == constants.SCHEDULINGMODE_RANDOM:
         logging.info("Random scheduling mode selected..")

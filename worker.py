@@ -65,7 +65,6 @@ class Worker:
 
     def submit_task(self, task: Task) -> Future:
         self.add_random_delay()
-
         if task.taskDefintion not in self.operations.operationsMapping:
             logging.info("Unknown function:", task.taskDefintion)
             raise grpc.RpcError(grpc.StatusCode.INVALID_ARGUMENT, 'The function name is unknown')
@@ -103,7 +102,7 @@ class Worker:
             _task.taskId,
             self.worker_id,
             _status)
-        logging.info(f"Notified the scheduler on task completion {_task.taskId} - {tmp}")
+        logging.info(f"Notified the scheduler on task completion of Task ID: {_task.taskId} - {tmp}")
 
 
     def get_result_from_worker(self, future: Future) -> bytes:

@@ -45,7 +45,7 @@ jobs:
       shell: bash
 
     - name: Start scheduler server (Random mode)
-      run: python3 scheduler_server.py --PortNumber 50051 --SchedulerMode Random &
+      run: python3 scheduler_server.py --PortNumber 50051 --SchedulerMode Random --AssingedWorkersPerTask 2 &
 
     - name: Start first worker server (Random mode)
       run: python3 worker_server.py --PortNumber 50052 --MaxThreadCount 2 &
@@ -72,7 +72,7 @@ jobs:
       shell: bash
 
     - name: Start scheduler server (RoundRobin mode)
-      run: python3 scheduler_server.py --PortNumber 50051 --SchedulerMode RoundRobin &
+      run: python3 scheduler_server.py --PortNumber 50051 --SchedulerMode RoundRobin --AssingedWorkersPerTask 2 &
 
     - name: Start first worker server (RoundRobin mode)
       run: python3 worker_server.py --PortNumber 50052 --MaxThreadCount 2 &
