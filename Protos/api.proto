@@ -3,7 +3,7 @@ syntax = "proto3";
 package api;
 
 service SchedulerApi {
-    rpc SubmitTask(TaskRequest) returns (TaskResponse) {}
+    rpc SubmitTask(TaskRequest) returns (SubmitTaskToSchedulerResponse) {}
     rpc TaskCompleted(TaskCompletedRequest) returns (TaskCompletedResponse) {}
     rpc RegisterWorker(RegisterWorkerRequest) returns (RegisterWorkerResponse) {}
 }
@@ -19,6 +19,10 @@ message TaskRequest {
 
 message TaskResponse {
     Future future = 1;
+}
+
+message SubmitTaskToSchedulerResponse{
+    repeated Future futures = 1;
 }
 
 message TaskCompletedRequest {

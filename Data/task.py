@@ -4,8 +4,8 @@ import api_pb2
 class Task:
     # self.taskData is a list of future or/and bytes
     def __init__(self, taskId, taskDefintion, taskData):
-        self.taskId = taskId
-        self.taskDefintion = taskDefintion
+        self.taskId : str = taskId
+        self.taskDefintion : str = taskDefintion
         if len(taskData)!=0 and not isinstance(taskData[0], api_pb2.TaskDataParam):
             self.taskData = taskData
         # Converts list of api_pb2.TaskDataParam to list of future and/or bytes
