@@ -18,6 +18,16 @@ class Operations:
             "sum_of_integers": self.sum_of_integers,
             # Add more functions as needed
         }
+
+        self.operationsWithGPU = {
+            "dot_product",
+            "retrieval",
+            "generation",
+            "print_char_count",
+            "sum_of_integers"
+            # Add more functions as needed
+        }
+
         self.workerObj = worker
 
     def dot_product(self, matrix1, matrix2):
