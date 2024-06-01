@@ -85,10 +85,11 @@ class Scheduler:
 
     def task_completed(self, task_id, worker_id, status):
         logging.info(f"Scheduler recevied message of completion {task_id} from {worker_id} - Success {status}")
-        with self.WorkersTaskFinishedCountLock: #Lock to ensure that 2 task_completed calls from same worker both update the value correctly
-            currentMapWorkerInfo = self.WorkersTaskFinishedCount[worker_id]
-            currentMapWorkerInfo.currentAvailableCap = currentMapWorkerInfo.currentAvailableCap + 1
-            self.WorkersTaskFinishedCount[worker_id] = currentMapWorkerInfo
+        if self.schedulerMode == constants.SCHEDULINGMODE_LOADAWARE:
+            with self.WorkersTaskFinishedCountLock: #Lock to ensure that 2 task_completed calls from same worker both update the value correctly
+                currentMapWorkerInfo = self.WorkersTaskFinishedCount[worker_id]
+                currentMapWorkerInfo.currentAvailableCap = currentMapWorkerInfo.currentAvailableCap + 1
+                self.WorkersTaskFinishedCount[worker_id] = currentMapWorkerInfo
 
         logging.info(f"Scheduler recevied message of completion of Task ID:{task_id} from Worker ID:{worker_id} - Success {status}")
         return True
@@ -174,7 +175,7 @@ class Scheduler:
             lockName = self.workerIdsWithGPULock
         
         with lockName:
-            if listName.len() > 0:
+            if len(listName) > 0:
                 pickedWorkerId = random.choice(listName)
             else:
                 if gpuEnabledTask is not True:
@@ -240,10 +241,10 @@ class Scheduler:
         with self.workerMapLock:
             self.workers[assignedWorkerId] = workerInfo
         if workerInfo.isGPUEnabled is True:
-            with self.workedIdWithGPULock:
+            with self.workerIdsWithGPULock:
                 self.workerIdsWithGPU.append(assignedWorkerId)
         else:
-            with self.workedIdWithoutGPULock:
+            with self.workerIdsWithoutGPULock:
                 self.workerIdsWithoutGPU.append(assignedWorkerId)
         
         logging.info(f"Finished registering the worker in {self.schedulerMode} mode with {assignedWorkerId}. WorkerInfo {workerInfo}")
