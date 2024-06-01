@@ -87,5 +87,10 @@ message TaskDataParam {
     oneof dataParam {
         Future future = 1;
         bytes data = 2;
+        FutureList futures = 3;
     }
+}
+
+message FutureList {
+    repeated Future future_items = 1;
 }

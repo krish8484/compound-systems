@@ -21,11 +21,21 @@ class Task:
     def to_proto(self) -> api_pb2.Task:
         task = api_pb2.Task(taskId = self.taskId, taskDefinition = self.taskDefintion)
         for i in self.taskData:
-            if isinstance(i, Future):
+            if isinstance(i, list):
+                for f in i:
+                    if isinstance(f, Future):
+                        task.taskData.append(api_pb2.TaskDataParam(
+                            future=api_pb2.Future(
+                                resultLocation=f.resultLocation,
+                                hostName=f.hostName,
+                                port=f.port
+                            )
+                        ))
+            elif isinstance(i, Future):
                 task.taskData.append(api_pb2.TaskDataParam(future = api_pb2.Future(resultLocation = i.resultLocation, hostName = i.hostName, port = i.port)))
             else:
                 task.taskData.append(api_pb2.TaskDataParam(data = i))
         return task
-        
+
     def __str__(self):
         return "[Task ID: {} || Task Definition: {}]".format(self.taskId, self.taskDefintion)
