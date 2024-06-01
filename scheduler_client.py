@@ -33,7 +33,8 @@ class SchedulerClient:
             hostName = workerInfo.hostName,
             portNumber = workerInfo.portNumber,
             maxThreadCount = workerInfo.maxThreadCount,
-            isGPUEnabled = workerInfo.isGPUEnabled)
+            isGPUEnabled = workerInfo.isGPUEnabled,
+            hardwareGeneration = workerInfo.hardwareGeneration)
         request = api_pb2.RegisterWorkerRequest(workerInfo = _workerInfo)
         response = self.stub.RegisterWorker(request)
         return response.workerIdAssignedByScheduler

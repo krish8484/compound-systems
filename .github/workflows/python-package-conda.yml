@@ -48,10 +48,10 @@ jobs:
       run: python3 scheduler_server.py --PortNumber 50051 --SchedulerMode Random --AssingedWorkersPerTask 2 &
 
     - name: Start first worker server (Random mode)
-      run: python3 worker_server.py --PortNumber 50052 --MaxThreadCount 2 &
+      run: python3 worker_server.py --PortNumber 50052 --MaxThreadCount 2 --HardwareGeneration Gen2&
 
     - name: Start second worker server (Random mode)
-      run: python3 worker_server.py --PortNumber 50053 --MaxThreadCount 5 &
+      run: python3 worker_server.py --PortNumber 50053 --MaxThreadCount 5 --HardwareGeneration Gen2 &
 
     - name: Wait for servers to start (Random mode)
       run: sleep 10
@@ -75,13 +75,13 @@ jobs:
       run: python3 scheduler_server.py --PortNumber 50051 --SchedulerMode RoundRobin --AssingedWorkersPerTask 2 &
 
     - name: Start first worker server (RoundRobin mode)
-      run: python3 worker_server.py --PortNumber 50052 --MaxThreadCount 2 &
+      run: python3 worker_server.py --PortNumber 50052 --MaxThreadCount 2 --HardwareGeneration Gen2 &
 
     - name: Start second worker server (RoundRobin mode)
-      run: python3 worker_server.py --PortNumber 50053 --MaxThreadCount 5 &
+      run: python3 worker_server.py --PortNumber 50053 --MaxThreadCount 5 --HardwareGeneration Gen2 &
 
     - name: Start third worker server (RoundRobin mode)
-      run: python3 worker_server.py --PortNumber 50054 --MaxThreadCount 5 &
+      run: python3 worker_server.py --PortNumber 50054 --MaxThreadCount 5 --HardwareGeneration Gen2 &
 
     - name: Wait for servers to start (RoundRobin mode)
       run: sleep 10
@@ -91,4 +91,45 @@ jobs:
         $CONDA/bin/activate $CONDA_ENV_NAME
         cd tests
         pytest --count=20
+      shell: bash
+    
+    - name: Stop scheduler server (RoundRobin mode)
+      run: pkill -f scheduler_server.py
+      shell: bash
+
+    - name: Stop worker servers (RoundRobin mode)
+      run: pkill -f worker_server.py
+      shell: bash
+
+    - name: Start scheduler server (LoadAware mode)
+      run: python3 scheduler_server.py --PortNumber 50051 --SchedulerMode LoadAware &
+
+    - name: Start first worker server (LoadAware mode)
+      run: python3 worker_server.py --PortNumber 50052 --MaxThreadCount 2 --HardwareGeneration Gen2 &
+
+    - name: Start second worker server (LoadAware mode)
+      run: python3 worker_server.py --PortNumber 50053 --MaxThreadCount 5 --HardwareGeneration Gen2 &
+
+    - name: Start third worker server (LoadAware mode)
+      run: python3 worker_server.py --PortNumber 50054 --MaxThreadCount 5 --HardwareGeneration Gen2 --gpuEnabled &
+
+    - name: Start fourth worker server (LoadAware mode)
+      run: python3 worker_server.py --PortNumber 50055 --MaxThreadCount 5 --HardwareGeneration Gen2 --gpuEnabled &
+
+    - name: Wait for servers to start (LoadAware mode)
+      run: sleep 10
+
+    - name: Test with pytest (LoadAware mode)
+      run: |
+        $CONDA/bin/activate $CONDA_ENV_NAME
+        cd tests
+        pytest --count=20
+      shell: bash
+    
+    - name: Stop scheduler server (LoadAware mode)
+      run: pkill -f scheduler_server.py
+      shell: bash
+
+    - name: Stop worker servers (LoadAware mode)
+      run: pkill -f worker_server.py
       shell: bash

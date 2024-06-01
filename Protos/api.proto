@@ -76,6 +76,7 @@ message WorkerInfo {
     int32 portNumber = 2;
     int32 maxThreadCount = 3;
     bool isGPUEnabled = 4;
+    string hardwareGeneration = 5;
 }
 
 /*
