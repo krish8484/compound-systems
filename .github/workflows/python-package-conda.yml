@@ -99,7 +99,7 @@ jobs:
       run: |
         $CONDA/bin/activate $CONDA_ENV_NAME
         cd tests
-        pytest -
+        pytest
       shell: bash
 
     - name: Stop scheduler server (RoundRobin mode)
