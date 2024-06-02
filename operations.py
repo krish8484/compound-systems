@@ -94,12 +94,12 @@ class Operations:
             dot_prod = np.dot(matrix1, matrix2)
             mag_1 = np.linalg.norm(matrix1)
             mag_2 = np.linalg.norm(matrix2)
-            sim = dot_prod / (mag_1 * mag_2) 
+            sim = dot_prod / (mag_1 * mag_2)
             top_indices = np.argsort(sim)[-top_k:][::-1][0]
             result = [matrix1[i] for i in top_indices]
             return result
         except WorkerUnableToExecuteTaskError as e:
-            logging.error("Unable to get result for future:", e.future)    
+            logging.error("Unable to get result for future:", e.future)
         except Exception as e:
             logging.error("Unexpected error:", e)
         return constants.ERROR
@@ -120,13 +120,16 @@ class Operations:
             logging.error("Unexpected error:", e)
             return constants.ERROR
 
-    def sum_of_integers(self, args):
+    def sum_of_integers(self, *args):
         try:
-            if isinstance(args, Future):
-                args = self.workerObj.get_result_from_worker(args)
-            if isinstance(args, bytes):
-                args = args.decode('utf-8')
-                args = eval(args)  # Convert string representation of list back to list
+            processed_args = []
+            for arg in args:
+                if isinstance(arg, Future):
+                    processed_args.append(int(self.workerObj.get_result_from_worker(arg)))
+                elif isinstance(arg, bytes):
+                    processed_arg = int(arg.decode('utf-8'))
+                    processed_args.append(eval(processed_arg))
+            args = processed_args
             if not isinstance(args, list):
                 raise ValueError("Input must be a list or bytes representing a list.")
             if not all(isinstance(item, int) for item in args):

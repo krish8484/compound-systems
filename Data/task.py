@@ -26,6 +26,6 @@ class Task:
             else:
                 task.taskData.append(api_pb2.TaskDataParam(data = i))
         return task
-        
+
     def __str__(self):
         return "[Task ID: {} || Task Definition: {}]".format(self.taskId, self.taskDefintion)

@@ -24,6 +24,14 @@ def poll_for_result(worker_client, future, expected_result):
     assert result == expected_result, f"Expected {expected_result}, but got {result}"
     logging.info(f"Result: {result}")
 
+# Helper function to split text into n chunks
+def split_text_into_chunks(text, num_chunks):
+    chunk_size = len(text) // num_chunks
+    chunks = [text[i * chunk_size:(i + 1) * chunk_size] for i in range(num_chunks)]
+    if len(text) % num_chunks != 0:
+        chunks[-1] += text[num_chunks * chunk_size:]  # Add the remaining text to the last chunk
+    return chunks
+
 @pytest.fixture
 def scheduler_client():
     return SchedulerClient("localhost", 50051)
@@ -43,6 +51,10 @@ def words():
 @pytest.fixture
 def numbers():
     return [1, 2, 3, 4, 5, 6, 7, 8]
+
+@pytest.fixture
+def large_text():
+    return "This is an example of a large text. " * 1000000
 
 
 def test_dot_product(scheduler_client, matrix1, matrix2):
@@ -97,7 +109,7 @@ def test_passing_futures_as_args_flow(scheduler_client, matrix1, matrix2):
     future2 = scheduler_client.SubmitTask(Task(taskId="1", taskDefintion="mat_add", taskData=[json.dumps(matrix1).encode(), json.dumps(matrix2).encode()]))[0]
     future3 = scheduler_client.SubmitTask(Task(taskId="2", taskDefintion="mat_subtract", taskData=[future, future2]))[0]
     # future4 = scheduler_client.SubmitTask(Task(taskID="3", taskDefinition="retrieval", taskData=[json.dumps(matrix1).encode(), json.dumps(matrix2).encode()]))
-    
+
     # TODO: add future4
     workerClient = WorkerClient(future3.hostName, future3.port)
 
@@ -114,3 +126,23 @@ def test_assign_task_to_multiple_workers(scheduler_client, matrix1, matrix2):
         logging.info(f"Future: {future}")
         worker_client = WorkerClient(future.hostName, future.port)
         poll_for_result(worker_client, future, expected_result)
+
+def test_map_reduce(scheduler_client, large_text):
+    chunks = split_text_into_chunks(large_text, num_chunks=1000)
+
+    futures = []
+    task_id = 1
+    for chunk in chunks:
+        print(len(chunk))
+        task = Task(taskId=str(task_id), taskDefintion="print_char_count", taskData=[json.dumps(chunk).encode()])
+        future = scheduler_client.SubmitTask(task)[0]
+        futures.append(future)
+        task_id += 1
+
+    task = Task(taskId=str(task_id), taskDefintion="sum_of_integers", taskData=futures)
+    future = scheduler_client.SubmitTask(task)[0]
+
+    worker_client = WorkerClient(future.hostName, future.port)
+
+    expected_result = len(large_text)
+    poll_for_result(worker_client, future, expected_result)
