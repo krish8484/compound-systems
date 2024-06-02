@@ -142,3 +142,42 @@ jobs:
     - name: Stop worker servers (LoadAware mode)
       run: pkill -f worker_server.py
       shell: bash
+
+    - name: Start scheduler server (PowerOfTwo mode)
+      run: python3 scheduler_server.py --PortNumber 50051 --SchedulerMode PowerOf2 &
+
+    - name: Start first worker server (PowerOfTwo mode)
+      run: python3 worker_server.py --PortNumber 50052 --MaxThreadCount 2 --HardwareGeneration Gen2 &
+
+    - name: Start second worker server (PowerOfTwo mode)
+      run: python3 worker_server.py --PortNumber 50053 --MaxThreadCount 5 --HardwareGeneration Gen2 &
+
+    - name: Start third worker server (PowerOfTwo mode)
+      run: python3 worker_server.py --PortNumber 50054 --MaxThreadCount 5 --HardwareGeneration Gen2 --gpuEnabled &
+
+    - name: Start fourth worker server (PowerOfTwo mode)
+      run: python3 worker_server.py --PortNumber 50055 --MaxThreadCount 5 --HardwareGeneration Gen2 --gpuEnabled &
+    
+    - name: Start fifth worker server (PowerOfTwo mode)
+      run: python3 worker_server.py --PortNumber 50056 --MaxThreadCount 5 --HardwareGeneration Gen2 --gpuEnabled &
+    
+    - name: Start sixth worker server (PowerOfTwo mode)
+      run: python3 worker_server.py --PortNumber 50057 --MaxThreadCount 5 --HardwareGeneration Gen2 --gpuEnabled &
+
+    - name: Wait for servers to start (PowerOfTwo mode)
+      run: sleep 10
+
+    - name: Test with pytest (PowerOfTwo mode)
+      run: |
+        $CONDA/bin/activate $CONDA_ENV_NAME
+        cd tests
+        pytest --count=20
+      shell: bash
+    
+    - name: Stop scheduler server (PowerOfTwo mode)
+      run: pkill -f scheduler_server.py
+      shell: bash
+
+    - name: Stop worker servers (PowerOfTwo mode)
+      run: pkill -f worker_server.py
+      shell: bash
