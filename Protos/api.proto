@@ -89,7 +89,3 @@ message TaskDataParam {
         bytes data = 2;
     }
 }
-
-message FutureList {
-    repeated Future future_items = 1;
-}
