@@ -128,9 +128,7 @@ class Worker:
 
     def add_random_delay(self):
         if self.add_delay:
-            if randrange(100) > 50:
-                delayVal = randrange(10)
-                logging.info(f"AddDelay is true - Adding delay of {delayVal} seconds.")
-                time.sleep(delayVal)
-            else:
-                logging.info(f"AddDelay is true but not adding any delay.")
+            delayVal = randrange(5,10)
+            logging.info(f"AddDelay is true - Adding delay of {delayVal} seconds.")
+        else:
+            logging.info(f"AddDelay is false - not adding any delay.")
