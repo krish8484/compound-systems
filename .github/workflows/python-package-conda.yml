@@ -52,6 +52,12 @@ jobs:
 
     - name: Start second worker server (Random mode)
       run: python3 worker_server.py --PortNumber 50053 --MaxThreadCount 5 --HardwareGeneration Gen2 &
+    
+    - name: Start third worker server (RoundRobin mode)
+      run: python3 worker_server.py --PortNumber 50054 --MaxThreadCount 5 --HardwareGeneration Gen2 --gpuEnabled &
+
+    - name: Start fourth worker server (RoundRobin mode)
+      run: python3 worker_server.py --PortNumber 50055 --MaxThreadCount 5 --HardwareGeneration Gen2 --gpuEnabled &
 
     - name: Wait for servers to start (Random mode)
       run: sleep 10
@@ -81,7 +87,10 @@ jobs:
       run: python3 worker_server.py --PortNumber 50053 --MaxThreadCount 5 --HardwareGeneration Gen2 &
 
     - name: Start third worker server (RoundRobin mode)
-      run: python3 worker_server.py --PortNumber 50054 --MaxThreadCount 5 --HardwareGeneration Gen2 &
+      run: python3 worker_server.py --PortNumber 50054 --MaxThreadCount 5 --HardwareGeneration Gen2 --gpuEnabled &
+
+    - name: Start fourth worker server (RoundRobin mode)
+      run: python3 worker_server.py --PortNumber 50055 --MaxThreadCount 5 --HardwareGeneration Gen2 --gpuEnabled &
 
     - name: Wait for servers to start (RoundRobin mode)
       run: sleep 10
