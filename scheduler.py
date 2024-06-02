@@ -34,6 +34,7 @@ class Scheduler:
             self.initalize_load_aware_scheduler()
         elif self.schedulerMode == constants.SCHEDULINGMODE_POWEROFTWO:
             self.initalize_power_of_two_scheduler()
+
        
         signal.signal(signal.SIGINT, self.sigterm_handler)
 
@@ -54,7 +55,8 @@ class Scheduler:
             gpuEnabledTask = task.taskDefintion in self.operations.operationsWithGPU
             logging.info(f"Getting worker for task {task}")
             worker = self.get_worker(gpuEnabledTask)
-            logging.info(f"Received worker: {worker}")
+            logging.info(f"Received worker: {worker} for {task}")
+
             worker_client = WorkerClient(worker.hostName , int(worker.portNumber))
             logging.info(f"Task {task} submitted to worker:{worker}")
             futures.append(worker_client.SubmitTask(task, timeout=constants.SCHEDULER_TIMEOUT_TO_RECEIVE_FUTURE_FROM_WORKER))
@@ -133,7 +135,6 @@ class Scheduler:
         sys.exit(0)
 
     def get_worker(self, gpuEnabledTask) -> Union[WorkerInfo, WorkerInfoWrapper]:
-        logging.info(f"Getting Worker get_worker")
         if self.schedulerMode == constants.SCHEDULINGMODE_RANDOM:
             logging.info(f"Getting worker for {self.schedulerMode}")
             return self.get_worker_random_mode(gpuEnabledTask)
