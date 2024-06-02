@@ -24,8 +24,8 @@ def poll_for_result(worker_client, future, expected_result):
     assert result == expected_result, f"Expected {expected_result}, but got {result}"
     logging.info(f"Result: {result}")
 
-# Helper function to split text into 4 chunks
-def split_text_into_chunks(text, num_chunks=4):
+# Helper function to split text into n chunks
+def split_text_into_chunks(text, num_chunks):
     chunk_size = len(text) // num_chunks
     chunks = [text[i * chunk_size:(i + 1) * chunk_size] for i in range(num_chunks)]
     if len(text) % num_chunks != 0:
@@ -139,7 +139,7 @@ def test_map_reduce(scheduler_client, large_text):
         futures.append(future)
         task_id += 1
 
-    task = Task(taskId=str(task_id), taskDefintion="sum_of_integers", taskData=[futures])
+    task = Task(taskId=str(task_id), taskDefintion="sum_of_integers", taskData=futures)
     future = scheduler_client.SubmitTask(task)[0]
 
     worker_client = WorkerClient(future.hostName, future.port)

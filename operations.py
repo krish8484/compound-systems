@@ -112,14 +112,14 @@ class Operations:
 
     def sum_of_integers(self, *args):
         try:
-            if isinstance(args, tuple) and all(isinstance(arg, Future) for arg in args):
-                args = [self.workerObj.get_result_from_worker(arg) for arg in args]
-            if len(args) == 1 and isinstance(args[0], bytes):
-                args = args[0].decode('utf-8')
-                args = eval(args)  # Convert string representation of list back to list
-            elif all(isinstance(arg, bytes) for arg in args):
-                args = [arg.decode('utf-8') for arg in args]
-                args = eval('[' + ','.join(args) + ']')
+            processed_args = []
+            for arg in args:
+                if isinstance(arg, Future):
+                    processed_args.append(int(self.workerObj.get_result_from_worker(arg)))
+                elif isinstance(arg, bytes):
+                    processed_arg = int(arg.decode('utf-8'))
+                    processed_args.append(eval(processed_arg))
+            args = processed_args
             if not isinstance(args, list):
                 raise ValueError("Input must be a list or bytes representing a list.")
             if not all(isinstance(item, int) for item in args):

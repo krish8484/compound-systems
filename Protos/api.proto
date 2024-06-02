@@ -87,7 +87,6 @@ message TaskDataParam {
     oneof dataParam {
         Future future = 1;
         bytes data = 2;
-        FutureList futures = 3;
     }
 }
 
