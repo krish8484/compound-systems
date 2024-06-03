@@ -136,7 +136,7 @@ def test_map_reduce(scheduler_client, large_text):
     task_id = 1
     for chunk in chunks:
         task = Task(taskId=str(task_id), taskDefintion="print_char_count", taskData=[json.dumps(chunk).encode()])
-        future = scheduler_client.SubmitTask(task)[0]
+        future = scheduler_client.SubmitTask(task)
         futures.append(future)
         task_id += 1
 
