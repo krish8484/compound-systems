@@ -68,8 +68,8 @@ if __name__ == '__main__':
     parser.add_argument(
         "-m",
         "--SchedulerMode",
-        choices=['Random', 'RoundRobin', 'LoadAware'],
-        help="Choose 'Random' or 'RoundRobin' mode",
+        choices=['Random', 'RoundRobin', 'LoadAware', 'PowerOf2'],
+        help="Choose 'Random' or 'RoundRobin' or 'LoadAware' or 'PowerOf2' mode",
         required=True)
     
     parser.add_argument(
@@ -91,5 +91,8 @@ if __name__ == '__main__':
         logging.info("RoundRobin scheduling mode selected..")
     elif SCHEDULER_MODE == constants.SCHEDULINGMODE_LOADAWARE:
         logging.info("LoadAware scheduling mode selected..")
+    elif SCHEDULER_MODE == constants.SCHEDULINGMODE_POWEROFTWO:
+        logging.info("PowerOf2 scheduling mode selected..")
     
+    logging.info(f"{SCHEDULER_MODE}")
     serve()
