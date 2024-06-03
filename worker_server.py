@@ -15,6 +15,7 @@ WORKER_PORT = 50052
 ADD_DELAY = False
 MAX_THREAD_COUNT = 2
 GPU_ENABLED = False
+HW_GENERATION = "Gen1"
 
 class WorkerServer(api_pb2_grpc.WorkerApiServicer):
     def __init__(self):
@@ -25,7 +26,8 @@ class WorkerServer(api_pb2_grpc.WorkerApiServicer):
             WORKER_PORT,
             ADD_DELAY,
             MAX_THREAD_COUNT,
-            GPU_ENABLED)
+            GPU_ENABLED,
+            HW_GENERATION)
 
     def GetResult(self, request, context):
         result = self.worker.get_result(Future(resultLocation= request.future.resultLocation, hostName=request.future.hostName, port=request.future.port))
@@ -61,6 +63,13 @@ if __name__ == '__main__':
         help="Please pass the max thread that you want worker to spawn.",
         required=False,
         default=5)
+    
+    parser.add_argument(
+        "-g",
+        "--HardwareGeneration",
+        choices=['Gen1', 'Gen2', 'Gen3', 'Gen4'],
+        help="Choose 'Gen1' or 'Gen2' or 'Gen3' or 'Gen4' mode",
+        required=True)
 
     parser.add_argument(
         '--gpuEnabled',
@@ -75,6 +84,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     WORKER_PORT = int(args.PortNumber)
     MAX_THREAD_COUNT = int(args.MaxThreadCount)
+    HW_GENERATION = args.HardwareGeneration
 
     if args.addDelay: 
         ADD_DELAY = True
@@ -87,5 +97,7 @@ if __name__ == '__main__':
         logging.info("Will mark worker as GPU Enabled..") 
     else: 
         logging.info("Will not mark worker as GPU Enabled") 
+
+    logging.info(f"Received Params: {args}")
     
     serve()

@@ -42,7 +42,8 @@ class SchedulerServer(api_pb2_grpc.SchedulerApiServicer):
                 hostName = request.workerInfo.hostName,
                 portNumber=request.workerInfo.portNumber,
                 maxThreadCount=request.workerInfo.maxThreadCount,
-                isGPUEnabled=request.workerInfo.isGPUEnabled))
+                isGPUEnabled=request.workerInfo.isGPUEnabled,
+                hardwareGeneration=request.workerInfo.hardwareGeneration))
         return api_pb2.RegisterWorkerResponse(workerIdAssignedByScheduler = assignedWorkerId)
 
 def serve():
@@ -67,8 +68,8 @@ if __name__ == '__main__':
     parser.add_argument(
         "-m",
         "--SchedulerMode",
-        choices=['Random', 'RoundRobin'],
-        help="Choose 'Random' or 'RoundRobin' mode",
+        choices=['Random', 'RoundRobin', 'LoadAware', 'PowerOf2'],
+        help="Choose 'Random' or 'RoundRobin' or 'LoadAware' or 'PowerOf2' mode",
         required=True)
     
     parser.add_argument(
@@ -88,5 +89,10 @@ if __name__ == '__main__':
         logging.info("Random scheduling mode selected..")
     elif SCHEDULER_MODE == constants.SCHEDULINGMODE_ROUNDROBIN:
         logging.info("RoundRobin scheduling mode selected..")
+    elif SCHEDULER_MODE == constants.SCHEDULINGMODE_LOADAWARE:
+        logging.info("LoadAware scheduling mode selected..")
+    elif SCHEDULER_MODE == constants.SCHEDULINGMODE_POWEROFTWO:
+        logging.info("PowerOf2 scheduling mode selected..")
     
+    logging.info(f"{SCHEDULER_MODE}")
     serve()

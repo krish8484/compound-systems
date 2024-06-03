@@ -26,7 +26,7 @@ class Task:
             else:
                 task.taskData.append(api_pb2.TaskDataParam(listOfFutures = api_pb2.ListOfFutures(futures = [future.to_proto() for future in i])))
         return task
-        
+
     def __str__(self):
         return "[Task ID: {} || Task Definition: {}]".format(self.taskId, self.taskDefintion)
 
