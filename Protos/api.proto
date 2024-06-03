@@ -48,7 +48,7 @@ message GetResultRequest {
 }
 
 message GetResultResponse {
-    bytes result = 1;
+    Result result = 1;
 }
 
 /*
@@ -84,7 +84,35 @@ Read this for more details: https://developers.google.com/protocol-buffers/docs/
 */
 message TaskDataParam {
     oneof dataParam {
-        Future future = 1;
+        ListOfFutures listOfFutures = 1;
         bytes data = 2;
     }
+}
+
+message ListOfFutures {
+    repeated Future futures = 1;
+}
+
+message Result {
+    ResultStatus resultStatus = 1;
+    bytes data = 2;
+    Error error = 3;
+}
+
+message Error{
+    ErrorType errorType = 1;
+    string errorMessage = 2;
+    Task failingTask = 3;
+    Future failingFuture = 4;
+}
+
+enum ErrorType {
+    UNABLETOCONNECTWITHWORKERSFORRESULT = 0;
+    ERRORWHENEXECUTINGTASK = 1;
+}
+
+enum ResultStatus {
+    COMPLETED = 0;
+    ERROR = 1;
+    INPROGRESS = 2;
 }
