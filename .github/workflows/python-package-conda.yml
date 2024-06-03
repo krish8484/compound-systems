@@ -52,7 +52,7 @@ jobs:
 
     - name: Start second worker server (Random mode)
       run: python3 worker_server.py --PortNumber 50053 --MaxThreadCount 5 --HardwareGeneration Gen2 &
-    
+
     - name: Start third worker server (RoundRobin mode)
       run: python3 worker_server.py --PortNumber 50054 --MaxThreadCount 5 --HardwareGeneration Gen2 --gpuEnabled &
 
@@ -66,7 +66,7 @@ jobs:
       run: |
         $CONDA/bin/activate $CONDA_ENV_NAME
         cd tests
-        pytest --count=20
+        pytest
       shell: bash
 
     - name: Stop scheduler server (Random mode)
@@ -99,9 +99,9 @@ jobs:
       run: |
         $CONDA/bin/activate $CONDA_ENV_NAME
         cd tests
-        pytest --count=20
+        pytest
       shell: bash
-    
+
     - name: Stop scheduler server (RoundRobin mode)
       run: pkill -f scheduler_server.py
       shell: bash
@@ -132,9 +132,9 @@ jobs:
       run: |
         $CONDA/bin/activate $CONDA_ENV_NAME
         cd tests
-        pytest --count=20
+        pytest
       shell: bash
-    
+
     - name: Stop scheduler server (LoadAware mode)
       run: pkill -f scheduler_server.py
       shell: bash

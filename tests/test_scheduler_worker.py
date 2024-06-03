@@ -96,7 +96,8 @@ def test_char_count(scheduler_client, words):
         poll_for_result(worker_client, future, expected_result)
 
 def test_addition(scheduler_client, numbers):
-        task = Task(taskId="4", taskDefintion="sum_of_integers", taskData=[json.dumps(numbers).encode()])
+        byte_numbers = [bytes([num]) for num in numbers]
+        task = Task(taskId="4", taskDefintion="sum_of_integers", taskData=byte_numbers)
         future = scheduler_client.SubmitTask(task)[0]
 
         worker_client = WorkerClient(future.hostName, future.port)
@@ -133,7 +134,6 @@ def test_map_reduce(scheduler_client, large_text):
     futures = []
     task_id = 1
     for chunk in chunks:
-        print(len(chunk))
         task = Task(taskId=str(task_id), taskDefintion="print_char_count", taskData=[json.dumps(chunk).encode()])
         future = scheduler_client.SubmitTask(task)[0]
         futures.append(future)

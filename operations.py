@@ -127,8 +127,8 @@ class Operations:
                 if isinstance(arg, Future):
                     processed_args.append(int(self.workerObj.get_result_from_worker(arg)))
                 elif isinstance(arg, bytes):
-                    processed_arg = int(arg.decode('utf-8'))
-                    processed_args.append(eval(processed_arg))
+                    processed_arg = int.from_bytes(arg, byteorder='big')
+                    processed_args.append(processed_arg)
             args = processed_args
             if not isinstance(args, list):
                 raise ValueError("Input must be a list or bytes representing a list.")
