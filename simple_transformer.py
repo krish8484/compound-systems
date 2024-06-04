@@ -30,8 +30,17 @@ def main():
     matrix1 = [[1,2], [3,4]]
     output = model.gen(matrix1)
 
-    print("Input:\n", matrix1)
-    print("Output:\n", output)
+    expected_result = np.array([
+        [[-1.07381302, -0.35631778], [-0.0082236, -0.33212289]],
+        [[1.18010406, 0.64358659], [0.58773279, -0.32573123]]
+    ])
+
+    print("type: ", type(output))
+    print("shape: ", output.shape)
+    # assert output == documents, f"Expected: {documents}, Actual: {output}"
+
+    print("input:\n", matrix1)
+    print("output:\n", output)
 
 if __name__ == "__main__":
     main()

@@ -96,7 +96,7 @@ class Operations:
             mag_2 = np.linalg.norm(matrix2)
             sim = dot_prod / (mag_1 * mag_2)
             top_indices = np.argsort(sim)[-top_k:][::-1][0]
-            result = [matrix1[i] for i in top_indices]
+            result = [matrix1[i].tolist() for i in top_indices]
             return result
         except WorkerUnableToExecuteTaskError as e:
             logging.error("Unable to get result for future:", e.future)

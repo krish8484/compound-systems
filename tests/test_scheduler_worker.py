@@ -9,6 +9,7 @@ from Data.task import Task
 from logging_provider import logging
 import json
 import constants
+import numpy as np
 
 def poll_for_result(worker_client, future, expected_result):
     while True:
@@ -56,7 +57,6 @@ def numbers():
 def large_text():
     return "This is an example of a large text. " * 1000000
 
-
 def test_dot_product(scheduler_client, matrix1, matrix2):
     task = Task(taskId="0", taskDefintion="dot_product", taskData=[json.dumps(matrix1).encode(), json.dumps(matrix2).encode()])
     future = scheduler_client.SubmitTask(task)[0]
@@ -65,7 +65,6 @@ def test_dot_product(scheduler_client, matrix1, matrix2):
 
     expected_result = [[19, 22], [43, 50]]
     poll_for_result(worker_client, future, expected_result)
-
 
 def test_mat_add(scheduler_client, matrix1, matrix2):
     task = Task(taskId="1", taskDefintion="mat_add", taskData=[json.dumps(matrix1).encode(), json.dumps(matrix2).encode()])
@@ -96,22 +95,42 @@ def test_char_count(scheduler_client, words):
         poll_for_result(worker_client, future, expected_result)
 
 def test_addition(scheduler_client, numbers):
-        byte_numbers = [bytes([num]) for num in numbers]
-        task = Task(taskId="4", taskDefintion="sum_of_integers", taskData=byte_numbers)
-        future = scheduler_client.SubmitTask(task)[0]
+    byte_numbers = [bytes([num]) for num in numbers]
+    task = Task(taskId="4", taskDefintion="sum_of_integers", taskData=byte_numbers)
+    future = scheduler_client.SubmitTask(task)[0]
 
-        worker_client = WorkerClient(future.hostName, future.port)
+    worker_client = WorkerClient(future.hostName, future.port)
 
-        expected_result = sum(numbers)
-        poll_for_result(worker_client, future, expected_result)
+    expected_result = sum(numbers)
+    poll_for_result(worker_client, future, expected_result)
+
+def test_retrieval(scheduler_client, matrix1, matrix2):
+    task = Task(taskId="5", taskDefintion="retrieval", taskData=[json.dumps(matrix1).encode(), json.dumps(matrix2).encode()])
+    future = scheduler_client.SubmitTask(task)[0]
+
+    worker_client = WorkerClient(future.hostName, future.port)
+
+    expected_result = [[1, 2], [3, 4]]
+    poll_for_result(worker_client, future, expected_result)
+
+def test_generation(scheduler_client, matrix1):
+    task = Task(taskId="6", taskDefintion="generation", taskData=[json.dumps(matrix1).encode()])
+    future = scheduler_client.SubmitTask(task)[0]
+
+    worker_client = WorkerClient(future.hostName, future.port)
+
+    expected_result = np.array([
+        [[-1.07381302, -0.35631778], [-0.0082236, -0.33212289]],
+        [[1.18010406, 0.64358659], [0.58773279, -0.32573123]]
+    ])
+
+    poll_for_result(worker_client, future, expected_result)
 
 def test_passing_futures_as_args_flow(scheduler_client, matrix1, matrix2):
     future = scheduler_client.SubmitTask(Task(taskId="0", taskDefintion="dot_product", taskData=[json.dumps(matrix1).encode(), json.dumps(matrix2).encode()]))[0]
     future2 = scheduler_client.SubmitTask(Task(taskId="1", taskDefintion="mat_add", taskData=[json.dumps(matrix1).encode(), json.dumps(matrix2).encode()]))[0]
     future3 = scheduler_client.SubmitTask(Task(taskId="2", taskDefintion="mat_subtract", taskData=[future, future2]))[0]
-    # future4 = scheduler_client.SubmitTask(Task(taskID="3", taskDefinition="retrieval", taskData=[json.dumps(matrix1).encode(), json.dumps(matrix2).encode()]))
-
-    # TODO: add future4
+    
     workerClient = WorkerClient(future3.hostName, future3.port)
 
     expected_result = [[13, 14], [33, 38]]
