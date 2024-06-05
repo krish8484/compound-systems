@@ -130,8 +130,8 @@ def test_generation(scheduler_client, matrix1):
     # poll_for_result(worker_client, future, expected_result)
 
 def test_passing_futures_as_args_flow(scheduler_client, matrix1, matrix2):
-    future = scheduler_client.SubmitTask(Task(taskId="0", taskDefintion="dot_product", taskData=[json.dumps(matrix1).encode(), json.dumps(matrix2).encode()]))[0]
-    future2 = scheduler_client.SubmitTask(Task(taskId="1", taskDefintion="mat_add", taskData=[json.dumps(matrix1).encode(), json.dumps(matrix2).encode()]))[0]
+    future = scheduler_client.SubmitTask(Task(taskId="0", taskDefintion="dot_product", taskData=[json.dumps(matrix1).encode(), json.dumps(matrix2).encode()]))
+    future2 = scheduler_client.SubmitTask(Task(taskId="1", taskDefintion="mat_add", taskData=[json.dumps(matrix1).encode(), json.dumps(matrix2).encode()]))
     future3 = scheduler_client.SubmitTask(Task(taskId="2", taskDefintion="mat_subtract", taskData=[future, future2]))[0]
     # future4 = scheduler_client.SubmitTask(Task(taskID="3", taskDefinition="retrieval", taskData=[json.dumps(matrix1).encode(), json.dumps(matrix2).encode()]))
 
