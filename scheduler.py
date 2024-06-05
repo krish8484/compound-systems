@@ -213,7 +213,7 @@ class Scheduler:
                     lockName = self.workerIdsWithGPULock
 
                     with lockName:
-                        if listName.len() > 0:
+                        if len(listName) > 0:
                             pickedWorkerId = random.choice(listName)
                 else:
                     logging.info(f"No worker found.")

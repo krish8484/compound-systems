@@ -10,17 +10,18 @@ from logging_provider import logging
 import json
 import constants
 import numpy as np
+import api_pb2
 
 def poll_for_result(worker_client, future, expected_result):
     while True:
         result = worker_client.GetResult(future=future)
-        if result == constants.NOTCOMPLETED:
+        if result.resultStatus == api_pb2.ResultStatus.INPROGRESS:
             time.sleep(constants.WAITTIMEFORPOLLINGRESULT)
             continue
-        elif result == constants.ERROR:
-            assert 1 == 2, "An error occurred while fetching the result"
+        elif result.resultStatus == api_pb2.ResultStatus.ERROR:
+            assert 1 == 2, f"An error occurred while fetching the result {result.error}"
         else:
-            result = json.loads(result)
+            result = json.loads(result.data)
             break
     assert result == expected_result, f"Expected {expected_result}, but got {result}"
     logging.info(f"Result: {result}")
@@ -132,7 +133,9 @@ def test_passing_futures_as_args_flow(scheduler_client, matrix1, matrix2):
     future = scheduler_client.SubmitTask(Task(taskId="0", taskDefintion="dot_product", taskData=[json.dumps(matrix1).encode(), json.dumps(matrix2).encode()]))[0]
     future2 = scheduler_client.SubmitTask(Task(taskId="1", taskDefintion="mat_add", taskData=[json.dumps(matrix1).encode(), json.dumps(matrix2).encode()]))[0]
     future3 = scheduler_client.SubmitTask(Task(taskId="2", taskDefintion="mat_subtract", taskData=[future, future2]))[0]
-    
+    # future4 = scheduler_client.SubmitTask(Task(taskID="3", taskDefinition="retrieval", taskData=[json.dumps(matrix1).encode(), json.dumps(matrix2).encode()]))
+
+    # TODO: add future4
     workerClient = WorkerClient(future3.hostName, future3.port)
 
     expected_result = [[13, 14], [33, 38]]
@@ -156,7 +159,7 @@ def test_map_reduce(scheduler_client, large_text):
     task_id = 1
     for chunk in chunks:
         task = Task(taskId=str(task_id), taskDefintion="print_char_count", taskData=[json.dumps(chunk).encode()])
-        future = scheduler_client.SubmitTask(task)[0]
+        future = scheduler_client.SubmitTask(task)
         futures.append(future)
         task_id += 1
 
