@@ -31,7 +31,7 @@ class WorkerServer(api_pb2_grpc.WorkerApiServicer):
 
     def GetResult(self, request, context):
         result = self.worker.get_result(Future(resultLocation= request.future.resultLocation, hostName=request.future.hostName, port=request.future.port))
-        return api_pb2.GetResultResponse(result=result)
+        return api_pb2.GetResultResponse(result=result.to_proto())
 
     def SubmitTask(self, request, context):
         future = self.worker.submit_task(Task(taskId=request.task.taskId, taskDefintion=request.task.taskDefinition, taskData=request.task.taskData))

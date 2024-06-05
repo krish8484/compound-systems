@@ -48,7 +48,7 @@ jobs:
       run: python3 scheduler_server.py --PortNumber 50051 --SchedulerMode Random --AssingedWorkersPerTask 2 &
 
     - name: Start first worker server (Random mode)
-      run: python3 worker_server.py --PortNumber 50052 --MaxThreadCount 2 --HardwareGeneration Gen2&
+      run: python3 worker_server.py --PortNumber 50052 --MaxThreadCount 2 --HardwareGeneration Gen2 &
 
     - name: Start second worker server (Random mode)
       run: python3 worker_server.py --PortNumber 50053 --MaxThreadCount 5 --HardwareGeneration Gen2 &
