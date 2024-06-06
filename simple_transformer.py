@@ -4,6 +4,7 @@ class SimpleTransformer:
     def __init__(self, vocab_size, d_model):
         self.vocab_size = vocab_size
         self.d_model = d_model
+        np.random.seed(42)
         self.embedding = np.random.randn(vocab_size, d_model)
 
     def forward(self, x, transpose_axes=(0, 2, 1)):
@@ -31,13 +32,21 @@ def main():
     output = model.gen(matrix1)
 
     expected_result = np.array([
-        [[-1.07381302, -0.35631778], [-0.0082236, -0.33212289]],
-        [[1.18010406, 0.64358659], [0.58773279, -0.32573123]]
+        [[0.5671, 1.3624], [0.112, 0.4556]],
+        [[1.4104, 0.7489], [0.2594, 0.6226]]
     ])
 
     print("type: ", type(output))
     print("shape: ", output.shape)
-    # assert output == documents, f"Expected: {documents}, Actual: {output}"
+    print("type: ", type(expected_result))
+    print("shape: ", expected_result.shape)
+    
+    output = np.ceil(output * 10000) / 10000    
+
+    print("\n output: ", output)
+    print("\n expected: ", expected_result, "\n")
+
+    assert np.array_equal(output, expected_result), "Expected is not Actual"
 
     print("input:\n", matrix1)
     print("output:\n", output)
