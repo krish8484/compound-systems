@@ -1,5 +1,5 @@
 # requirements.txt
-
+psutil==5.8.0
 grpcio-tools==1.42.0
 numpy==1.26.4
 flake8==7.0.0
