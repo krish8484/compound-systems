@@ -113,6 +113,7 @@ class Operations:
         matrix1 = np.array(json.loads(matrix1))
         model = SimpleTransformer(vocab_size=10, d_model=matrix1.shape[0])
         result = model.gen(matrix1)
+        result = np.ceil(result * 10000) / 10000
         return result.tolist()
     
     def failingOperationForTesting(self, exceptionType):
