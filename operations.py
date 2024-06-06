@@ -65,8 +65,8 @@ class Operations:
         
 
     def retrieval(self, matrix1, matrix2, top_k=1):
-            # similarities as dot products
-            # matrix1 are documents, matrix2 are embeddings
+        # similarities as dot products
+        # matrix1 are documents, matrix2 are embeddings
         if isinstance(matrix1, list):
             matrix1 = self.workerObj.get_result_from_worker(matrix1)
         if isinstance(matrix2, list):
@@ -78,7 +78,7 @@ class Operations:
         mag_2 = np.linalg.norm(matrix2)
         sim = dot_prod / (mag_1 * mag_2) 
         top_indices = np.argsort(sim)[-top_k:][::-1][0]
-        result = [matrix1[i] for i in top_indices]
+        result = [matrix1[i].tolist() for i in top_indices]
         return result
 
     def print_char_count(self, variable):
@@ -113,6 +113,7 @@ class Operations:
         matrix1 = np.array(json.loads(matrix1))
         model = SimpleTransformer(vocab_size=10, d_model=matrix1.shape[0])
         result = model.gen(matrix1)
+        result = np.ceil(result * 10000) / 10000
         return result.tolist()
     
     def failingOperationForTesting(self, exceptionType):
