@@ -6,7 +6,16 @@ A set of capability extensions will be pursued from the base implementation to p
 
 Subsequent versions will implement a specific distributed system for a RAG-LLM (Retrieval-Augmented Generation Large Language Model) application leveraging shared memory for reuse, drawing inspiration from web application prefetching strategies. 
 
-Steps to Run
+Run the github workflow in .github/workflows/python-package-conda.yml with 
+gh workflow run
+
+If you encounter errors you may also run the individual commands in the python-package-conda.yml file
+
+Start the scheduler and workers in different terminals. Make sure to start atleast one GPU and one CPU enabled worker.
+
+Run the tests in the tests directory with pytest
+
+Details:
 
 1) Install miniconda from https://docs.anaconda.com/free/miniconda/
 2) conda create --name cs244b --file requirements.txt python=3.9
