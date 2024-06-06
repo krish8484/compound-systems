@@ -11,3 +11,9 @@ class WorkerInfoWrapper:
 
     def __str__(self):
         return "[HostName: {} || PortNumber: {} || MaxThreadCount: {} || IsGPUEnabled: {} || Hardware Generation: {} || Current Available Capacity: {} || WorkerId: {}]".format(self.hostName, self.portNumber, self.maxThreadCount, self.isGPUEnabled, self.hardwareGeneration, self.currentAvailableCap, self.workerId)
+
+    def __lt__(self, other):
+        return self.portNumber < other.portNumber
+    
+    def __gt__(self, other):
+        return self.portNumber > other.portNumber

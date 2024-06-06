@@ -154,7 +154,7 @@ class Scheduler:
             if wrappedWorkerInfo is None:
                 # Try to populate the priority queue from the self.WorkersTaskFinishedCount
                 self.WorkersWithGPU = PriorityQueue() # Discard and instantiate new priority queue
-                self.repopulate_queue(self.WorkersWithGPU, self.WorkersWithGPULock, False)
+                self.repopulate_queue(self.WorkersWithGPU, self.WorkersWithGPULock, True)
 
                 # After repopulation, attempt to get the worker again. If it still isn't found, it implies no woker is available.
                 wrappedWorkerInfo = self.get_worker_info(self.WorkersWithGPU, self.WorkersWithGPULock)
@@ -327,12 +327,13 @@ class Scheduler:
                 return wrappedWorkerInfo
     
     def register_worker_load_aware(self, assignedWorkerId, workerInfo: WorkerInfo):
+        wrappedWorkerInfo = WorkerInfoWrapper(workerInfo, assignedWorkerId)
         if workerInfo.isGPUEnabled is True:
-            self.update_priorityQueue(self.WorkersWithGPU, self.WorkersWithGPULock, workerInfo)
+            self.update_priorityQueue(self.WorkersWithGPU, self.WorkersWithGPULock, wrappedWorkerInfo)
         else:
-            self.update_priorityQueue(self.WorkersWithoutGPU, self.WorkersWithoutGPULock, workerInfo)
+            self.update_priorityQueue(self.WorkersWithoutGPU, self.WorkersWithoutGPULock, wrappedWorkerInfo)
         
-        _updatedWorkerInfo = workerInfo
+        _updatedWorkerInfo = WorkerInfoWrapper(workerInfo, assignedWorkerId)
         _updatedWorkerInfo.currentAvailableCap = 0
         with self.WorkersTaskFinishedCountLock:
             self.WorkersTaskFinishedCount[assignedWorkerId] = _updatedWorkerInfo
@@ -445,8 +446,15 @@ class Scheduler:
                 if workerInfoFromMap.isGPUEnabled is GPUEnabledTask:
                     currentMapWorkerInfo = workerInfoFromMap
                     self.update_priorityQueueWithLockAcquired(queueName, workerInfoFromMap)
-                    currentMapWorkerInfo.currentAvailableCap = 0 # Reset the value to 0
-                    self.WorkersTaskFinishedCount[workerIdFromMap] = currentMapWorkerInfo
+                    workerInfoObj = WorkerInfo(
+                        hostName=currentMapWorkerInfo.hostName,
+                        portNumber=currentMapWorkerInfo.portNumber,
+                        maxThreadCount=currentMapWorkerInfo.maxThreadCount,
+                        isGPUEnabled=currentMapWorkerInfo.isGPUEnabled,
+                        hardwareGeneration=currentMapWorkerInfo.hardwareGeneration)
+                    updatedWorkerInfo = WorkerInfoWrapper(workerInfoObj, currentMapWorkerInfo.workerId)
+                    updatedWorkerInfo.currentAvailableCap = 0 # Reset the value to 0
+                    self.WorkersTaskFinishedCount[workerIdFromMap] = updatedWorkerInfo
     
     def get_worker_info(self, queueName, lockName):
         logging.info(f"In get_worker_info for {queueName} with {lockName} and queue size {queueName.qsize()}")
@@ -456,6 +464,7 @@ class Scheduler:
                 poppedInfo = queueName.get()
                 logging.info(f"Got info {poppedInfo}")
                 wrappedWorkerInfo = poppedInfo[1]
+                logging.info(f"Current Available Cap {wrappedWorkerInfo.currentAvailableCap}")
                 wrappedWorkerInfo.currentAvailableCap = wrappedWorkerInfo.currentAvailableCap -1
                 if wrappedWorkerInfo.currentAvailableCap > 0: # If there is still capacity, add it back to the priority queue
                     self.update_priorityQueueWithLockAcquired(queueName, wrappedWorkerInfo)
@@ -503,11 +512,11 @@ class Scheduler:
         wrappedWorkerInfo.currentAvailableCap = wrappedWorkerInfo.currentAvailableCap -1
         mapName[wrappedWorkerInfo.workerId] = wrappedWorkerInfo
 
-    def update_priorityQueue(self, queueName, queueLock, workerInfo):
+    def update_priorityQueue(self, queueName, queueLock, wrappedWorkerInfo):
         with queueLock:
-            self.update_priorityQueueWithLockAcquired(queueName, workerInfo)
+            self.update_priorityQueueWithLockAcquired(queueName, wrappedWorkerInfo)
 
-    def update_priorityQueueWithLockAcquired(self, queueName, workerInfo):
-        availableLoad = float(-1 * int(workerInfo.maxThreadCount) * float(self.HardwareGenerationMap[workerInfo.hardwareGeneration]))
-        logging.info(f"Updating the priority queue with {availableLoad} for {workerInfo}")
-        queueName.put((availableLoad, workerInfo))     
+    def update_priorityQueueWithLockAcquired(self, queueName, wrappedWorkerInfo):
+        availableLoad = float(-1 * int(wrappedWorkerInfo.maxThreadCount) * float(self.HardwareGenerationMap[wrappedWorkerInfo.hardwareGeneration]))
+        logging.info(f"Updating the priority queue with {availableLoad} for {wrappedWorkerInfo}")
+        queueName.put((availableLoad, wrappedWorkerInfo))     
