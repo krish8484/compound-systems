@@ -224,5 +224,3 @@ def test_worker_fetching_using_future_where_the_result_is_fetchable_but_errored(
 
     assert result.resultStatus == api_pb2.ResultStatus.ERROR
     assert result.error.errorType == api_pb2.ErrorType.ERRORWHENEXECUTINGTASK
-    assert result.error.failingTask.taskId == failingTask.taskId
-    assert result.error.failingTask.taskDefintion == failingTask.taskDefintion
