@@ -3,6 +3,7 @@ import sys
 import time
 # Add the parent directory of the tests directory to the Python path
 sys.path.append("..")
+from Data.future import Future
 from scheduler_client import SchedulerClient
 from worker_client import WorkerClient
 from Data.task import Task
@@ -12,7 +13,17 @@ import constants
 import numpy as np
 import api_pb2
 
-def poll_for_result(worker_client, future, expected_result):
+def get_result_from_worker(worker_client, future):
+    while True:
+        result = worker_client.GetResult(future=future)
+        if result.resultStatus == api_pb2.ResultStatus.INPROGRESS:
+            time.sleep(constants.WAITTIMEFORPOLLINGRESULT)
+            continue
+        else:
+            return result
+    
+
+def validate_result(worker_client, future, expected_result):
     while True:
         result = worker_client.GetResult(future=future)
         if result.resultStatus == api_pb2.ResultStatus.INPROGRESS:
@@ -65,7 +76,7 @@ def test_dot_product(scheduler_client, matrix1, matrix2):
     worker_client = WorkerClient(future.hostName, future.port)
 
     expected_result = [[19, 22], [43, 50]]
-    poll_for_result(worker_client, future, expected_result)
+    validate_result(worker_client, future, expected_result)
 
 def test_mat_add(scheduler_client, matrix1, matrix2):
     task = Task(taskId="1", taskDefintion="mat_add", taskData=[json.dumps(matrix1).encode(), json.dumps(matrix2).encode()])
@@ -74,7 +85,7 @@ def test_mat_add(scheduler_client, matrix1, matrix2):
     worker_client = WorkerClient(future.hostName, future.port)
 
     expected_result = [[6, 8], [10, 12]]
-    poll_for_result(worker_client, future, expected_result)
+    validate_result(worker_client, future, expected_result)
 
 def test_mat_subtract(scheduler_client, matrix1, matrix2):
     task = Task(taskId="2", taskDefintion="mat_subtract", taskData=[json.dumps(matrix1).encode(), json.dumps(matrix2).encode()])
@@ -83,7 +94,7 @@ def test_mat_subtract(scheduler_client, matrix1, matrix2):
     worker_client = WorkerClient(future.hostName, future.port)
 
     expected_result = [[-4, -4 ], [-4, -4]]
-    poll_for_result(worker_client, future, expected_result)
+    validate_result(worker_client, future, expected_result)
 
 def test_char_count(scheduler_client, words):
     for word in words:
@@ -93,7 +104,7 @@ def test_char_count(scheduler_client, words):
         worker_client = WorkerClient(future.hostName, future.port)
 
         expected_result = len(word)
-        poll_for_result(worker_client, future, expected_result)
+        validate_result(worker_client, future, expected_result)
 
 def test_addition(scheduler_client, numbers):
     byte_numbers = [bytes([num]) for num in numbers]
@@ -103,7 +114,7 @@ def test_addition(scheduler_client, numbers):
     worker_client = WorkerClient(future.hostName, future.port)
 
     expected_result = sum(numbers)
-    poll_for_result(worker_client, future, expected_result)
+    validate_result(worker_client, future, expected_result)
 
 def test_retrieval(scheduler_client, matrix1, matrix2):
     task = Task(taskId="5", taskDefintion="retrieval", taskData=[json.dumps(matrix1).encode(), json.dumps(matrix2).encode()])
@@ -137,7 +148,7 @@ def test_passing_futures_as_args_flow(scheduler_client, matrix1, matrix2):
     workerClient = WorkerClient(future3.hostName, future3.port)
 
     expected_result = [[13, 14], [33, 38]]
-    poll_for_result(workerClient, future3, expected_result)
+    validate_result(workerClient, future3, expected_result)
 
 # Multiple workers here doesn't guarantee that the task will be assigned to different workers. It depends on the scheduling mode and the number of workers registered.
 # Make sure --AssingedWorkersPerTask is set to more than 1 to ideally test this(not assigning would still work).
@@ -148,7 +159,7 @@ def test_assign_task_to_multiple_workers(scheduler_client, matrix1, matrix2):
     for future in futures:
         logging.info(f"Future: {future}")
         worker_client = WorkerClient(future.hostName, future.port)
-        poll_for_result(worker_client, future, expected_result)
+        validate_result(worker_client, future, expected_result)
 
 def test_map_reduce(scheduler_client, large_text):
     chunks = split_text_into_chunks(large_text, num_chunks=1000)
@@ -167,4 +178,51 @@ def test_map_reduce(scheduler_client, large_text):
     worker_client = WorkerClient(future.hostName, future.port)
 
     expected_result = len(large_text)
-    poll_for_result(worker_client, future, expected_result)
+    validate_result(worker_client, future, expected_result)
+
+def test_worker_fetching_using_multiple_futures(scheduler_client, matrix1, matrix2):
+    futures1 = scheduler_client.SubmitTask(Task(taskId="0", taskDefintion="dot_product", taskData=[json.dumps(matrix1).encode(), json.dumps(matrix2).encode()]))
+    resultFuture = scheduler_client.SubmitTask(Task(taskId="0", taskDefintion="dot_product", taskData=[futures1, futures1]))[0]
+
+    worker_client = WorkerClient(resultFuture.hostName, resultFuture.port)
+
+    expected_result = [[1307, 1518], [2967, 3446]]
+    validate_result(worker_client, resultFuture, expected_result)
+
+def test_worker_fetching_using_two_futures_where_one_result_is_not_fetchable_and_the_other_is_fetchable(scheduler_client, matrix1, matrix2):
+    notReachablePort = 60061
+    failingFuture = Future("failingFuture", "localhost", notReachablePort)
+    passingFuture = scheduler_client.SubmitTask(Task(taskId="0", taskDefintion="dot_product", taskData=[json.dumps(matrix1).encode(), json.dumps(matrix2).encode()]))[0]
+    resultFuture = scheduler_client.SubmitTask(Task(taskId="0", taskDefintion="dot_product", taskData=[[failingFuture, passingFuture], [passingFuture]]))[0]
+
+    worker_client = WorkerClient(resultFuture.hostName, resultFuture.port)
+
+    expected_result = [[1307, 1518], [2967, 3446]]
+    validate_result(worker_client, resultFuture, expected_result)
+
+def test_worker_fetching_using_multiple_futures_where_both_results_are_not_fetchable(scheduler_client, matrix1, matrix2):
+    notReachablePort = 60061
+    failingFuture = Future("failingFuture", "localhost", notReachablePort)
+    resultFuture = scheduler_client.SubmitTask(Task(taskId="0", taskDefintion="dot_product", taskData=[[failingFuture], [failingFuture]]))[0]
+
+    worker_client = WorkerClient(resultFuture.hostName, resultFuture.port)
+    result = get_result_from_worker(worker_client, resultFuture)
+
+    assert result.resultStatus == api_pb2.ResultStatus.ERROR
+    assert result.error.errorType == api_pb2.ErrorType.UNABLETOCONNECTWITHWORKERSFORRESULT
+    assert result.error.failingFuture.hostName == failingFuture.hostName
+    assert result.error.failingFuture.port == notReachablePort
+    assert result.error.failingFuture.resultLocation == failingFuture.resultLocation
+
+def test_worker_fetching_using_future_where_the_result_is_fetchable_but_errored(scheduler_client, matrix1, matrix2):
+    failingTask = Task(taskId="1", taskDefintion="failing_operation_for_testing", taskData=["TestError".encode()])
+    failingFuture = scheduler_client.SubmitTask(failingTask)[0]
+    resultFuture = scheduler_client.SubmitTask(Task(taskId="0", taskDefintion="dot_product", taskData=[[failingFuture], [failingFuture]]))[0]
+
+    worker_client = WorkerClient(resultFuture.hostName, resultFuture.port)
+    result = get_result_from_worker(worker_client, resultFuture)
+
+    assert result.resultStatus == api_pb2.ResultStatus.ERROR
+    assert result.error.errorType == api_pb2.ErrorType.ERRORWHENEXECUTINGTASK
+    assert result.error.failingTask.taskId == failingTask.taskId
+    assert result.error.failingTask.taskDefintion == failingTask.taskDefintion
