@@ -252,3 +252,24 @@ def test_worker_fetching_using_future_where_the_result_is_fetchable_but_errored(
 
     assert result.resultStatus == api_pb2.ResultStatus.ERROR
     assert result.error.errorType == api_pb2.ErrorType.ERRORWHENEXECUTINGTASK
+
+
+# Exact replication of rag_agent in our dfut model. Not tested yet. 
+# I think generation task should be failing as its already failing in the above generation test.
+def test_rag_agent():
+    knowledge = [[1, 2], [3, 4]]
+    embedding = [[5, 6], [7, 8]]
+    steps = 1000
+    pondering = 100
+    for i in range(steps):
+        if i % pondering == 0:
+            retrieval_task = Task(taskId=f"Retrieval_{i}", taskDefintion="retrieval", taskData=[json.dumps(knowledge).encode(), json.dumps(embedding).encode()])
+            retrieved_output_future = scheduler_client.SubmitTask(retrieval_task)[0]
+            # retrieved_output = np.array(retrieved_output).reshape(2, 2) --> Make sure this happens in retreival task before it returns
+        generation_task = Task(taskId=f"Generation_{i}", taskDefintion="generation", taskData=[[retrieved_output_future]])
+        generation_output_future = scheduler_client.SubmitTask(generation_task)[0]
+
+        worker_client = WorkerClient(generation_output_future.hostName, generation_output_future.port)
+        generation_output = get_result_from_worker(worker_client, generation_output_future) 
+    
+    logging.info(generation_output)
