@@ -46,12 +46,12 @@ jobs:
 
     - name: Start scheduler server (Random mode)
       run: 
-        cd Scheduler
+        cd Scheduler;
         python3 scheduler_server.py --PortNumber 50051 --SchedulerMode Random --AssingedWorkersPerTask 2 &
 
     - name: Start first worker server (Random mode)
       run: 
-        cd Worker
+        cd Worker;
         python3 worker_server.py --PortNumber 50052 --MaxThreadCount 2 --HardwareGeneration Gen2 &
 
     - name: Start second worker server (Random mode)
