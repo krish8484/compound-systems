@@ -45,19 +45,29 @@ jobs:
       shell: bash
 
     - name: Start scheduler server (Random mode)
-      run: python3 Scheduler/scheduler_server.py --PortNumber 50051 --SchedulerMode Random --AssingedWorkersPerTask 2 &
+      run: 
+        cd Scheduler
+        python3 scheduler_server.py --PortNumber 50051 --SchedulerMode Random --AssingedWorkersPerTask 2 &
 
     - name: Start first worker server (Random mode)
-      run: python3 Worker/worker_server.py --PortNumber 50052 --MaxThreadCount 2 --HardwareGeneration Gen2 &
+      run: 
+        cd Worker
+        python3 worker_server.py --PortNumber 50052 --MaxThreadCount 2 --HardwareGeneration Gen2 &
 
     - name: Start second worker server (Random mode)
-      run: python3 Worker/worker_server.py --PortNumber 50053 --MaxThreadCount 5 --HardwareGeneration Gen2 &
+      run: 
+        cd Worker
+        python3 worker_server.py --PortNumber 50053 --MaxThreadCount 5 --HardwareGeneration Gen2 &
 
     - name: Start third worker server (RoundRobin mode)
-      run: python3 Worker/worker_server.py --PortNumber 50054 --MaxThreadCount 5 --HardwareGeneration Gen2 --gpuEnabled &
+      run: 
+        cd Worker
+        python3 worker_server.py --PortNumber 50054 --MaxThreadCount 5 --HardwareGeneration Gen2 --gpuEnabled &
 
     - name: Start fourth worker server (RoundRobin mode)
-      run: python3 Worker/worker_server.py --PortNumber 50055 --MaxThreadCount 5 --HardwareGeneration Gen2 --gpuEnabled &
+      run: 
+        cd Worker
+        python3 worker_server.py --PortNumber 50055 --MaxThreadCount 5 --HardwareGeneration Gen2 --gpuEnabled &
 
     - name: Wait for servers to start (Random mode)
       run: sleep 10
@@ -70,27 +80,37 @@ jobs:
       shell: bash
 
     - name: Stop scheduler server (Random mode)
-      run: pkill -f Scheduler/scheduler_server.py
+      run: pkill -f scheduler_server.py
       shell: bash
 
     - name: Stop worker servers (Random mode)
-      run: pkill -f Worker/worker_server.py
+      run: pkill -f worker_server.py
       shell: bash
 
     - name: Start scheduler server (RoundRobin mode)
-      run: python3 Scheduler/scheduler_server.py --PortNumber 50051 --SchedulerMode RoundRobin --AssingedWorkersPerTask 2 &
+      run: 
+        cd Scheduler
+        python3 scheduler_server.py --PortNumber 50051 --SchedulerMode RoundRobin --AssingedWorkersPerTask 2 &
 
     - name: Start first worker server (RoundRobin mode)
-      run: python3 Worker/worker_server.py --PortNumber 50052 --MaxThreadCount 2 --HardwareGeneration Gen2 &
+      run: 
+        cd Worker
+        python3 worker_server.py --PortNumber 50052 --MaxThreadCount 2 --HardwareGeneration Gen2 &
 
     - name: Start second worker server (RoundRobin mode)
-      run: python3 Worker/worker_server.py --PortNumber 50053 --MaxThreadCount 5 --HardwareGeneration Gen2 &
+      run: 
+        cd Worker
+        python3 worker_server.py --PortNumber 50053 --MaxThreadCount 5 --HardwareGeneration Gen2 &
 
     - name: Start third worker server (RoundRobin mode)
-      run: python3 Worker/worker_server.py --PortNumber 50054 --MaxThreadCount 5 --HardwareGeneration Gen2 --gpuEnabled &
+      run: 
+        cd Worker
+        python3 worker_server.py --PortNumber 50054 --MaxThreadCount 5 --HardwareGeneration Gen2 --gpuEnabled &
 
     - name: Start fourth worker server (RoundRobin mode)
-      run: python3 Worker/worker_server.py --PortNumber 50055 --MaxThreadCount 5 --HardwareGeneration Gen2 --gpuEnabled &
+      run: 
+        cd Worker
+        python3 worker_server.py --PortNumber 50055 --MaxThreadCount 5 --HardwareGeneration Gen2 --gpuEnabled &
 
     - name: Wait for servers to start (RoundRobin mode)
       run: sleep 10
@@ -103,27 +123,37 @@ jobs:
       shell: bash
 
     - name: Stop scheduler server (RoundRobin mode)
-      run: pkill -f Scheduler/scheduler_server.py
+      run: pkill -f scheduler_server.py
       shell: bash
 
     - name: Stop worker servers (RoundRobin mode)
-      run: pkill -f Worker/worker_server.py
+      run: pkill -f worker_server.py
       shell: bash
 
     - name: Start scheduler server (LoadAware mode)
-      run: python3 Scheduler/scheduler_server.py --PortNumber 50051 --SchedulerMode LoadAware &
+      run: 
+        cd Scheduler
+        python3 scheduler_server.py --PortNumber 50051 --SchedulerMode LoadAware &
 
     - name: Start first worker server (LoadAware mode)
-      run: python3 Worker/worker_server.py --PortNumber 50052 --MaxThreadCount 2 --HardwareGeneration Gen2 &
+      run: 
+        cd Worker
+        python3 worker_server.py --PortNumber 50052 --MaxThreadCount 2 --HardwareGeneration Gen2 &
 
     - name: Start second worker server (LoadAware mode)
-      run: python3 Worker/worker_server.py --PortNumber 50053 --MaxThreadCount 5 --HardwareGeneration Gen2 &
+      run: 
+        cd Worker
+        python3 worker_server.py --PortNumber 50053 --MaxThreadCount 5 --HardwareGeneration Gen2 &
 
     - name: Start third worker server (LoadAware mode)
-      run: python3 Worker/worker_server.py --PortNumber 50054 --MaxThreadCount 5 --HardwareGeneration Gen2 --gpuEnabled &
+      run: 
+        cd Worker
+        python3 worker_server.py --PortNumber 50054 --MaxThreadCount 5 --HardwareGeneration Gen2 --gpuEnabled &
 
     - name: Start fourth worker server (LoadAware mode)
-      run: python3 Worker/worker_server.py --PortNumber 50055 --MaxThreadCount 5 --HardwareGeneration Gen2 --gpuEnabled &
+      run: 
+        cd Worker
+        python3 worker_server.py --PortNumber 50055 --MaxThreadCount 5 --HardwareGeneration Gen2 --gpuEnabled &
 
     - name: Wait for servers to start (LoadAware mode)
       run: sleep 10
@@ -136,33 +166,47 @@ jobs:
       shell: bash
 
     - name: Stop scheduler server (LoadAware mode)
-      run: pkill -f Scheduler/scheduler_server.py
+      run: pkill -f scheduler_server.py
       shell: bash
 
     - name: Stop worker servers (LoadAware mode)
-      run: pkill -f Worker/worker_server.py
+      run: pkill -f worker_server.py
       shell: bash
 
     - name: Start scheduler server (PowerOfTwo mode)
-      run: python3 Scheduler/scheduler_server.py --PortNumber 50051 --SchedulerMode PowerOf2 &
+      run: 
+        cd Scheduler
+        python3 scheduler_server.py --PortNumber 50051 --SchedulerMode PowerOf2 &
 
     - name: Start first worker server (PowerOfTwo mode)
-      run: python3 Worker/worker_server.py --PortNumber 50052 --MaxThreadCount 2 --HardwareGeneration Gen2 &
+      run: 
+        cd Worker
+        python3 worker_server.py --PortNumber 50052 --MaxThreadCount 2 --HardwareGeneration Gen2 &
 
     - name: Start second worker server (PowerOfTwo mode)
-      run: python3 Worker/worker_server.py --PortNumber 50053 --MaxThreadCount 5 --HardwareGeneration Gen2 &
+      run: 
+        cd Worker
+        python3 worker_server.py --PortNumber 50053 --MaxThreadCount 5 --HardwareGeneration Gen2 &
 
     - name: Start third worker server (PowerOfTwo mode)
-      run: python3 Worker/worker_server.py --PortNumber 50054 --MaxThreadCount 5 --HardwareGeneration Gen2 --gpuEnabled &
+      run: 
+        cd Worker
+        python3 worker_server.py --PortNumber 50054 --MaxThreadCount 5 --HardwareGeneration Gen2 --gpuEnabled &
 
     - name: Start fourth worker server (PowerOfTwo mode)
-      run: python3 Worker/worker_server.py --PortNumber 50055 --MaxThreadCount 5 --HardwareGeneration Gen2 --gpuEnabled &
+      run: 
+        cd Worker
+        python3 worker_server.py --PortNumber 50055 --MaxThreadCount 5 --HardwareGeneration Gen2 --gpuEnabled &
     
     - name: Start fifth worker server (PowerOfTwo mode)
-      run: python3 Worker/worker_server.py --PortNumber 50056 --MaxThreadCount 5 --HardwareGeneration Gen2 --gpuEnabled &
+      run: 
+        cd Worker
+        python3 worker_server.py --PortNumber 50056 --MaxThreadCount 5 --HardwareGeneration Gen2 --gpuEnabled &
     
     - name: Start sixth worker server (PowerOfTwo mode)
-      run: python3 Worker/worker_server.py --PortNumber 50057 --MaxThreadCount 5 --HardwareGeneration Gen2 --gpuEnabled &
+      run: 
+        cd Worker
+        python3 worker_server.py --PortNumber 50057 --MaxThreadCount 5 --HardwareGeneration Gen2 --gpuEnabled &
 
     - name: Wait for servers to start (PowerOfTwo mode)
       run: sleep 10
@@ -175,9 +219,9 @@ jobs:
       shell: bash
     
     - name: Stop scheduler server (PowerOfTwo mode)
-      run: pkill -f Scheduler/scheduler_server.py
+      run: pkill -f scheduler_server.py
       shell: bash
 
     - name: Stop worker servers (PowerOfTwo mode)
-      run: pkill -f Worker/worker_server.py
+      run: pkill -f worker_server.py
       shell: bash
