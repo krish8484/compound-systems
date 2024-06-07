@@ -4,9 +4,8 @@ import time
 # Add the parent directory of the tests directory to the Python path
 sys.path.append("..")
 from Data.future import Future
-from scheduler_client import SchedulerClient
-from simple_transformer import SimpleTransformer
-from worker_client import WorkerClient
+from Scheduler.scheduler_client import SchedulerClient
+from Worker.worker_client import WorkerClient
 from Data.task import Task
 from Shared.logging_provider import logging
 import json
