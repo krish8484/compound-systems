@@ -7,14 +7,14 @@ from Data.task import Task
 from Data.future import Future
 from Data.WorkerInfo import WorkerInfo
 from Data.WorkerInfoWrapper import WorkerInfoWrapper
-from worker_client import WorkerClient
-from logging_provider import logging
-from exceptions import NoWorkerAvailableError
+from Worker.worker_client import WorkerClient
+from Shared.logging_provider import logging
+from Shared.exceptions import NoWorkerAvailableError
 import grpc
-import constants
+import Shared.constants as constants
 from queue import PriorityQueue
 from typing import Union
-from operations import Operations
+from Shared.operations import Operations
 
 class Scheduler:
     def __init__(self, scheduler_mode, assigned_workers_per_task):

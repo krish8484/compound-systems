@@ -8,9 +8,9 @@ from scheduler_client import SchedulerClient
 from simple_transformer import SimpleTransformer
 from worker_client import WorkerClient
 from Data.task import Task
-from logging_provider import logging
+from Shared.logging_provider import logging
 import json
-import constants
+import Shared.constants as constants
 import numpy as np
 import api_pb2
 

@@ -1,8 +1,10 @@
+import sys
+sys.path.append("..")
 from concurrent import futures
 import api_pb2
 import api_pb2_grpc
 import grpc
-from logging_provider import logging
+from Shared.logging_provider import logging
 from worker import Worker
 from Data.task import Task
 from Data.future import Future
