@@ -1,4 +1,4 @@
-from retrieval_module import retrieve_documents
+from Shared.retrieval_module import retrieve_documents
 
 def main():
     documents = [[1, 2], [3, 4]]

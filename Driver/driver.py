@@ -1,7 +1,7 @@
-from scheduler_client import SchedulerClient
-from worker_client import WorkerClient
+from Scheduler.scheduler_client import SchedulerClient
+from Worker.worker_client import WorkerClient
 from Data.task import Task
-from logging_provider import logging
+from Shared.logging_provider import logging
 import json
 
 # Example usage

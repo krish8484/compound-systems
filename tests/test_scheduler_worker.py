@@ -4,12 +4,12 @@ import time
 # Add the parent directory of the tests directory to the Python path
 sys.path.append("..")
 from Data.future import Future
-from scheduler_client import SchedulerClient
-from worker_client import WorkerClient
+from Scheduler.scheduler_client import SchedulerClient
+from Worker.worker_client import WorkerClient
 from Data.task import Task
-from logging_provider import logging
+from Shared.logging_provider import logging
 import json
-import constants
+import Shared.constants as constants
 import numpy as np
 import api_pb2
 

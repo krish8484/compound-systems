@@ -1,13 +1,15 @@
+import sys
+sys.path.append("..")
 from concurrent import futures
 import api_pb2
 import api_pb2_grpc
 import grpc
-from logging_provider import logging
+from Shared.logging_provider import logging
 from scheduler import Scheduler
 from Data.task import Task
 from Data.WorkerInfo import WorkerInfo
 import argparse
-import constants
+import Shared.constants as constants
 
 SCHEDULER_HOST = "localhost"
 SCHEDULER_PORT = 50051
