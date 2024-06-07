@@ -256,7 +256,7 @@ def test_worker_fetching_using_future_where_the_result_is_fetchable_but_errored(
 
 # Exact replication of rag_agent in our dfut model. Not tested yet. 
 # I think generation task should be failing as its already failing in the above generation test.
-def test_rag_agent():
+def test_rag_agent(scheduler_client):
     knowledge = [[1, 2], [3, 4]]
     embedding = [[5, 6], [7, 8]]
     steps = 1000
