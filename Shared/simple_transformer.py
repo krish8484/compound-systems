@@ -3,7 +3,7 @@ import os
 import time
 import psutil
 import argparse
-from retrieval_module import retrieve_documents  
+from Shared.retrieval_module import retrieve_documents  
 
 class SimpleTransformer:
     def __init__(self, vocab_size, d_model, seed_val=48):

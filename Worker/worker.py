@@ -2,21 +2,21 @@ import signal
 import sys
 import uuid
 from Data.result import Result
-from scheduler_client import SchedulerClient
+from Scheduler.scheduler_client import SchedulerClient
 from worker_client import WorkerClient
 from Data.future import Future
 from Data.task import Task
 from Data.WorkerInfo import WorkerInfo
 from Data.Status import Status
-from logging_provider import logging
+from Shared.logging_provider import logging
 import threading
 from random import randrange
 import grpc
 import json
 import time
-from operations import Operations
-import constants
-from exceptions import *
+from Shared.operations import Operations
+import Shared.constants as constants
+from Shared.exceptions import *
 import api_pb2
 
 class UniqueIDGenerator:

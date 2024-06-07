@@ -1,7 +1,7 @@
 import numpy as np
 import json
-from exceptions import *
-from simple_transformer import SimpleTransformer
+from Shared.exceptions import *
+from Shared.simple_transformer import SimpleTransformer
 
 class Operations:
     def __init__(self, worker):
