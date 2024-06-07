@@ -5,6 +5,7 @@ import time
 sys.path.append("..")
 from Data.future import Future
 from scheduler_client import SchedulerClient
+from simple_transformer import SimpleTransformer
 from worker_client import WorkerClient
 from Data.task import Task
 from logging_provider import logging
@@ -123,6 +124,7 @@ def test_retrieval(scheduler_client, matrix1, matrix2):
     worker_client = WorkerClient(future.hostName, future.port)
 
     expected_result = [[1, 2], [3, 4]]
+    validate_result(worker_client, future, expected_result)
     # poll_for_result(worker_client, future, expected_result)
 
 def test_generation(scheduler_client, matrix1):
@@ -131,12 +133,38 @@ def test_generation(scheduler_client, matrix1):
 
     worker_client = WorkerClient(future.hostName, future.port)
 
+    # TODO: create a single test and get the new values of the output
     expected_result = np.array([
         [[0.5671, 1.3624], [0.112, 0.4556]],
         [[1.4104, 0.7489], [0.2594, 0.6226]]
     ])
+    # expected_result = expected_result[0][0][0]
 
-    # poll_for_result(worker_client, future, expected_result)
+    # result_obj = get_result_from_worker(worker_client, future)
+    # result = json.loads(result_obj.data)
+    # result = result[0][0][0]
+
+    # validate_result(worker_client, future, expected_result)
+    # print(f"type: {type(result)}, value: {result}")
+
+    # assert np.array_equal(result, expected_result), "results are NOT as expected"
+
+# TODO: complete this
+# def test_rag_agent(scheduler_client, matrix1, matrix2):
+#     futures = []
+#     task_id = 1
+    
+#     for i in range(100):
+#         task = Task(taskId=str(task_id), taskDefintion="retrieval", taskData=[json.dumps(matrix1).encode(), json.dumps(matrix2).encode()])
+#         future = scheduler_client.SubmitTask(task)[0]
+#         futures.append(future)
+#         task_id += 1        
+#         generation_output = model.gen(r) 
+#         return generation_output
+
+#     result = worker_client.GetResult(future=future)
+#     worker_client = WorkerClient(future.hostName, future.port)
+
 
 def test_passing_futures_as_args_flow(scheduler_client, matrix1, matrix2):
     future = scheduler_client.SubmitTask(Task(taskId="0", taskDefintion="dot_product", taskData=[json.dumps(matrix1).encode(), json.dumps(matrix2).encode()]))
