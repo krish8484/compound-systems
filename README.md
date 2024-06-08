@@ -99,6 +99,6 @@ python3 driver.py
 ```
 Driver code runs all the supported operations in the system with predefined inputs.
 
-`Driver can be expanded to modify inputs ro run any supported operations `
+`Driver can be expanded to modify inputs to run any supported operations `
 
 As soon as you start the driver, the tasks would start getting executed and would be visible in terminal logs.
