@@ -1,7 +1,5 @@
 # CS244b Course Project
 
-# Getting Started
-
 ## Project Description
 
 Distributed Futures are an extension of traditional RPCs in which a reference to the computed value is returned that may reside on a remote node. We have developed and evaluated a distributed futures system intended for mixed fine-grain and course-grain workloads. Our worker-scheduler pairing can optimize across GPU or CPU simulated workers across different software and hardware generations. System provides a mechanism for clients to track task completion and retrieve results.
@@ -24,9 +22,8 @@ Make sure to start atleast one GPU and one CPU enabled worker. This ensures that
 
 Following steps go over the starting the scheduler in PowerOf2 mode and start 4 workers (2 of them with GPU). 
 
-Details:
-
 1) Install miniconda from https://docs.anaconda.com/free/miniconda/
+
 2) Create a conda environment for the experiments
 ```
 conda create --name cs244b --file requirements.txt python=3.9
@@ -37,21 +34,71 @@ conda create --name cs244b --file requirements.txt python=3.9
 conda activate cs244b
 ```
 
-4) Run compile_proto script from root repo folder [CS244B](https://github.com/krish8484/cs244b) which generates the necessary gRPC proto files. The script depends on your target machine. For UNIX based machines, run:
+4) Run compile_proto script from root repo folder [CS244B](https://github.com/krish8484/cs244b) which generates the necessary gRPC proto files. The script depends on your target machine. 
+
+For UNIX based machines, run:
 ```
 ./compile_proto.sh
 ```
-5) Start the scheduler server from one terminal - 
-    python3 scheduler_server.py --PortNumber 50051 --SchedulerMode Random
-6) Start multiple worker servers in another terminal - python3 worker_server.py --PortNumber <PortNumber> --MaxThreadCount <MaxThreadCount> --HardwareGeneration <HardwareGeneration>
-    Example Command:
-    python3 worker_server.py --PortNumber 50055 --MaxThreadCount 2 --HardwareGeneration Gen2 --gpuEnabled
 
-    First parameter is the port number
-    Second parameter is the number of threads the worker can process
-    Third parameter is the hardware generation parameter which determines if scheduler would send more requests to this worker in LoadAware scheduling mode
-    Fourth parameter is an optional parameter. If --gpuEnabled parameter is passed, worker is treated as GPU Enabled.
-    Fifth parameter is an optional parameter. If --addDelay parameter is passed, delays are added randomly for the worker operations.
+For Windows OS machine, run:
+```
+compile_proto.cmd
+```
 
-7) Run driver for another terminal - python3 driver.py (There is an example code written under main for testing)
-8) Submit tasks with the driver; they should be seen getting executed on the worker.
+5) Start the scheduler server from a terminal -
+```
+cd Scheduler;
+python3 scheduler_server.py --PortNumber 50051 --SchedulerMode PowerOf2
+```
+Reference Command:
+`python3 scheduler_server.py --PortNumber <PortNumber> --SchedulerMode <SchedulingMode> --AssingedWorkersPerTask <AssignedWorkersPerTask>`
+
+- First parameter is the port number. Type `int`.
+- Second parameter is the scheduling algorithm that would be used for request routing in the scheduler. Type `string`. It supports 4 modes `Random`, `RoundRobin`, `LoadAware` and `PowerOf2`
+- Third parameter is the number of workers a single task would assigned.  Type `int`. This Task Replication Strategy helps up retrieve a task computation from another worker when one of them is down.
+
+6) Start multiple worker servers in different terminals - 
+`Worker1`
+```
+cd Worker;
+python3 worker_server.py --PortNumber 50052 --MaxThreadCount 2 --HardwareGeneration Gen2
+```
+
+`Worker2`
+```
+cd Worker;
+python3 worker_server.py --PortNumber 50053 --MaxThreadCount 2 --HardwareGeneration Gen2
+```
+
+`Worker3`
+```
+cd Worker;
+python3 worker_server.py --PortNumber 50054 --MaxThreadCount 2 --HardwareGeneration Gen2 --gpuEnabled
+```
+
+`Worker4`
+```
+cd Worker;
+python3 worker_server.py --PortNumber 50055 --MaxThreadCount 2 --HardwareGeneration Gen2 --gpuEnabled
+```
+
+Reference Command:
+`python3 worker_server.py --PortNumber <PortNumber> --MaxThreadCount <MaxThreadCount> --HardwareGeneration <HardwareGeneration>`
+
+- First parameter is the port number. Type `int`.
+- Second parameter is the number of threads the worker can process. Type `int`.
+- Third parameter is the hardware generation parameter. Type `string`. It supports 4 values `Gen1`, `Gen2`, `Gen3` and `Gen4`. Scheduler uses this information in `LoadAware` and `PowerOf2` scheduling modes to determine the number of requests worker can handle.
+- Fourth parameter is an optional parameter. If --gpuEnabled parameter is passed, worker is treated as GPU Enabled.
+- Fifth parameter is an optional parameter. If --addDelay parameter is passed, delays are added randomly for the worker operations.
+
+7) Run driver for another terminal - 
+```
+cd Driver;
+python3 driver.py
+```
+Driver code runs all the supported operations in the system with predefined inputs.
+
+`Driver can be expanded to modify inputs ro run any supported operations `
+
+As soon as you start the driver, the tasks would start getting executed and would be visible in terminal logs.
