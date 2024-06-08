@@ -1,26 +1,46 @@
-CS244b Course Project
+# CS244b Course Project
 
-The Distributed Task Execution System is designed to efficiently distribute and execute tasks across multiple worker processes while providing a mechanism for clients to track task completion and retrieve results. This system aims to leverage parallelism and distributed computing to enhance task execution performance.
+# Getting Started
 
-A set of capability extensions will be pursued from the base implementation to process across multiple machines with simplified scheduling, introduce a global scheduler for efficient resource allocation, and integrate shared memory mechanisms to facilitate seamless data sharing among distributed components. 
+## Project Description
 
-Subsequent versions will implement a specific distributed system for a RAG-LLM (Retrieval-Augmented Generation Large Language Model) application leveraging shared memory for reuse, drawing inspiration from web application prefetching strategies. 
+Distributed Futures are an extension of traditional RPCs in which a reference to the computed value is returned that may reside on a remote node. We have developed and evaluated a distributed futures system intended for mixed fine-grain and course-grain workloads. Our worker-scheduler pairing can optimize across GPU or CPU simulated workers across different software and hardware generations. System provides a mechanism for clients to track task completion and retrieve results.
 
-Run the github workflow in .github/workflows/python-package-conda.yml with 
+The system's performance is measured against multiple matrix operations, map reduce operations and a RAG-LLM (Retrieval-Augmented Generation Large Language Model) application leveraging shared memory for reuse, drawing inspiration from web application prefetching strategies. 
+
+## Steps to run experiments (using CI pipeline)
+
+Run the github workflow in `.github/workflows/python-package-conda.yml` using the following command:
+``` 
 gh workflow run
+```
 
-If you encounter errors you may also run the individual commands in the python-package-conda.yml file
+In case of any errors with gh, you may also run the individual commands in the `python-package-conda.yml` file.
 
-Start the scheduler and workers in different terminals. Make sure to start atleast one GPU and one CPU enabled worker.
+## Steps to run expirements (using Driver)
 
-Run the tests in the tests directory with pytest
+We need to start the scheduler and workers in different terminals. 
+Make sure to start atleast one GPU and one CPU enabled worker. This ensures that all types of workloads can be run. Once scheduler and workers are up, run the tests in the tests directory with pytest.
+
+Following steps go over the starting the scheduler in PowerOf2 mode and start 4 workers (2 of them with GPU). 
 
 Details:
 
 1) Install miniconda from https://docs.anaconda.com/free/miniconda/
-2) conda create --name cs244b --file requirements.txt python=3.9
-3) conda activate cs244b
-4) Run compile_proto script based on your target machine from root repo folder (CS244B)
+2) Create a conda environment for the experiments
+```
+conda create --name cs244b --file requirements.txt python=3.9
+```
+
+3) Activate the conda package and environment manager:
+```
+conda activate cs244b
+```
+
+4) Run compile_proto script from root repo folder [CS244B](https://github.com/krish8484/cs244b) which generates the necessary gRPC proto files. The script depends on your target machine. For UNIX based machines, run:
+```
+./compile_proto.sh
+```
 5) Start the scheduler server from one terminal - 
     python3 scheduler_server.py --PortNumber 50051 --SchedulerMode Random
 6) Start multiple worker servers in another terminal - python3 worker_server.py --PortNumber <PortNumber> --MaxThreadCount <MaxThreadCount> --HardwareGeneration <HardwareGeneration>
