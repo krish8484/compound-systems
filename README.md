@@ -56,7 +56,7 @@ Reference Command:
 
 - First parameter is the port number. Type `int`.
 - Second parameter is the scheduling algorithm that would be used for request routing in the scheduler. Type `string`. It supports 4 modes `Random`, `RoundRobin`, `LoadAware` and `PowerOf2`
-- Third parameter is the number of workers a single task would assigned.  Type `int`. This Task Replication Strategy helps up retrieve a task computation from another worker when one of them is down.
+- Third parameter is an optional parameter representing the number of workers a single task would assigned.  Type `int`. This Task Replication Strategy helps up retrieve a task computation from another worker when one of them is down.
 
 6) Start multiple worker servers in different terminals - 
 `Worker1`
