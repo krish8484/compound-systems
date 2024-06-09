@@ -123,6 +123,7 @@ def test_retrieval(scheduler_client, matrix1, matrix2):
     worker_client = WorkerClient(future.hostName, future.port)
 
     expected_result = [[1, 2], [3, 4]]
+    validate_result(worker_client, future, expected_result)
     # poll_for_result(worker_client, future, expected_result)
 
 def test_generation(scheduler_client, matrix1):
@@ -131,12 +132,38 @@ def test_generation(scheduler_client, matrix1):
 
     worker_client = WorkerClient(future.hostName, future.port)
 
+    # TODO: create a single test and get the new values of the output
     expected_result = np.array([
         [[0.5671, 1.3624], [0.112, 0.4556]],
         [[1.4104, 0.7489], [0.2594, 0.6226]]
     ])
+    # expected_result = expected_result[0][0][0]
 
-    # poll_for_result(worker_client, future, expected_result)
+    # result_obj = get_result_from_worker(worker_client, future)
+    # result = json.loads(result_obj.data)
+    # result = result[0][0][0]
+
+    # validate_result(worker_client, future, expected_result)
+    # print(f"type: {type(result)}, value: {result}")
+
+    # assert np.array_equal(result, expected_result), "results are NOT as expected"
+
+# TODO: complete this
+# def test_rag_agent(scheduler_client, matrix1, matrix2):
+#     futures = []
+#     task_id = 1
+    
+#     for i in range(100):
+#         task = Task(taskId=str(task_id), taskDefintion="retrieval", taskData=[json.dumps(matrix1).encode(), json.dumps(matrix2).encode()])
+#         future = scheduler_client.SubmitTask(task)[0]
+#         futures.append(future)
+#         task_id += 1        
+#         generation_output = model.gen(r) 
+#         return generation_output
+
+#     result = worker_client.GetResult(future=future)
+#     worker_client = WorkerClient(future.hostName, future.port)
+
 
 def test_passing_futures_as_args_flow(scheduler_client, matrix1, matrix2):
     future = scheduler_client.SubmitTask(Task(taskId="0", taskDefintion="dot_product", taskData=[json.dumps(matrix1).encode(), json.dumps(matrix2).encode()]))
@@ -224,3 +251,24 @@ def test_worker_fetching_using_future_where_the_result_is_fetchable_but_errored(
 
     assert result.resultStatus == api_pb2.ResultStatus.ERROR
     assert result.error.errorType == api_pb2.ErrorType.ERRORWHENEXECUTINGTASK
+
+
+# Exact replication of rag_agent in our dfut model. Not tested yet. 
+# I think generation task should be failing as its already failing in the above generation test.
+def test_rag_agent(scheduler_client):
+    knowledge = [[1, 2], [3, 4]]
+    embedding = [[5, 6], [7, 8]]
+    steps = 1000
+    pondering = 100
+    for i in range(steps):
+        if i % pondering == 0:
+            retrieval_task = Task(taskId=f"Retrieval_{i}", taskDefintion="retrieval", taskData=[json.dumps(knowledge).encode(), json.dumps(embedding).encode()])
+            retrieved_output_future = scheduler_client.SubmitTask(retrieval_task)[0]
+            # retrieved_output = np.array(retrieved_output).reshape(2, 2) --> Make sure this happens in retreival task before it returns
+        generation_task = Task(taskId=f"Generation_{i}", taskDefintion="generation", taskData=[[retrieved_output_future]])
+        generation_output_future = scheduler_client.SubmitTask(generation_task)[0]
+
+        worker_client = WorkerClient(generation_output_future.hostName, generation_output_future.port)
+        generation_output = get_result_from_worker(worker_client, generation_output_future) 
+    
+    logging.info(generation_output)
