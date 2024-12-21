@@ -1,4 +1,4 @@
-# CS244b Course Project
+# Compound Systems for AI Workloads
 
 ## Project Description
 
@@ -26,15 +26,15 @@ Following steps go over the starting the scheduler in PowerOf2 mode and start 4 
 
 2) Create a conda environment for the experiments
 ```
-conda create --name cs244b --file requirements.txt python=3.9
+conda create --name comp-sys --file requirements.txt python=3.9
 ```
 
 3) Activate the conda package and environment manager:
 ```
-conda activate cs244b
+conda activate comp-sys
 ```
 
-4) Run compile_proto script from root repo folder [CS244B](https://github.com/krish8484/cs244b) which generates the necessary gRPC proto files. The script depends on your target machine. 
+4) Run compile_proto script from root repo folder [compound-systems](https://github.com/krish8484/compound-systems) which generates the necessary gRPC proto files. The script depends on your target machine. 
 
 For UNIX based machines, run:
 ```
