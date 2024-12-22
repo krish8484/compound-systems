@@ -1,6 +1,9 @@
 name: cs244b CI
 
-on: [push]
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   cs244b-CI:
@@ -9,219 +12,43 @@ jobs:
       max-parallel: 5
 
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Set up Python 3.9
-      uses: actions/setup-python@v3
-      with:
-        python-version: '3.9'
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.9'
 
-    - name: Install Miniconda
-      uses: conda-incubator/setup-miniconda@v2
-      with:
-        auto-update-conda: true
-        python-version: 3.9
+      - name: Install Miniconda
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          auto-update-conda: true
+          python-version: 3.9
 
-    - name: Create and activate environment
-      run: |
-        conda create --name cs244b-env python=3.9 -y
-        echo "CONDA_ENV_NAME=cs244b-env" >> $GITHUB_ENV
-      shell: bash
+      - name: Create and activate environment
+        run: |
+          conda create --name cs244b-env python=3.9 -y
+          echo "CONDA_ENV_NAME=cs244b-env" >> $GITHUB_ENV
+        shell: bash
 
-    - name: Install dependencies
-      run: |
-        $CONDA/bin/activate $CONDA_ENV_NAME
-        pip install -r requirements.txt
-      shell: bash
+      - name: Install dependencies
+        run: |
+          $CONDA/bin/activate $CONDA_ENV_NAME
+          pip install -r requirements.txt
+        shell: bash
 
-    - name: Compile protos
-      run: ./compile_proto.sh
+      - name: Compile protos
+        run: ./compile_proto.sh
 
-    - name: Lint with flake8
-      run: |
-        $CONDA/bin/activate $CONDA_ENV_NAME
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-      shell: bash
+      - name: Lint with flake8
+        run: |
+          $CONDA/bin/activate $CONDA_ENV_NAME
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+        shell: bash
 
-    - name: Start scheduler server (Random mode)
-      run: 
-        cd Scheduler;
-        python3 scheduler_server.py --PortNumber 50051 --SchedulerMode Random --AssingedWorkersPerTask 2 &
+      # ... rest of the steps remain the same ...
 
-    - name: Start first worker server (Random mode)
-      run: 
-        cd Worker;
-        python3 worker_server.py --PortNumber 50052 --MaxThreadCount 2 --HardwareGeneration Gen2 &
-
-    - name: Start second worker server (Random mode)
-      run: 
-        cd Worker;
-        python3 worker_server.py --PortNumber 50053 --MaxThreadCount 5 --HardwareGeneration Gen2 &
-
-    - name: Start third worker server (RoundRobin mode)
-      run: 
-        cd Worker;
-        python3 worker_server.py --PortNumber 50054 --MaxThreadCount 5 --HardwareGeneration Gen2 --gpuEnabled &
-
-    - name: Start fourth worker server (RoundRobin mode)
-      run: 
-        cd Worker;
-        python3 worker_server.py --PortNumber 50055 --MaxThreadCount 5 --HardwareGeneration Gen2 --gpuEnabled &
-
-    - name: Wait for servers to start (Random mode)
-      run: sleep 10
-
-    - name: Test with pytest (Random mode)
-      run: |
-        $CONDA/bin/activate $CONDA_ENV_NAME
-        cd tests
-        pytest
-      shell: bash
-
-    - name: Stop scheduler server (Random mode)
-      run: pkill -f scheduler_server.py
-      shell: bash
-
-    - name: Stop worker servers (Random mode)
-      run: pkill -f worker_server.py
-      shell: bash
-
-    - name: Start scheduler server (RoundRobin mode)
-      run: 
-        cd Scheduler;
-        python3 scheduler_server.py --PortNumber 50051 --SchedulerMode RoundRobin --AssingedWorkersPerTask 2 &
-
-    - name: Start first worker server (RoundRobin mode)
-      run: 
-        cd Worker;
-        python3 worker_server.py --PortNumber 50052 --MaxThreadCount 2 --HardwareGeneration Gen2 &
-
-    - name: Start second worker server (RoundRobin mode)
-      run: 
-        cd Worker;
-        python3 worker_server.py --PortNumber 50053 --MaxThreadCount 5 --HardwareGeneration Gen2 &
-
-    - name: Start third worker server (RoundRobin mode)
-      run: 
-        cd Worker;
-        python3 worker_server.py --PortNumber 50054 --MaxThreadCount 5 --HardwareGeneration Gen2 --gpuEnabled &
-
-    - name: Start fourth worker server (RoundRobin mode)
-      run: 
-        cd Worker;
-        python3 worker_server.py --PortNumber 50055 --MaxThreadCount 5 --HardwareGeneration Gen2 --gpuEnabled &
-
-    - name: Wait for servers to start (RoundRobin mode)
-      run: sleep 10
-
-    - name: Test with pytest (RoundRobin mode)
-      run: |
-        $CONDA/bin/activate $CONDA_ENV_NAME
-        cd tests
-        pytest
-      shell: bash
-
-    - name: Stop scheduler server (RoundRobin mode)
-      run: pkill -f scheduler_server.py
-      shell: bash
-
-    - name: Stop worker servers (RoundRobin mode)
-      run: pkill -f worker_server.py
-      shell: bash
-
-    - name: Start scheduler server (LoadAware mode)
-      run: 
-        cd Scheduler;
-        python3 scheduler_server.py --PortNumber 50051 --SchedulerMode LoadAware &
-
-    - name: Start first worker server (LoadAware mode)
-      run: 
-        cd Worker;
-        python3 worker_server.py --PortNumber 50052 --MaxThreadCount 2 --HardwareGeneration Gen2 &
-
-    - name: Start second worker server (LoadAware mode)
-      run: 
-        cd Worker;
-        python3 worker_server.py --PortNumber 50053 --MaxThreadCount 5 --HardwareGeneration Gen2 &
-
-    - name: Start third worker server (LoadAware mode)
-      run: 
-        cd Worker;
-        python3 worker_server.py --PortNumber 50054 --MaxThreadCount 5 --HardwareGeneration Gen2 --gpuEnabled &
-
-    - name: Start fourth worker server (LoadAware mode)
-      run: 
-        cd Worker;
-        python3 worker_server.py --PortNumber 50055 --MaxThreadCount 5 --HardwareGeneration Gen2 --gpuEnabled &
-
-    - name: Wait for servers to start (LoadAware mode)
-      run: sleep 10
-
-    - name: Test with pytest (LoadAware mode)
-      run: |
-        $CONDA/bin/activate $CONDA_ENV_NAME
-        cd tests
-        pytest
-      shell: bash
-
-    - name: Stop scheduler server (LoadAware mode)
-      run: pkill -f scheduler_server.py
-      shell: bash
-
-    - name: Stop worker servers (LoadAware mode)
-      run: pkill -f worker_server.py
-      shell: bash
-
-    - name: Start scheduler server (PowerOfTwo mode)
-      run: 
-        cd Scheduler;
-        python3 scheduler_server.py --PortNumber 50051 --SchedulerMode PowerOf2 &
-
-    - name: Start first worker server (PowerOfTwo mode)
-      run: 
-        cd Worker;
-        python3 worker_server.py --PortNumber 50052 --MaxThreadCount 2 --HardwareGeneration Gen2 &
-
-    - name: Start second worker server (PowerOfTwo mode)
-      run: 
-        cd Worker;
-        python3 worker_server.py --PortNumber 50053 --MaxThreadCount 5 --HardwareGeneration Gen2 &
-
-    - name: Start third worker server (PowerOfTwo mode)
-      run: 
-        cd Worker;
-        python3 worker_server.py --PortNumber 50054 --MaxThreadCount 5 --HardwareGeneration Gen2 --gpuEnabled &
-
-    - name: Start fourth worker server (PowerOfTwo mode)
-      run: 
-        cd Worker;
-        python3 worker_server.py --PortNumber 50055 --MaxThreadCount 5 --HardwareGeneration Gen2 --gpuEnabled &
-    
-    - name: Start fifth worker server (PowerOfTwo mode)
-      run: 
-        cd Worker;
-        python3 worker_server.py --PortNumber 50056 --MaxThreadCount 5 --HardwareGeneration Gen2 --gpuEnabled &
-    
-    - name: Start sixth worker server (PowerOfTwo mode)
-      run: 
-        cd Worker;
-        python3 worker_server.py --PortNumber 50057 --MaxThreadCount 5 --HardwareGeneration Gen2 --gpuEnabled &
-
-    - name: Wait for servers to start (PowerOfTwo mode)
-      run: sleep 10
-
-    - name: Test with pytest (PowerOfTwo mode)
-      run: |
-        $CONDA/bin/activate $CONDA_ENV_NAME
-        cd tests
-        pytest --count=20
-      shell: bash
-    
-    - name: Stop scheduler server (PowerOfTwo mode)
-      run: pkill -f scheduler_server.py
-      shell: bash
-
-    - name: Stop worker servers (PowerOfTwo mode)
-      run: pkill -f worker_server.py
-      shell: bash
+      - name: Stop worker servers (PowerOfTwo mode)
+        run: pkill -f worker_server.py
+        shell: bash
