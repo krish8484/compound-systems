@@ -22,7 +22,6 @@ def get_result_from_worker(worker_client, future):
         else:
             return result
     
-
 def validate_result(worker_client, future, expected_result):
     while True:
         result = worker_client.GetResult(future=future)
@@ -148,23 +147,6 @@ def test_generation(scheduler_client, matrix1):
 
     # assert np.array_equal(result, expected_result), "results are NOT as expected"
 
-# TODO: complete this
-# def test_rag_agent(scheduler_client, matrix1, matrix2):
-#     futures = []
-#     task_id = 1
-    
-#     for i in range(100):
-#         task = Task(taskId=str(task_id), taskDefintion="retrieval", taskData=[json.dumps(matrix1).encode(), json.dumps(matrix2).encode()])
-#         future = scheduler_client.SubmitTask(task)[0]
-#         futures.append(future)
-#         task_id += 1        
-#         generation_output = model.gen(r) 
-#         return generation_output
-
-#     result = worker_client.GetResult(future=future)
-#     worker_client = WorkerClient(future.hostName, future.port)
-
-
 def test_passing_futures_as_args_flow(scheduler_client, matrix1, matrix2):
     future = scheduler_client.SubmitTask(Task(taskId="0", taskDefintion="dot_product", taskData=[json.dumps(matrix1).encode(), json.dumps(matrix2).encode()]))
     future2 = scheduler_client.SubmitTask(Task(taskId="1", taskDefintion="mat_add", taskData=[json.dumps(matrix1).encode(), json.dumps(matrix2).encode()]))
@@ -252,9 +234,7 @@ def test_worker_fetching_using_future_where_the_result_is_fetchable_but_errored(
     assert result.resultStatus == api_pb2.ResultStatus.ERROR
     assert result.error.errorType == api_pb2.ErrorType.ERRORWHENEXECUTINGTASK
 
-
-# Exact replication of rag_agent in our dfut model. Not tested yet. 
-# I think generation task should be failing as its already failing in the above generation test.
+# Exact replication of rag_agent in our dfut model.
 def test_rag_agent(scheduler_client):
     knowledge = [[1, 2], [3, 4]]
     embedding = [[5, 6], [7, 8]]
@@ -264,7 +244,7 @@ def test_rag_agent(scheduler_client):
         if i % pondering == 0:
             retrieval_task = Task(taskId=f"Retrieval_{i}", taskDefintion="retrieval", taskData=[json.dumps(knowledge).encode(), json.dumps(embedding).encode()])
             retrieved_output_future = scheduler_client.SubmitTask(retrieval_task)[0]
-            # retrieved_output = np.array(retrieved_output).reshape(2, 2) --> Make sure this happens in retreival task before it returns
+            # retrieved_output = np.array(retrieved_output).reshape(2, 2) --> TODO: reshape in retreival task before it returns
         generation_task = Task(taskId=f"Generation_{i}", taskDefintion="generation", taskData=[[retrieved_output_future]])
         generation_output_future = scheduler_client.SubmitTask(generation_task)[0]
 
