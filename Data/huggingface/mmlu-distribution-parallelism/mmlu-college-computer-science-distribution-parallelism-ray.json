@@ -1,0 +1,1240 @@
+[
+  {
+    "topic": "Ray (ray.io) - Distributed Computing: Basics",
+    "context": "Ray is an open-source framework enabling distributed execution of Python code across multiple cores or nodes. It provides tasks and actors for parallel processing, using a centralized head node to coordinate scheduling.",
+    "question": "What is the primary objective of Ray as a distributed computing framework?",
+    "options": [
+      "A: To execute Python code only in a single-threaded environment",
+      "B: To integrate solely with GPU-based deep learning models",
+      "C: To allow easy scaling of Python applications across multiple nodes and cores",
+      "D: To replace HTTP-based microservices with serverless triggers",
+      "E: To run compiled C++ programs on specialized hardware"
+    ],
+    "correct_options_literal": "Ray’s main goal is to provide an easy way to scale Python code by distributing tasks over multiple cores and nodes.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Ray (ray.io) - Distributed Computing: Basics",
+    "context": "Ray tasks are Python functions decorated with @ray.remote. When you call .remote(), the function executes asynchronously and returns an ObjectRef as a placeholder for the result.",
+    "question": "How does one invoke a Ray remote function so that it executes asynchronously?",
+    "options": [
+      "A: By calling the function_name.sync() method",
+      "B: By using the built-in Python asyncio library and await syntax",
+      "C: By decorating the function with @ray.remote and using function_name.remote()",
+      "D: By creating a custom thread pool to distribute tasks",
+      "E: By passing the function into a multiprocess queue manually"
+    ],
+    "correct_options_literal": "You decorate the function with @ray.remote and call .remote() for asynchronous execution in a Ray cluster.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Ray (ray.io) - Distributed Computing: Basics",
+    "context": "Ray’s architecture involves a head node, which stores the cluster’s control state, and worker nodes that execute tasks. The head node runs the GCS (Global Control Store) to track metadata and scheduling decisions.",
+    "question": "Which node in a Ray cluster maintains cluster metadata and orchestrates task distribution?",
+    "options": [
+      "A: The worker node",
+      "B: The local machine that started Python",
+      "C: The head node",
+      "D: The GPU node only",
+      "E: No dedicated node; each node manages itself autonomously"
+    ],
+    "correct_options_literal": "The head node (GCS) maintains all control state and orchestrates tasks across the cluster.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Ray (ray.io) - Distributed Computing: Basics",
+    "context": "Ray tasks return ObjectRefs instead of direct values. The actual data is stored in the Ray Object Store, enabling fast, shared-memory access and avoiding unnecessary data copies.",
+    "question": "Why does Ray return ObjectRefs instead of direct values for remote function calls?",
+    "options": [
+      "A: To prevent any asynchronous execution",
+      "B: To limit the usage of multi-threading in Python",
+      "C: To enable shared-memory access to data in the Ray Object Store and avoid copying large data",
+      "D: Because Ray only supports textual string returns",
+      "E: To force all results to be saved on disk before retrieval"
+    ],
+    "correct_options_literal": "Returning references (ObjectRefs) allows Ray to keep data in a shared memory store, reducing copies and enabling efficient parallelism.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Ray (ray.io) - Distributed Computing: Basics",
+    "context": "Ray runs a distributed scheduler that enqueues tasks on worker processes, distributing computation among all available resources. The scheduler also tracks task dependencies in a Directed Acyclic Graph (DAG).",
+    "question": "What data structure does Ray use internally to manage task dependencies and scheduling?",
+    "options": [
+      "A: A single global queue, processed in FIFO order",
+      "B: A Directed Acyclic Graph (DAG)",
+      "C: A binary search tree of tasks",
+      "D: A circular buffer of tasks",
+      "E: A manual file-based job queue with priority tags"
+    ],
+    "correct_options_literal": "Ray employs a DAG-based approach, ensuring tasks wait for their dependencies to complete before being scheduled.",
+    "correct_options": "B",
+    "correct_options_idx": 2
+  },
+  {
+    "topic": "Ray (ray.io) - Distributed Computing: Basics",
+    "context": "Remote calls in Ray are asynchronous. You can retrieve the results of a task by calling ray.get(ObjectRef), which will block until the result is ready or until a specified timeout if provided.",
+    "question": "How do you obtain the actual return value of a remote function in Ray after invoking it with .remote()?",
+    "options": [
+      "A: By calling the method .join() on the function",
+      "B: By waiting for a cluster-wide broadcast to complete",
+      "C: By calling ray.get() on the ObjectRef",
+      "D: By specifying a concurrency limit in the Ray config file",
+      "E: By transforming the ObjectRef into a Python thread"
+    ],
+    "correct_options_literal": "After calling function.remote(), you retrieve the actual data by invoking ray.get(<ObjectRef>).",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Ray (ray.io) - Distributed Computing: Basics",
+    "context": "Ray provides a dashboard accessible on the head node’s IP at a chosen port. It allows you to visualize system metrics such as CPU usage, memory usage, tasks, and logs in real time.",
+    "question": "What is the main purpose of the Ray dashboard?",
+    "options": [
+      "A: To provide a CLI-only interface for launching tasks",
+      "B: To serve as a text editor for Python code within the cluster",
+      "C: To offer a graphical interface for monitoring cluster health, resource usage, and task status",
+      "D: To store user credentials for secure role-based access",
+      "E: To disable remote invocation if the cluster load is too high"
+    ],
+    "correct_options_literal": "The Ray dashboard is a graphical tool for monitoring cluster metrics, task status, and resource usage in real time.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Ray (ray.io) - Distributed Computing: Basics",
+    "context": "Ray supports both single-node and multi-node configurations. The user starts a head node using 'ray start --head', and additional nodes can join by pointing to the head node’s address.",
+    "question": "How do you typically start a Ray cluster on the head node?",
+    "options": [
+      "A: By running 'ray start --cluster'",
+      "B: By importing 'ray' in Python and calling 'init_cluster()'",
+      "C: By using 'ray start --head' on the machine designated as the head node",
+      "D: By installing Docker and running 'docker run ray'",
+      "E: By using 'ray serve deploy' without specifying any node addresses"
+    ],
+    "correct_options_literal": "To initiate a head node, you run 'ray start --head' on the intended head machine.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Ray (ray.io) - Distributed Computing: Basics",
+    "context": "In a Ray cluster, worker nodes execute tasks. If a worker node fails, Ray’s fault tolerance mechanism reschedules tasks on healthy nodes. This ensures continuous progress despite node outages.",
+    "question": "What happens when a worker node in a Ray cluster fails during task execution?",
+    "options": [
+      "A: The entire cluster shuts down immediately",
+      "B: Nothing happens; tasks remain lost",
+      "C: Ray automatically retries or reschedules tasks on other available nodes",
+      "D: The head node attempts to reboot the failing node indefinitely",
+      "E: The user must manually transfer tasks to a new node with a command"
+    ],
+    "correct_options_literal": "Ray seamlessly reschedules any lost tasks to other healthy nodes, ensuring fault tolerance.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Ray (ray.io) - Distributed Computing: Basics",
+    "context": "Ray can schedule tasks on CPU cores or GPU devices if specified. By default, tasks require one CPU. Users can declare resource requirements when defining remote functions or actors to ensure correct scheduling.",
+    "question": "How do you specify resource requirements for a Ray remote function or actor?",
+    "options": [
+      "A: By calling an internal private API only accessible to Ray developers",
+      "B: By configuring system environment variables with the desired resources",
+      "C: By passing arguments like num_cpus or num_gpus in the @ray.remote decorator or when instantiating the actor",
+      "D: By using a forced GPU assignment in the Python script outside Ray",
+      "E: By specifying the function name in a separate JSON cluster config"
+    ],
+    "correct_options_literal": "You can pass arguments, e.g., @ray.remote(num_cpus=2, num_gpus=1), to declare a function or actor’s required resources.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+
+  {
+    "topic": "Ray (ray.io) - Distributed Computing: Tasks & Actors",
+    "context": "Ray Actors are stateful processes that can preserve data across multiple method calls. They are created by decorating a Python class with @ray.remote and instantiating it with .remote().",
+    "question": "What is the key difference between Ray tasks and Ray actors?",
+    "options": [
+      "A: Ray tasks can only run on CPU, whereas Ray actors run on GPU",
+      "B: Ray tasks are fully stateless, whereas Ray actors preserve internal state across method invocations",
+      "C: Ray tasks require manual resource scheduling, whereas Ray actors do not",
+      "D: Ray tasks can only be called once, whereas Ray actors can be called only twice",
+      "E: Ray tasks run in parallel, while Ray actors run strictly sequentially"
+    ],
+    "correct_options_literal": "Ray tasks do not maintain internal state, while Ray actors store state across multiple calls, enabling iterative updates.",
+    "correct_options": "B",
+    "correct_options_idx": 2
+  },
+  {
+    "topic": "Ray (ray.io) - Distributed Computing: Tasks & Actors",
+    "context": "Ray actor handles method calls sequentially. If concurrency is required, you can specify concurrency settings (e.g., setting max_concurrency > 1 in the decorator) to allow multiple concurrent method executions, but that demands careful synchronization within the actor.",
+    "question": "How can you enable concurrent method executions in a single Ray actor?",
+    "options": [
+      "A: By default, actor methods are fully concurrent without any changes",
+      "B: By using Python’s GIL in normal mode",
+      "C: By specifying @ray.remote(max_concurrency=N) in the actor definition",
+      "D: By disabling the Ray Object Store",
+      "E: By running the actor on multiple head nodes simultaneously"
+    ],
+    "correct_options_literal": "You must define the actor with @ray.remote(max_concurrency=N) if you want concurrent method executions in a single actor process.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Ray (ray.io) - Distributed Computing: Tasks & Actors",
+    "context": "Deadlock scenarios can occur in Ray if two actors synchronously wait for each other’s results in a cyclical dependency. Ray’s best practice is to avoid circular dependencies by restructuring the workflow or using asynchronous patterns.",
+    "question": "What is a common cause of deadlocks in Ray when using actors?",
+    "options": [
+      "A: Calling ray.shutdown() too often",
+      "B: Actors requesting large GPU resources that are not available",
+      "C: Cyclic, synchronous waiting where Actor A waits for Actor B while Actor B waits for Actor A",
+      "D: Using the @ray.remote decorator for classes instead of functions",
+      "E: Overutilizing the local object store with small objects"
+    ],
+    "correct_options_literal": "A typical deadlock arises from circular dependencies where two actors block on each other’s calls.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Ray (ray.io) - Distributed Computing: Tasks & Actors",
+    "context": "If an actor method must return very large data, it is typically placed in the Ray Object Store. For extremely large objects, one might consider using Ray’s object spilling or external storage for optimal memory usage.",
+    "question": "What is one recommended approach to handle extremely large data returns from a Ray actor method?",
+    "options": [
+      "A: Store them in the local variable scope to keep them out of the Object Store",
+      "B: Rely on the built-in Python list to ensure in-process memory usage",
+      "C: Utilize Ray’s object spilling or external storage backends for big data to avoid overflowing memory",
+      "D: Delete all other actors in the cluster before returning data",
+      "E: Convert the data to JSON strings and log it to the console"
+    ],
+    "correct_options_literal": "When returning large objects, enabling Ray’s object spilling or using external storage can help manage memory usage efficiently.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Ray (ray.io) - Distributed Computing: Tasks & Actors",
+    "context": "Ray supports passing ObjectRefs between actors and tasks, allowing for pipeline-like workflows. However, one should be careful to avoid excessive data dependencies which can reduce parallelism.",
+    "question": "How can you chain multiple actors in a pipeline without collecting intermediate results locally?",
+    "options": [
+      "A: By always calling ray.get() at each step",
+      "B: By passing ObjectRefs from one actor to another, avoiding local retrieval until the final step",
+      "C: By copying data to disk after each actor method",
+      "D: By sending large pickled objects between actors via Python sockets",
+      "E: By creating a new cluster for each step to isolate data"
+    ],
+    "correct_options_literal": "You can pass ObjectRefs directly between actors to chain computations without retrieving intermediate results locally.",
+    "correct_options": "B",
+    "correct_options_idx": 2
+  },
+  {
+    "topic": "Ray (ray.io) - Distributed Computing: Tasks & Actors",
+    "context": "Ray Actors can be distributed across different nodes. If an actor is pinned to a specific resource (e.g., GPU), scheduling ensures the actor resides on a node that meets its resource requirements.",
+    "question": "Which statement accurately describes Ray’s actor placement when GPU resources are requested?",
+    "options": [
+      "A: Ray automatically places the actor on any node, ignoring GPU specs",
+      "B: Ray never allows GPU-based actors to be created",
+      "C: Ray schedules the actor on a node that has enough GPU resources to satisfy its declared requirements",
+      "D: Ray schedules GPU-based actors only on the head node",
+      "E: Ray allows the user to manually pick the node IP address in all cases"
+    ],
+    "correct_options_literal": "When an actor is defined with GPU requirements, Ray automatically places it on a node that has enough available GPU resources.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Ray (ray.io) - Distributed Computing: Tasks & Actors",
+    "context": "In Ray, actors process method calls sequentially by default. If you call multiple methods on the same actor, the calls will queue up unless concurrency settings are adjusted. This approach simplifies concurrency control for stateful computations.",
+    "question": "By default, how does Ray handle multiple concurrent calls to the same actor’s methods?",
+    "options": [
+      "A: Ray merges all method calls into a single function and runs them at once",
+      "B: The calls run in parallel threads automatically",
+      "C: The calls are processed sequentially, one after another",
+      "D: Ray discards calls that arrive while another method is running",
+      "E: The calls must be manually scheduled via a custom concurrency manager"
+    ],
+    "correct_options_literal": "The default behavior is sequential execution of actor method calls, creating an implicit queue of requests.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Ray (ray.io) - Distributed Computing: Tasks & Actors",
+    "context": "Ray Actors can specify more advanced configurations like graceful shutdown behaviors. For example, you could define an actor destructor or a custom method for flushing final states, ensuring data is saved before the process ends.",
+    "question": "What is a recommended method to ensure state in a Ray actor is not lost upon actor shutdown?",
+    "options": [
+      "A: Rely on ephemeral memory alone",
+      "B: Explicitly define and call a final 'save' or 'flush' method before shutting down the actor",
+      "C: Convert the actor into a stateless task",
+      "D: Place the actor on the head node for guaranteed data preservation",
+      "E: Use Python’s with statement to handle context automatically"
+    ],
+    "correct_options_literal": "It’s good practice to provide a method for persisting or flushing internal state, and invoke it before terminating the actor or the cluster.",
+    "correct_options": "B",
+    "correct_options_idx": 2
+  },
+
+  {
+    "topic": "Ray (ray.io) - Cluster Management",
+    "context": "A Ray cluster can scale horizontally by adding or removing worker nodes. Autoscaling can be configured via a cluster config YAML, enabling on-demand resource expansion or contraction in cloud environments.",
+    "question": "How does Ray typically achieve autoscaling in a cloud environment?",
+    "options": [
+      "A: By manually calling 'ray add-node' whenever usage is high",
+      "B: By using a cluster config with a predefined min and max node count, allowing Ray to request more nodes as needed",
+      "C: By employing Dockerfiles to replicate the entire environment",
+      "D: By requiring the user to set up a Kubernetes CRD for Ray manually",
+      "E: By automatically turning off GPU usage on existing nodes"
+    ],
+    "correct_options_literal": "Ray’s autoscaler uses a YAML-based cluster configuration to define min/max nodes, spinning up or shutting down nodes dynamically in the cloud.",
+    "correct_options": "B",
+    "correct_options_idx": 2
+  },
+  {
+    "topic": "Ray (ray.io) - Cluster Management",
+    "context": "Ray uses the GCS (Global Control Store) for cluster metadata. The GCS tracks worker processes, object directory information, and resource usage. When the head node restarts, certain metadata can be reloaded to ensure continuity.",
+    "question": "Which component of Ray is primarily responsible for storing metadata, such as worker registrations and object directory mappings?",
+    "options": [
+      "A: The Ray Dashboard",
+      "B: The Local file system of each worker",
+      "C: The Global Control Store (GCS)",
+      "D: A third-party cache like Redis that is not included in Ray",
+      "E: A Kubernetes config map"
+    ],
+    "correct_options_literal": "The GCS in Ray holds cluster metadata like worker registrations and object placement data, centralizing control info.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Ray (ray.io) - Cluster Management",
+    "context": "When you launch Ray in a cluster, you can specify resources for each node (CPU, GPU, custom resources). Ray schedules tasks and actors to nodes that match resource requirements. Over-subscription typically leads to queued tasks until resources free up.",
+    "question": "How does Ray handle task placement when multiple tasks request more CPU resources than are available on a given node?",
+    "options": [
+      "A: Ray immediately kills some tasks to free resources",
+      "B: Ray refuses to run any tasks on that node altogether",
+      "C: Ray queues the tasks until enough resources become available, or schedules them on different nodes with sufficient resources",
+      "D: Ray forcibly splits tasks across different processes on the same node",
+      "E: Ray migrates tasks to the head node only"
+    ],
+    "correct_options_literal": "Ray either schedules tasks on other nodes with free resources or queues them until enough resources are free on the current node.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Ray (ray.io) - Cluster Management",
+    "context": "Ray provides a CLI to manage clusters. Commands like 'ray up cluster.yaml' spin up a cluster in the specified cloud environment, while 'ray down cluster.yaml' tears it down. This is particularly common with AWS, GCP, or Azure, where Ray can provision nodes automatically.",
+    "question": "Which Ray CLI command is commonly used to create or update a Ray cluster defined in a YAML config?",
+    "options": [
+      "A: ray start-cluster",
+      "B: ray cluster-launch",
+      "C: ray up <cluster_yaml>",
+      "D: ray new <cluster_yaml>",
+      "E: ray install <cluster_yaml>"
+    ],
+    "correct_options_literal": "The 'ray up <cluster_yaml>' command is used to create or update the cluster according to the specified YAML configuration.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Ray (ray.io) - Cluster Management",
+    "context": "Ray’s cluster configuration YAML includes an 'initialization_commands' block, which runs shell commands on new nodes during provisioning. It also supports 'setup_commands' for configuring dependencies after the base environment is ready.",
+    "question": "When customizing node setup for a Ray cluster, which YAML field typically contains commands to configure dependencies once the base environment has started?",
+    "options": [
+      "A: initial_venv_commands",
+      "B: pre_boot_commands",
+      "C: advanced_commands",
+      "D: setup_commands",
+      "E: run_after_start"
+    ],
+    "correct_options_literal": "Ray’s cluster config uses 'setup_commands' to define shell instructions that run after the base environment is up.",
+    "correct_options": "D",
+    "correct_options_idx": 4
+  },
+  {
+    "topic": "Ray (ray.io) - Cluster Management",
+    "context": "Ray can be deployed on Kubernetes via the Ray Operator. This operator watches for custom RayCluster objects and manages pods to create a head node and worker nodes, respecting the desired configuration specified in the RayCluster CRD.",
+    "question": "How does Ray typically integrate with Kubernetes for cluster management?",
+    "options": [
+      "A: By ignoring Kubernetes altogether in favor of on-prem only",
+      "B: By using a built-in Kubernetes scheduler in the Ray dashboard",
+      "C: By employing the Ray Operator, which manages the lifecycle of RayCluster custom resources",
+      "D: By forcibly running all pods as a single container with Ray tasks",
+      "E: By requiring manual YAML modifications for each node in the cluster"
+    ],
+    "correct_options_literal": "Ray supports the Ray Operator on Kubernetes, which manages RayCluster custom resources to orchestrate head and worker pods.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Ray (ray.io) - Cluster Management",
+    "context": "Ray scaling strategies can be reactive (scale up on increased load) or proactive. The Ray autoscaler can watch usage metrics and node statuses to add or remove nodes dynamically, aiming to balance cost and performance.",
+    "question": "What triggers Ray’s reactive autoscaler to add more nodes to a cluster?",
+    "options": [
+      "A: A developer manually toggles a switch in the dashboard",
+      "B: A GPU usage threshold is reached only on the head node",
+      "C: The scheduling queue accumulates tasks that cannot be placed on existing nodes due to insufficient resources",
+      "D: The cluster’s CPU usage is at 1%",
+      "E: The worker nodes are all in the same availability zone"
+    ],
+    "correct_options_literal": "If Ray’s scheduler sees tasks are pending due to insufficient resources, the autoscaler provisions additional nodes to handle the load.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Ray (ray.io) - Cluster Management",
+    "context": "In advanced cluster setups, you can define custom resources in Ray (e.g., \"accelerator_type: TPU\"). Tasks or actors requiring \"accelerator_type=TPU\" will be scheduled only on nodes that declare this resource, enabling flexible multi-accelerator clusters.",
+    "question": "How can developers ensure that tasks requiring a custom hardware accelerator (e.g., a TPU) are scheduled correctly in a multi-accelerator Ray cluster?",
+    "options": [
+      "A: By editing the Ray source code to add new scheduling heuristics",
+      "B: By defining a custom resource in the cluster config (e.g., accelerator_type=TPU) and specifying that requirement in @ray.remote",
+      "C: By launching the cluster with 'ray start --tpu-mode'",
+      "D: By forcing all tasks to run on CPU nodes first, then GPU nodes",
+      "E: By disabling Ray’s built-in scheduling and manually specifying node IP addresses"
+    ],
+    "correct_options_literal": "To schedule tasks on custom hardware, define a custom resource in the cluster config and specify it in @ray.remote(resource={\"accelerator_type\": 1}).",
+    "correct_options": "B",
+    "correct_options_idx": 2
+  },
+  {
+    "topic": "Ray (ray.io) - Cluster Management",
+    "context": "Ray uses gossip protocols and direct communications between nodes for certain data operations, but the GCS remains the single source of truth for object and task metadata. This ensures consistent cluster-wide state.",
+    "question": "Why does Ray still rely on the Global Control Store (GCS) even though nodes can communicate directly for certain operations?",
+    "options": [
+      "A: The GCS is not actually used in production clusters",
+      "B: The GCS only stores logs, not essential metadata",
+      "C: The GCS ensures a consistent, centralized state for object location, task scheduling, and cluster membership",
+      "D: The GCS is required only for debugging GPU allocation",
+      "E: The GCS is replaced automatically by a different store if too many nodes join"
+    ],
+    "correct_options_literal": "Despite node-to-node communication, the GCS maintains authoritative metadata for scheduling and object location across the cluster.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Ray (ray.io) - Cluster Management",
+    "context": "When deploying Ray on multiple on-prem servers, administrators often rely on SSH-based cluster config files. This approach is similar to the cloud-based YAML config but uses SSH credentials to connect to each machine.",
+    "question": "Which of the following is a common way to manage a multi-node Ray cluster on an on-premise environment?",
+    "options": [
+      "A: Setting up the Ray Operator on a local Kubernetes cluster by default",
+      "B: Using the same YAML cluster config approach with SSH credentials to start the head node and join worker nodes",
+      "C: Only using Docker Compose on all machines",
+      "D: Running local Python scripts that call 'ray.init()' on each node manually",
+      "E: Launching a single node and enabling hardware virtualization for others"
+    ],
+    "correct_options_literal": "Even for on-prem clusters, you can define a YAML-based Ray cluster config containing SSH info for each node, then run 'ray up'.",
+    "correct_options": "B",
+    "correct_options_idx": 2
+  },
+
+  {
+    "topic": "Ray (ray.io) - Ray Serve",
+    "context": "Ray Serve is a high-level library for serving models and arbitrary Python code as scalable, load-balanced microservices. It manages multiple replicas automatically, distributing incoming requests among them.",
+    "question": "What is the fundamental purpose of Ray Serve?",
+    "options": [
+      "A: To automatically parallelize Python scripts via concurrency only",
+      "B: To create a distributed RPC service for Ray’s internal scheduling",
+      "C: To deploy and scale Python-based services (often ML models) behind HTTP endpoints, handling load balancing and concurrency",
+      "D: To store user data in a high-availability key-value store",
+      "E: To replace the need for any Ray tasks or actors"
+    ],
+    "correct_options_literal": "Ray Serve provides an HTTP-based serving layer that can load-balance requests across replicas of Python services or ML models.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Ray (ray.io) - Ray Serve",
+    "context": "Ray Serve supports both stateless and stateful deployments. A stateful deployment can store data in actor state across requests. This can be useful for caching or incremental model updates.",
+    "question": "How does Ray Serve allow for stateful serving of machine learning models or Python services?",
+    "options": [
+      "A: By disallowing concurrency in all endpoints",
+      "B: By forbidding the use of actors within Serve deployments",
+      "C: By allowing each deployment to be backed by a Ray actor that can maintain internal state across requests",
+      "D: By requiring all data to be saved to an external database between requests",
+      "E: By restricting incoming requests to a single client"
+    ],
+    "correct_options_literal": "Ray Serve can use an actor-based backend, letting each replica hold state (e.g., updated model parameters) across multiple requests.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Ray (ray.io) - Ray Serve",
+    "context": "When using Ray Serve, you define deployments with @serve.deployment. Each deployment can scale to multiple replicas, distributing incoming requests among them for high throughput and availability.",
+    "question": "Which decorator is used to define a Ray Serve deployment in code?",
+    "options": [
+      "A: @ray.remote",
+      "B: @ray.serveable",
+      "C: @serve.deployment",
+      "D: @ray.servicify",
+      "E: @deployment.remote"
+    ],
+    "correct_options_literal": "Ray Serve deployments are declared with @serve.deployment, optionally specifying name, num_replicas, and other configs.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Ray (ray.io) - Ray Serve",
+    "context": "Ray Serve supports routing to different deployments with explicit routing or using path-based routing. You can mount multiple deployments on different routes, enabling a microservice architecture on a single Ray cluster.",
+    "question": "How can you configure multiple models or services under different HTTP endpoints using Ray Serve?",
+    "options": [
+      "A: By editing the Ray autoscaler settings",
+      "B: By specifying separate cluster configs for each endpoint",
+      "C: By defining multiple deployments, each with a unique route prefix, so requests can be routed to the respective service",
+      "D: By manually spinning up multiple Ray head nodes and assigning an IP to each",
+      "E: By using the old Ray scripts that have path-based references in them"
+    ],
+    "correct_options_literal": "You can create multiple deployments with distinct route_prefix values, so Serve automatically routes requests to each model or service accordingly.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Ray (ray.io) - Ray Serve",
+    "context": "Ray Serve offers built-in metrics for monitoring the throughput and latency of each deployment. Integration with Prometheus or other monitoring solutions is possible. This is critical for production environments where SLOs matter.",
+    "question": "What is a common way to monitor the performance metrics of Ray Serve deployments in production?",
+    "options": [
+      "A: Rely on a hidden Ray text file with logs only",
+      "B: Use built-in 'serve run metrics' CLI command exclusively",
+      "C: Export metrics to Prometheus, Grafana, or similar, to track throughput and latency across deployments",
+      "D: Only rely on Python’s default logging library for all performance data",
+      "E: Turn off concurrency to simplify monitoring"
+    ],
+    "correct_options_literal": "Ray Serve provides metrics that can be scraped by Prometheus or integrated into other metric-collection frameworks for throughput/latency tracking.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Ray (ray.io) - Ray Serve",
+    "context": "Ray Serve can handle rolling updates. You can deploy a new version of a model while continuing to serve traffic from the old version, then gradually shift traffic or switch it all at once, reducing downtime.",
+    "question": "Which approach does Ray Serve provide to minimize downtime during model version upgrades?",
+    "options": [
+      "A: It automatically kills all running replicas before starting new ones",
+      "B: It refuses any requests until the new version is fully deployed",
+      "C: It supports rolling updates by gradually redirecting traffic from old replicas to new replicas",
+      "D: It forcibly duplicates all old data into a new cluster offline",
+      "E: It merges both versions into a single weighted average model"
+    ],
+    "correct_options_literal": "Ray Serve supports rolling updates, letting you run both old and new replicas simultaneously and gradually shift traffic to minimize disruptions.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Ray (ray.io) - Ray Serve",
+    "context": "Ray Serve can be configured via the Serve API or the CLI. The usage pattern often involves defining deployments in Python, then calling serve.run() or serve.start() to begin listening on a specified port or handle routing behind a web server.",
+    "question": "How do you commonly start Ray Serve to handle HTTP requests within a Python script?",
+    "options": [
+      "A: By calling serve.listen_on_port() directly in the Ray config",
+      "B: By using serve.start() and specifying the desired host/port or relying on defaults",
+      "C: By editing /etc/ray/serve.conf on each node",
+      "D: By starting a separate microservice in Docker manually",
+      "E: By deploying a new global actor called ServeManager"
+    ],
+    "correct_options_literal": "Within Python, you typically initialize Serve with serve.start(), after which your deployments can receive HTTP requests.",
+    "correct_options": "B",
+    "correct_options_idx": 2
+  },
+  {
+    "topic": "Ray (ray.io) - Ray Serve",
+    "context": "When deploying a large number of replicas for high throughput, one must consider the overhead of each actor. Ray Serve tries to optimize scheduling to avoid bottlenecks, but the user still needs to ensure enough cluster resources are available (CPU, GPU, or memory).",
+    "question": "Which factor is critical to consider when scaling Ray Serve deployments to a large number of replicas for high throughput?",
+    "options": [
+      "A: The default Python recursion limit",
+      "B: Only using a single CPU node",
+      "C: The resource overhead of each actor replica and whether the cluster has enough CPU/memory/GPU resources",
+      "D: Forcing each replica to store model weights on local disk only",
+      "E: Avoiding any usage of the Ray Object Store to reduce memory footprint"
+    ],
+    "correct_options_literal": "Each replica runs as an actor, consuming resources. Scaling demands ensuring that the cluster has enough CPU/Memory/GPU resources to handle all replicas.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Ray (ray.io) - Ray Serve",
+    "context": "Ray Serve supports a built-in HTTP proxy to route requests to the correct deployment. Advanced usage may involve custom request handling or bridging with frameworks like FastAPI for complex routing or authentication logic.",
+    "question": "How can you integrate Ray Serve with a third-party web framework like FastAPI?",
+    "options": [
+      "A: By rewriting FastAPI to match Ray’s code structure",
+      "B: By deploying both frameworks on separate servers with no communication",
+      "C: By mounting a Serve deployment that internally calls FastAPI code or by using the FastAPI integration in Ray Serve to route requests appropriately",
+      "D: By disabling Ray Serve’s HTTP proxy and relying on raw sockets",
+      "E: By converting all FastAPI endpoints to Python decorators without arguments"
+    ],
+    "correct_options_literal": "You can embed or wrap a FastAPI app in a Ray Serve deployment, letting Serve handle scaling and concurrency while FastAPI manages routes/auth.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+
+  {
+    "topic": "Ray (ray.io) - Ray Tune",
+    "context": "Ray Tune is a library for hyperparameter tuning, supporting various search algorithms (Random, Grid, Bayesian Optimization) and schedulers (ASHAScheduler, PBT, etc.). It uses Ray to run many parallel training jobs.",
+    "question": "What is the primary purpose of Ray Tune in a machine learning workflow?",
+    "options": [
+      "A: To serve trained models at scale",
+      "B: To gather system logs from clusters",
+      "C: To distribute hyperparameter tuning experiments across multiple nodes or cores and facilitate efficient scheduling",
+      "D: To run Python scripts in a single-threaded environment",
+      "E: To replace local development environments"
+    ],
+    "correct_options_literal": "Ray Tune orchestrates and parallelizes hyperparameter searches across distributed resources for faster and more thorough ML experimentation.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Ray (ray.io) - Ray Tune",
+    "context": "Ray Tune integrates with frameworks like PyTorch, TensorFlow, XGBoost, and scikit-learn. It can automatically detect checkpoints, resume training from them, and compare metrics to prune underperforming trials.",
+    "question": "How does Ray Tune typically reduce the cost of hyperparameter searches when many trials underperform?",
+    "options": [
+      "A: By running each trial for the entire duration no matter what",
+      "B: By ignoring the performance metrics of each trial",
+      "C: By implementing early stopping mechanisms such as ASHA (Asynchronous Successive Halving) to prune trials unlikely to outperform others",
+      "D: By forcing all trials to use the same random seed",
+      "E: By automatically converting all GPU jobs to CPU jobs"
+    ],
+    "correct_options_literal": "Tune uses scheduling algorithms like ASHA to stop poor-performing trials early, reducing computation cost.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Ray (ray.io) - Ray Tune",
+    "context": "Tune supports multiple search algorithms, including Bayesian Optimization, which models the objective function to iteratively choose promising hyperparameters. It can be combined with early-stopping schedulers for maximum efficiency.",
+    "question": "What benefit does Bayesian Optimization provide in Ray Tune's hyperparameter search?",
+    "options": [
+      "A: It randomly guesses hyperparameters with no memory of past results",
+      "B: It fully enumerates every possible combination of hyperparameters",
+      "C: It models the objective function based on past observations to more intelligently select the next set of hyperparameters to try",
+      "D: It runs a single trial at a time, ignoring concurrency",
+      "E: It is only for neural network parameter initialization"
+    ],
+    "correct_options_literal": "Bayesian Optimization uses previous trial outcomes to build a surrogate model, guiding subsequent hyperparameter choices more intelligently than random search.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Ray (ray.io) - Ray Tune",
+    "context": "Ray Tune's Trial Schedulers like HyperBand, ASHA, or Population Based Training (PBT) all focus on optimizing the usage of computational resources by discarding or adapting less promising trials early and focusing on the most promising ones.",
+    "question": "Which of the following best describes the role of a Trial Scheduler in Ray Tune?",
+    "options": [
+      "A: To only provide real-time logs for each trial",
+      "B: To direct all trials to use the same hyperparameters",
+      "C: To manage the lifecycle of trials by deciding when to stop or pause underperforming ones and when to exploit promising ones",
+      "D: To strictly enforce that each trial runs for an identical number of epochs",
+      "E: To generate cluster config files for large-scale HPC systems"
+    ],
+    "correct_options_literal": "A Ray Tune scheduler decides how to allocate resources among trials, halting or modifying unpromising ones and promoting better ones.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Ray (ray.io) - Ray Tune",
+    "context": "Population Based Training (PBT) is a strategy that periodically mutates hyperparameters of well-performing trials to further exploit good configurations, while discarding or replacing poorer configurations.",
+    "question": "How does Population Based Training (PBT) differ from simple early stopping approaches in Ray Tune?",
+    "options": [
+      "A: PBT simply ends all trials at the same time",
+      "B: PBT clones the entire cluster environment for each new trial",
+      "C: PBT not only stops poor performers but also mutates hyperparameters of strong performers mid-training to explore near their configurations",
+      "D: PBT removes concurrency from the process",
+      "E: PBT only works with reinforcement learning tasks"
+    ],
+    "correct_options_literal": "PBT goes beyond halting bad trials: it dynamically updates hyperparameters of top performers and keeps training, thereby exploring variations near good solutions.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Ray (ray.io) - Ray Tune",
+    "context": "You can log metrics to TensorBoard or alternative tools by specifying loggers in your Tune run config. Each trial often writes its logs under a dedicated directory, facilitating comparison and analysis.",
+    "question": "How can you track training metrics during hyperparameter search with Ray Tune in a visual interface?",
+    "options": [
+      "A: By manually writing each metric to a text file and reading it line by line",
+      "B: By using Ray Serve’s router to display metrics in the browser",
+      "C: By integrating with TensorBoard loggers or custom loggers to visualize each trial’s progress",
+      "D: By using only 'print' statements for each training step",
+      "E: By relying on the Ray autoscaler to dump logs automatically"
+    ],
+    "correct_options_literal": "Ray Tune supports multiple loggers (e.g., TensorBoard), enabling real-time visualization of metrics for each trial directory.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Ray (ray.io) - Ray Tune",
+    "context": "Checkpointing helps resume interrupted runs. By storing model checkpoints at each step or periodically, Tune can restart from the last saved checkpoint if a node fails or if the cluster is restarted, preserving partial results.",
+    "question": "Why is checkpointing critical in Ray Tune’s hyperparameter experiments?",
+    "options": [
+      "A: It allows immediate finalization of all trials",
+      "B: It prevents the cluster from running out of disk space",
+      "C: It enables experiments to resume after node failures or restarts by loading the most recent model state",
+      "D: It forces each trial to run forever until manually killed",
+      "E: It reduces the time it takes to set up the Ray cluster"
+    ],
+    "correct_options_literal": "Checkpoints let you resume from partial progress if a trial is interrupted, ensuring that completed training steps aren’t wasted.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Ray (ray.io) - Ray Tune",
+    "context": "Tune can train reinforcement learning policies or supervised models in parallel. The user typically defines a training function that returns metrics (e.g., accuracy, reward) at each iteration. Tune then organizes these metrics for scheduling and analysis.",
+    "question": "How do you generally integrate a custom training loop with Ray Tune for hyperparameter tuning?",
+    "options": [
+      "A: By rewriting the entire model as a Ray Serve deployment",
+      "B: By disabling concurrency and running only a single training job",
+      "C: By writing a function that trains for a given set of hyperparameters and reports metrics (e.g., tune.report(...)) back to Ray Tune",
+      "D: By manually logging training steps in a CSV file and ignoring Ray’s scheduling",
+      "E: By running the training code in separate Docker containers with no Ray involvement"
+    ],
+    "correct_options_literal": "You typically define a function that does one iteration of training, logs results with tune.report(...), and Tune orchestrates multiple parallel runs using that function.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Ray (ray.io) - Ray Tune",
+    "context": "When scaling to large hyperparameter searches, the overhead of launching many training tasks can be nontrivial. Ray’s scheduling helps by distributing these tasks across all available resources while also allowing early stopping or trial concurrency limits to optimize resource usage.",
+    "question": "What is a recommended practice for large-scale hyperparameter tuning with Ray Tune to avoid resource saturation?",
+    "options": [
+      "A: Run all trials on a single CPU core sequentially",
+      "B: Disable early stopping so that all trials always run to completion",
+      "C: Use trial concurrency limits or advanced schedulers (e.g., ASHA) to manage the number of concurrent training tasks and free resources for more promising trials",
+      "D: Only run a single trial with random hyperparameters",
+      "E: Set num_cpus=0 in your cluster config"
+    ],
+    "correct_options_literal": "Limiting the max concurrent trials and employing schedulers ensures that resources aren’t overwhelmed and that promising trials get more compute.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+
+  {
+    "topic": "Ray (ray.io) - RLlib",
+    "context": "RLlib is Ray’s library for scalable reinforcement learning. It supports various RL algorithms (PPO, DQN, A3C, etc.) and leverages Ray’s distributed architecture to speed up training by parallelizing rollouts or policy evaluations.",
+    "question": "What is the main advantage of using RLlib for reinforcement learning tasks?",
+    "options": [
+      "A: It only supports single-threaded training to keep things simple",
+      "B: It provides an integrated HPC library for GPU matrix multiplications only",
+      "C: It offers a distributed RL framework that can parallelize environment rollouts and policy updates across many worker processes",
+      "D: It replaces the need for python code entirely",
+      "E: It focuses solely on hyperparameter tuning for supervised learning"
+    ],
+    "correct_options_literal": "RLlib scales RL training by distributing environment simulation and policy training across multiple workers via Ray’s architecture.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Ray (ray.io) - RLlib",
+    "context": "RLlib supports various built-in algorithms and can integrate custom models. Users define the environment and a config specifying the algorithm and hyperparameters, then call `ray.tune.run()` or the RLlib Trainer API to start distributed training.",
+    "question": "How do you typically launch a distributed RL training job using RLlib for a built-in algorithm?",
+    "options": [
+      "A: By using only the ray actors without specifying an algorithm",
+      "B: By passing the environment name and algorithm config into RLlib’s Trainer or tune.run() function",
+      "C: By manually creating multiple processes with multiprocessing in Python",
+      "D: By calling a special RLlib operator in the Ray dashboard",
+      "E: By writing your own scheduling algorithm from scratch"
+    ],
+    "correct_options_literal": "You typically define an RLlib config (algorithm=, env=, etc.) and pass it to tune.run() or the Trainer interface to launch training across worker processes.",
+    "correct_options": "B",
+    "correct_options_idx": 2
+  },
+  {
+    "topic": "Ray (ray.io) - RLlib",
+    "context": "RLlib separates the policy and rollout workers. Rollout workers collect experiences from the environment, while the policy is updated centrally (e.g., with synchronous or asynchronous updates). This design speeds up data collection for training.",
+    "question": "What is the purpose of rollout workers in RLlib’s architecture?",
+    "options": [
+      "A: To keep track of cluster resources like CPU or GPU usage",
+      "B: To collect experiences by interacting with the environment and generate training data for the central policy update",
+      "C: To store logs in a database for offline analysis",
+      "D: To handle hyperparameter tuning for each RL algorithm automatically",
+      "E: To do nothing unless GPU resources are requested"
+    ],
+    "correct_options_literal": "Rollout workers gather environment data (observations, actions, rewards) that the trainer uses to update the policy.",
+    "correct_options": "B",
+    "correct_options_idx": 2
+  },
+  {
+    "topic": "Ray (ray.io) - RLlib",
+    "context": "RLlib’s Policy Gradient methods like PPO can leverage GPUs for neural network training. Multiple rollout workers can run on CPU for environment simulation, while the central learner GPU processes batches of data in parallel for faster training.",
+    "question": "How can RLlib leverage both CPU and GPU resources in a single training job for maximum efficiency?",
+    "options": [
+      "A: By always running only on GPU",
+      "B: By manually spinning up CPU processes for environment rollouts and a GPU process for neural network updates",
+      "C: By assigning rollout workers to CPUs for environment simulation and having a central learner on GPU for training the policy, parallelizing data flow",
+      "D: By forcing all steps onto a single CPU node",
+      "E: By storing environment states in external memory"
+    ],
+    "correct_options_literal": "A common RLlib pattern is using CPU-based rollout workers to gather data, which is then sent to a GPU-based learner for neural network updates.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Ray (ray.io) - RLlib",
+    "context": "RLlib includes built-in support for policy checkpointing, allowing you to save the state of a trained policy. This can be reloaded later to continue training or perform inference in a separate process or even in Ray Serve.",
+    "question": "How can you continue training a previously trained RLlib policy from a certain checkpoint?",
+    "options": [
+      "A: By editing the Ray GCS manually to insert the saved weights",
+      "B: By using the 'resume_from_checkpoint' flag in the cluster config",
+      "C: By specifying the checkpoint_path in the trainer or tune.run() config, so RLlib loads the checkpoint before resuming training",
+      "D: By forcing all rollout workers to revert to zero initialization",
+      "E: By disabling the RLlib scheduler so it reloads the last run"
+    ],
+    "correct_options_literal": "You supply the existing checkpoint_path via the trainer or tune config so RLlib knows to load and continue training from that policy state.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Ray (ray.io) - RLlib",
+    "context": "RLlib’s multi-agent API allows multiple policies to coexist in a single environment. This is useful for multi-agent reinforcement learning scenarios such as competitive or cooperative tasks.",
+    "question": "How does RLlib support scenarios with multiple agents or policies in the same environment?",
+    "options": [
+      "A: By allowing only one agent to act at a time and ignoring the others",
+      "B: By running a separate cluster per agent",
+      "C: By enabling multi-agent mode, in which each agent can have a distinct policy object, and the environment returns observations/actions for each agent",
+      "D: By merging all agent observations into a single global policy only",
+      "E: By requiring specialized hardware for each agent"
+    ],
+    "correct_options_literal": "RLlib’s multi-agent feature assigns different policies to each agent within an environment, letting them train concurrently or in a coordinated way.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Ray (ray.io) - RLlib",
+    "context": "To evaluate an RLlib policy after training, you can run it in evaluation mode where exploration is typically turned off. RLlib can measure performance metrics such as total reward, average episode length, etc.",
+    "question": "What is a common approach to evaluate the performance of a trained policy in RLlib?",
+    "options": [
+      "A: Turn off the cluster and read logs manually",
+      "B: Manually set random hyperparameters to see how it performs",
+      "C: Set evaluation configurations so that exploration is disabled and run episodes to compute metrics like average return or success rate",
+      "D: Delete the checkpoint and re-initialize the policy from scratch",
+      "E: Convert the RLlib policy into a scikit-learn classifier for evaluation"
+    ],
+    "correct_options_literal": "By disabling exploration and running evaluation episodes with RLlib’s evaluation config, you can measure metrics like return and length.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Ray (ray.io) - RLlib",
+    "context": "RLlib’s PolicyServerInput and PolicyClient can be used to serve an RL policy over a network. This enables external simulators or user interfaces to connect via HTTP/WebSockets, sending observations and receiving actions in real time.",
+    "question": "Which RLlib feature allows you to externally connect an environment or simulator to an RLlib policy over the network?",
+    "options": [
+      "A: The built-in @serve.deployment decorator",
+      "B: The Ray Dashboard HPC plugin",
+      "C: RLlib’s PolicyServerInput and PolicyClient, enabling an HTTP-based interface for observation/action exchange",
+      "D: The old gym.connect() method",
+      "E: Ray Actors with environment references in them by default"
+    ],
+    "correct_options_literal": "RLlib includes PolicyServerInput/PolicyClient for a server-client setup where external systems can query a policy over WebSockets or HTTP.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Ray (ray.io) - RLlib",
+    "context": "Offline RL in RLlib can train policies on static datasets of (state, action, reward) tuples without environment interaction. This is especially useful for domains where real-time data collection is expensive or unsafe (e.g., healthcare, robotics).",
+    "question": "How does RLlib support training policies without active interaction with an environment?",
+    "options": [
+      "A: It cannot train without an active environment or simulator",
+      "B: By forcing the user to write custom code that bypasses RLlib",
+      "C: By using offline RL methods that rely on static logged data, feeding it into an offline dataset pipeline for policy optimization",
+      "D: By ignoring the actions in the dataset and re-initializing everything",
+      "E: By running environment rollouts in a paused state"
+    ],
+    "correct_options_literal": "RLlib’s offline RL features ingest static datasets of transitions to learn policies where real-time data collection is not possible.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+
+  {
+    "topic": "Ray (ray.io) - Data",
+    "context": "Ray Data provides scalable dataset APIs for loading, transforming, and ingesting data in a distributed fashion. It can read from local or remote sources (e.g., S3) and performs map, filter, reduce-like transformations across a Ray cluster.",
+    "question": "What is the main function of Ray Data?",
+    "options": [
+      "A: To load only JSON data from a local file system",
+      "B: To handle actor concurrency by merging states",
+      "C: To enable distributed data loading, transformation, and processing over large datasets on a Ray cluster",
+      "D: To run HPC workflows using MPI calls",
+      "E: To replace the Ray dashboard with a file-based logger"
+    ],
+    "correct_options_literal": "Ray Data provides a parallel dataset abstraction, supporting large-scale data ingest and transformations (map, filter, groupby) on a Ray cluster.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Ray (ray.io) - Data",
+    "context": "Ray Data can read from cloud storage like Amazon S3, Google Cloud Storage, or Azure Blob. Once the data is read, it creates a distributed Dataset object. You can then apply transformations such as map_batches, filter, or groupby operations on it.",
+    "question": "How does Ray Data typically enable parallel processing of a large CSV file stored in Amazon S3?",
+    "options": [
+      "A: By requiring you to download the CSV to your local machine first",
+      "B: By limiting the reads to a single node in the cluster",
+      "C: By reading the file in parallel across multiple workers, producing a distributed Dataset that can be transformed with map/filter operations at scale",
+      "D: By automatically converting the CSV into a video file",
+      "E: By forcing the user to implement a custom MPI reader"
+    ],
+    "correct_options_literal": "Ray Data can parallelize reading from S3 into multiple partitions, distributing the workload among cluster nodes for subsequent transformations.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Ray (ray.io) - Data",
+    "context": "Ray Data supports pipelined transformations, streaming data in batches from one operation to the next. This prevents large dataset stages from being fully materialized in memory at once, improving scalability for TB-scale data.",
+    "question": "What is the advantage of using streaming (pipelined) execution in Ray Data?",
+    "options": [
+      "A: It ensures all data is loaded into RAM before any processing begins",
+      "B: It runs slower but is simpler to debug",
+      "C: It prevents intermediate data from being fully materialized, allowing processing of large datasets in batches without needing all data in memory",
+      "D: It forces the user to manually shuffle data across workers",
+      "E: It disallows parallelism to avoid partial reads"
+    ],
+    "correct_options_literal": "With pipelined execution, Ray Data processes data in streaming batches, avoiding the overhead of storing entire intermediate results in memory.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Ray (ray.io) - Data",
+    "context": "Dataset shards in Ray Data represent partitions. These shards can be processed in parallel by tasks or actors. For example, a map_batches function can spawn tasks on each shard to transform subsets of the dataset concurrently.",
+    "question": "How does Ray Data achieve parallelism when performing transformations like map_batches() on a Dataset?",
+    "options": [
+      "A: By merging the entire dataset into a single shard",
+      "B: By creating a single-threaded process for each record",
+      "C: By splitting the dataset into shards (partitions) and scheduling each shard’s transformation in parallel on Ray worker nodes",
+      "D: By forcing the user to write explicit concurrency loops",
+      "E: By queueing transformations until the cluster is idle"
+    ],
+    "correct_options_literal": "Ray Data partitions the dataset into shards, each processed in parallel tasks or actors, thus distributing the workload across the cluster.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Ray (ray.io) - Data",
+    "context": "Ray Data can integrate with ML frameworks by converting Datasets into an iterator of batches (e.g., Pandas or NumPy arrays). This mechanism enables distributed data loading for training large models without manually sharding or orchestrating data across nodes.",
+    "question": "How can Ray Data feed training data efficiently into machine learning frameworks like PyTorch or TensorFlow?",
+    "options": [
+      "A: By converting the entire dataset into a single huge list in memory",
+      "B: By disabling parallelism to ensure correctness",
+      "C: By offering a Dataset-to-iterator API that yields batches, letting frameworks consume data chunk by chunk in distributed training",
+      "D: By only supporting local CSV files for model input",
+      "E: By rewriting the user’s training script to use MPI semantics"
+    ],
+    "correct_options_literal": "Ray Data can produce batch iterators for frameworks, seamlessly streaming data from distributed partitions into training loops in parallel.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Ray (ray.io) - Data",
+    "context": "You can apply a groupby operation on a Ray Dataset by specifying a key function or column, then applying aggregations like sum, mean, or custom UDF. Ray Data will shuffle or co-locate partitions by group key before applying the reduce step in parallel.",
+    "question": "How does Ray Data handle groupby aggregations over a large distributed Dataset?",
+    "options": [
+      "A: It is impossible to do groupby with Ray Data",
+      "B: It merges all data onto the head node to process sequentially",
+      "C: It performs a distributed shuffle to group records by key and then applies the aggregation in parallel on each partition",
+      "D: It sends partial data to each actor without combining results",
+      "E: It only supports a single groupby key at a time"
+    ],
+    "correct_options_literal": "Groupby operations in Ray Data involve a distributed shuffle that re-partitions data by the key, enabling parallel aggregation on each group partition.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Ray (ray.io) - Data",
+    "context": "When writing large amounts of data from a Ray Dataset back to storage, you can use Dataset.write_json(), write_parquet(), or write_csv(). Ray Data will distribute the write among worker nodes, typically generating multiple output files (one per partition).",
+    "question": "What is a typical behavior of Ray Data when writing out a large Dataset to disk or cloud storage in CSV format?",
+    "options": [
+      "A: It combines all partitions into a single CSV file by default",
+      "B: It creates multiple CSV files (one per partition) in the specified output path for distributed writes",
+      "C: It disallows writing CSV files if the data is too large",
+      "D: It triggers a Spark cluster to handle the I/O automatically",
+      "E: It switches to JSON format if CSV is not supported on that node"
+    ],
+    "correct_options_literal": "By default, each partition in a Ray Dataset is written to a separate file, yielding multiple CSV files in the output directory.",
+    "correct_options": "B",
+    "correct_options_idx": 2
+  },
+  {
+    "topic": "Ray (ray.io) - Data",
+    "context": "Ray Data integrates with Ray Tune and RLlib for scalable data loading. For example, you can transform a massive dataset with Ray Data, then feed it into a Ray Tune training function that tests different hyperparameters.",
+    "question": "How can Ray Data interact with Ray Tune to support hyperparameter optimization on large datasets?",
+    "options": [
+      "A: By forcing the dataset to be read only once by a single node",
+      "B: By restricting the dataset to 1 GB to ensure concurrency",
+      "C: By creating a distributed Dataset with Ray Data and passing it into each Tune trial’s training function, allowing each trial to read from subsets or transforms in parallel",
+      "D: By rewriting the training function to call system-level commands",
+      "E: By converting Ray Data partitions into a single text file for manual loading"
+    ],
+    "correct_options_literal": "You can define a Ray Dataset pipeline, then pass it to each hyperparameter trial so that distributed data processing occurs seamlessly across the cluster.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Ray (ray.io) - Data",
+    "context": "For very large datasets, Ray Data can spill data to disk, either locally or to external storage systems. This avoids out-of-memory errors when processing data that exceeds the total RAM across the cluster.",
+    "question": "What mechanism allows Ray Data to handle datasets larger than the available cluster memory?",
+    "options": [
+      "A: Using ephemeral memory that never grows",
+      "B: Disabling concurrency altogether",
+      "C: Object spilling, which writes infrequently used data blocks to disk (local or remote) when memory is pressured",
+      "D: Splitting the dataset into micro-batches of size 1",
+      "E: Requiring a manual checkpoint of the dataset every step"
+    ],
+    "correct_options_literal": "Ray Data automatically spills unneeded blocks to disk or external stores, thus letting the cluster process data bigger than available RAM.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+
+  {
+    "topic": "Ray (ray.io) - Advanced Features & HPC",
+    "context": "Ray can integrate with HPC clusters that use job schedulers like SLURM. By configuring environment variables and using Ray’s cluster initialization scripts, you can run tasks on HPC nodes similarly to cloud nodes.",
+    "question": "How can Ray be deployed in an HPC environment with a scheduler such as SLURM?",
+    "options": [
+      "A: Ray cannot run on any HPC systems",
+      "B: By manually rewriting the entire HPC queue to accept Ray scripts",
+      "C: By launching Ray head and worker nodes within SLURM-allocated resources (e.g., srun) and configuring them to join the cluster automatically",
+      "D: By forcing HPC nodes to run in single-node mode only",
+      "E: By turning off HPC job scheduling features entirely"
+    ],
+    "correct_options_literal": "You typically request nodes from SLURM, then within that environment run 'ray start --head' (head node) and 'ray start --address=...' (workers), allowing HPC resources to appear as a Ray cluster.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Ray (ray.io) - Advanced Features & HPC",
+    "context": "Ray supports collective communication libraries such as MPI or NCCL in combination with its distributed architecture. This is often leveraged for large-scale deep learning or HPC workflows where GPU-based allreduce is required.",
+    "question": "How does Ray support collective GPU operations (e.g., allreduce) in large-scale training jobs?",
+    "options": [
+      "A: By ignoring GPU usage",
+      "B: By providing a custom BFS algorithm in the cluster manager",
+      "C: By integrating with libraries like NCCL or MPI for data-parallel or model-parallel communication across multiple GPUs and nodes",
+      "D: By converting all GPU code into CPU code automatically",
+      "E: By disabling concurrency when GPUs are used"
+    ],
+    "correct_options_literal": "Ray tasks/actors can call into NCCL or MPI for multi-GPU or multi-node allreduce and broadcast operations, enabling HPC-level performance.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Ray (ray.io) - Advanced Features & HPC",
+    "context": "Ray uses a distributed object store that can handle zero-copy message passing among worker processes on the same node. On HPC clusters with high-speed interconnects (e.g., InfiniBand), memory transfers between nodes can be optimized if properly configured.",
+    "question": "Why is zero-copy message passing in Ray’s object store beneficial for HPC workloads?",
+    "options": [
+      "A: Because it reduces the code size of the application",
+      "B: Because it prevents any concurrency in the system",
+      "C: Because it eliminates the overhead of serializing and deserializing large arrays or tensors when they are shared across processes",
+      "D: Because it automatically writes all data to disk for safety",
+      "E: Because it duplicates the data multiple times for redundancy"
+    ],
+    "correct_options_literal": "Zero-copy memory sharing means large data can be passed between Ray workers without re-encoding, significantly boosting HPC performance.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Ray (ray.io) - Advanced Features & HPC",
+    "context": "Ray can coordinate multi-node GPU training using the AllReduce Strategy or parameter server strategies. The user can define actors that coordinate synchronization among nodes. Libraries like Horovod or PyTorch DDP can be integrated with Ray for HPC-like distributed training.",
+    "question": "Which approach allows Ray-based multi-node training to leverage standard GPU synchronization libraries for deep learning?",
+    "options": [
+      "A: Only the Ray Serve library provides multi-GPU training",
+      "B: By implementing a custom aggregator actor with no external libraries",
+      "C: By integrating frameworks like Horovod or PyTorch Distributed Data Parallel (DDP) within Ray tasks/actors for multi-GPU synchronization",
+      "D: By forcing each node to have a separate cluster ID",
+      "E: By disabling the Ray scheduler so GPUs handle everything automatically"
+    ],
+    "correct_options_literal": "Ray can orchestrate the processes, while Horovod/PyTorch DDP handle the GPU communication (allreduce) across nodes in parallel training.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Ray (ray.io) - Advanced Features & HPC",
+    "context": "For extremely large clusters, Ray’s internal components (e.g., GCS) must be tuned for concurrency. The Ray dashboard can reveal bottlenecks. Strategies might include distributing object stores, controlling the rate of tasks, or using advanced scheduling policies.",
+    "question": "What is a recommended strategy to ensure Ray scales effectively on clusters with hundreds or thousands of nodes?",
+    "options": [
+      "A: Disable the global control store to reduce overhead",
+      "B: Use a single actor to schedule all tasks on the head node",
+      "C: Tune Ray's internal configurations (e.g., GCS concurrency limits), distribute the object store load, and avoid creating an excessive number of tiny tasks",
+      "D: Stop using Ray tasks and only use Python’s threading library",
+      "E: Force all data to reside on external disk arrays"
+    ],
+    "correct_options_literal": "Large-scale Ray deployments often require careful configuration, balanced object sizes, and scheduling optimizations to reduce overhead.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Ray (ray.io) - Advanced Features & HPC",
+    "context": "Ray’s job submission API allows you to submit Python scripts or functions to a running Ray cluster. It packages the code and dependencies, sending them to the cluster for execution without needing direct SSH access to each node.",
+    "question": "How can you run a remote Python script on a Ray cluster without directly logging into worker nodes?",
+    "options": [
+      "A: By editing each node’s crontab",
+      "B: By sending the script via email to the cluster admin",
+      "C: By using Ray’s job submission API, which uploads code and dependencies to the cluster for remote execution",
+      "D: By creating a Docker image for each script manually",
+      "E: By forcing the script to run only on local CPU"
+    ],
+    "correct_options_literal": "Ray’s job submission API can package your code and send it to the cluster for execution, eliminating the need to SSH into each node.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Ray (ray.io) - Advanced Features & HPC",
+    "context": "Data locality can matter for HPC: sending large arrays across the network can be costly. Ray’s scheduler tries to place tasks on nodes where the data already resides, if feasible, minimizing data transfers between nodes.",
+    "question": "How does Ray reduce cross-node data transfers for large arrays in HPC contexts?",
+    "options": [
+      "A: By ignoring the location of data entirely",
+      "B: By caching data on the head node only",
+      "C: By employing data locality-aware scheduling, where tasks are preferentially placed on nodes that already host the required data in their object stores",
+      "D: By compressing data into text format for each node",
+      "E: By discarding large data if it cannot fit in local memory"
+    ],
+    "correct_options_literal": "Ray attempts to schedule tasks on the same node(s) that hold the needed data in the object store, cutting down on network overhead.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Ray (ray.io) - Advanced Features & HPC",
+    "context": "Ray’s memory manager can handle advanced object eviction policies. If a node’s object store is full, it can spill lesser-used objects to disk or to other nodes. This ensures the cluster remains stable under heavy memory pressure.",
+    "question": "What mechanism does Ray use to manage memory pressure when the object store on a node becomes full?",
+    "options": [
+      "A: It permanently shuts down that node",
+      "B: It kills all tasks on that node",
+      "C: It spills some objects to local or remote storage, freeing memory for more urgent data",
+      "D: It merges the contents of the object store with the CPU caches",
+      "E: It only allows basic dictionary objects to stay in memory"
+    ],
+    "correct_options_literal": "Ray can automatically spill old or less frequently accessed objects to disk, preventing memory exhaustion while keeping hot data in memory.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Ray (ray.io) - Advanced Features & HPC",
+    "context": "You can define advanced scheduling strategies for tasks, e.g., placing them on the same node for GPU affinity or on different nodes for data parallelism. Ray includes resource constraints in the scheduling decisions, letting you script custom placement logic if needed.",
+    "question": "How can you ensure that multiple tasks requiring a shared large dataset are scheduled on the same node to avoid network overhead?",
+    "options": [
+      "A: By letting Ray randomly assign tasks to nodes",
+      "B: By manually overriding the GCS code with custom patches",
+      "C: By specifying a custom scheduling or placement group that forces tasks to run on the same node or specifying constraints in @ray.remote(resources={})",
+      "D: By disabling concurrency in the cluster",
+      "E: By turning off data serialization globally"
+    ],
+    "correct_options_literal": "Ray’s placement groups or resource constraints let you co-locate tasks on the same node, thereby reducing large data transfers across the network.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+
+  {
+    "topic": "Ray (ray.io) - Debugging & Best Practices",
+    "context": "Ray provides debugging tools like the Ray dashboard logs, stack traces for tasks, and environment variable RAY_MEMORY_MONITOR_DEBUG to trace memory usage. Also, 'ray memory' command can show references to help identify memory leaks or uncollected objects.",
+    "question": "Which Ray debugging feature helps identify unreferenced or large objects consuming memory in the cluster?",
+    "options": [
+      "A: The 'ray logs' CLI command",
+      "B: The 'ray memory' CLI command, which shows the in-cluster references and size usage",
+      "C: The built-in Python garbage collector only",
+      "D: The 'ray kill' command for forcibly removing tasks",
+      "E: The 'ray remote-inspect' tool"
+    ],
+    "correct_options_literal": "The 'ray memory' command displays which objects are currently in memory, their owners, and references, aiding in debugging memory leaks.",
+    "correct_options": "B",
+    "correct_options_idx": 2
+  },
+  {
+    "topic": "Ray (ray.io) - Debugging & Best Practices",
+    "context": "Excessive creation of small tasks can lead to overhead in Ray’s scheduler and object store. Best practice is to batch computations (e.g., using map_batches) to reduce overhead and improve performance, especially at large scale.",
+    "question": "How can you mitigate scheduling overhead when dealing with millions of small tasks in Ray?",
+    "options": [
+      "A: By running all tasks on the head node only",
+      "B: By disabling the Ray Object Store",
+      "C: By batching small tasks into larger tasks or using map_batches so that fewer, more substantial tasks are scheduled",
+      "D: By converting tasks into separate processes for each data point",
+      "E: By enabling a debugging flag that merges tasks automatically"
+    ],
+    "correct_options_literal": "Rather than spawning a task per small item, it’s usually more efficient to group them into batch tasks, reducing scheduling overhead.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Ray (ray.io) - Debugging & Best Practices",
+    "context": "A common pitfall is forgetting to call ray.shutdown() in interactive sessions. If you re-run scripts that call ray.init() without a shutdown, you may create multiple Ray instances in the same Python process, leading to unexpected behavior.",
+    "question": "Why is calling ray.shutdown() considered good practice after finishing tasks in a Python shell or notebook?",
+    "options": [
+      "A: It is required to reset the global random seed",
+      "B: It keeps the CPU usage artificially high",
+      "C: It cleans up the current Ray runtime and frees resources, preventing conflicts if you re-initialize Ray again in the same process",
+      "D: It is required for any tasks to complete successfully",
+      "E: It compiles all Python code into bytecode"
+    ],
+    "correct_options_literal": "When done, ray.shutdown() terminates the local runtime, avoiding leftover connections or multiple Ray initializations in the same process.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Ray (ray.io) - Debugging & Best Practices",
+    "context": "Ray includes profiling tools that can trace tasks, actors, and the Ray object store usage. The timeline can be visualized in Chrome tracing format. This helps identify bottlenecks in scheduling or communication.",
+    "question": "How can you analyze Ray’s task scheduling timeline and identify performance bottlenecks?",
+    "options": [
+      "A: By only reading Python logs in text format",
+      "B: By running 'ray timeline' to produce a JSON trace, then opening it with Chrome tracing or other profiling tools",
+      "C: By disabling tasks and using manual scheduling",
+      "D: By forcing all tasks to print their completion time",
+      "E: By reading the GCS Redis keys directly"
+    ],
+    "correct_options_literal": "You can capture a timeline of Ray events (tasks, actors) in a JSON file and load it into Chrome’s about://tracing for visual inspection.",
+    "correct_options": "B",
+    "correct_options_idx": 2
+  },
+  {
+    "topic": "Ray (ray.io) - Debugging & Best Practices",
+    "context": "For diagnosing slow tasks, it helps to add distributed logging or use the built-in log-to-driver feature. If tasks run slowly, the cause could be data serialization overhead, missing resources, or large object transfers. The dashboard logs or 'ray logs' can pinpoint the culprit.",
+    "question": "What is a first step in diagnosing why certain Ray tasks are running slower than expected?",
+    "options": [
+      "A: Immediately reinstall Python",
+      "B: Ignore the tasks and hope they finish eventually",
+      "C: Check the Ray dashboard or 'ray logs' to look for error messages or resource contention, and verify if large data transfers or serialization overhead is causing delay",
+      "D: Disable the object store",
+      "E: Stop using Ray and switch to a local script"
+    ],
+    "correct_options_literal": "Monitoring logs and the Ray dashboard can reveal issues like waiting for resources, object store constraints, or large data serialization overhead.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Ray (ray.io) - Debugging & Best Practices",
+    "context": "When using actors, if you accidentally keep references to large data objects in an actor’s state, you may bloat memory usage. Offloading data to the Ray object store or external storage can prevent memory blowouts, especially if data is no longer needed in RAM.",
+    "question": "How can you prevent excessive memory usage inside a Ray actor that has to handle large datasets repeatedly?",
+    "options": [
+      "A: Keep all data in local variables forever",
+      "B: Store the data in the actor’s constructor for indefinite reuse",
+      "C: Release or offload large data objects to the Ray object store or external storage, removing references in the actor’s internal state",
+      "D: Force the actor to run with no concurrency",
+      "E: Use a single global variable to store data for all actors"
+    ],
+    "correct_options_literal": "If an actor’s state keeps references to huge data, it never gets GC’d. Using the object store or deleting references helps manage memory effectively.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Ray (ray.io) - Debugging & Best Practices",
+    "context": "Upgrading Ray to a compatible version ensures you have bug fixes and performance improvements. Incompatibilities might arise if the head node and worker nodes run different Ray versions. The recommended approach is to keep all nodes on the same Ray version for cluster stability.",
+    "question": "What is a recommended practice for avoiding version mismatch problems across a multi-node Ray cluster?",
+    "options": [
+      "A: Use a different Python version on each node",
+      "B: Only update the head node’s Ray version and ignore workers",
+      "C: Ensure that all nodes (head and workers) use the exact same Ray version to avoid protocol or API mismatches",
+      "D: Randomly install different alpha releases for quick testing",
+      "E: Force all tasks to run locally so versioning is irrelevant"
+    ],
+    "correct_options_literal": "To prevent errors and connection issues, every node in a Ray cluster should run the same version of Ray.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Ray (ray.io) - Debugging & Best Practices",
+    "context": "Ray tasks can time out if they rely on remote calls that never return. Properly handling exceptions in remote functions, checking for stale ObjectRefs, and using timeouts in ray.get() can help diagnose or mitigate hung tasks.",
+    "question": "Which approach can help debug or prevent indefinitely hung tasks in Ray due to unresponsive remote calls?",
+    "options": [
+      "A: Never calling remote tasks in a cluster setting",
+      "B: Setting a timeout parameter in ray.get() or using a try/except block around the remote call to handle errors gracefully",
+      "C: Forcing all tasks to have zero execution time",
+      "D: Using the same Python function name for all tasks",
+      "E: Relying on the Ray object store to automatically kill tasks"
+    ],
+    "correct_options_literal": "Time-based or exception-based handling (e.g., timeouts in ray.get()) can help detect tasks that fail to return or hang indefinitely.",
+    "correct_options": "B",
+    "correct_options_idx": 2
+  },
+  {
+    "topic": "Ray (ray.io) - Debugging & Best Practices",
+    "context": "Bottlenecks can occur if you pass extremely large arguments to remote functions directly. Instead, store data in the Ray object store and pass references. Large pickling or serialization steps can block the main thread, so referencing data is more efficient.",
+    "question": "How do you avoid the overhead of serializing large data when invoking a remote function in Ray?",
+    "options": [
+      "A: Pass the large data as a Python dictionary directly",
+      "B: Convert the data to a string and compress it manually",
+      "C: Put the data into the Ray object store (e.g., ray.put(...)), then pass the resulting ObjectRef to the remote function, avoiding large pickles",
+      "D: Turn off concurrency to reduce overhead",
+      "E: Copy the data to every node manually"
+    ],
+    "correct_options_literal": "Instead of sending large objects by value, place them into the object store with ray.put() and pass the ObjectRef, minimizing serialization overhead.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  }
+]

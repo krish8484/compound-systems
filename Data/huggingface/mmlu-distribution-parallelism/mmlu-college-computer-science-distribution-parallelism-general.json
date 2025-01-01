@@ -1,0 +1,1518 @@
+[
+  {
+    "topic": "2-Phase Commit (2PC) - Distributed Systems",
+    "context": "2PC is an atomic commit protocol that proceeds in two phases (prepare and commit). Despite ensuring all participants either commit or abort uniformly, it is susceptible to coordinator crashes, leading to blocking situations.",
+    "question": "In the prepare phase of 2PC, what must each participant do before sending its vote (commit or abort) back to the coordinator?",
+    "options": [
+      "A: Acquire locks on the data items it accessed",
+      "B: Immediately replicate its data to multiple nodes",
+      "C: Elect a backup coordinator",
+      "D: Perform garbage collection of old transactions",
+      "E: Terminate all concurrent transactions in the system"
+    ],
+    "correct_options_literal": "Participants typically acquire the necessary transaction locks (or ensure data is ready) before voting to commit, to guarantee atomicity once they send a 'commit' vote.",
+    "correct_options": "A",
+    "correct_options_idx": 1
+  },
+  {
+    "topic": "2-Phase Commit (2PC) - Distributed Systems",
+    "context": "If a participant votes to commit in the prepare phase, it promises it can complete the transaction. This commitment is stored on stable storage, ensuring the node can recover and finish the commit if it crashes after voting.",
+    "question": "Why must participants record their decision to commit in stable storage during the prepare phase?",
+    "options": [
+      "A: To allow immediate garbage collection of logs",
+      "B: So that if the participant fails, it can recover its decision and not violate atomicity",
+      "C: To begin distributing a consensus-based leader",
+      "D: To ensure the participant can proceed without the coordinator",
+      "E: To rollback all data automatically on restarts"
+    ],
+    "correct_options_literal": "A participant must remember its commit vote in durable storage so that, upon recovery, it does not contradict its earlier promise and break atomicity.",
+    "correct_options": "B",
+    "correct_options_idx": 2
+  },
+  {
+    "topic": "2-Phase Commit (2PC) - Distributed Systems",
+    "context": "2PC ensures atomic commit but is known to be blocking: if the coordinator crashes after participants have prepared, they wait indefinitely for a commit or abort decision.",
+    "question": "Which design aspect makes 2PC inherently blocking in the presence of coordinator failure?",
+    "options": [
+      "A: The participants’ reliance on the coordinator’s final decision",
+      "B: The lack of any stable storage on participants",
+      "C: The presence of network partitions in every protocol round",
+      "D: The repeated re-election of multiple coordinators",
+      "E: The system’s immediate fallback to 3PC"
+    ],
+    "correct_options_literal": "Participants cannot unilaterally decide to commit or abort once they have voted commit; they must wait for the coordinator’s final instruction.",
+    "correct_options": "A",
+    "correct_options_idx": 1
+  },
+  {
+    "topic": "2-Phase Commit (2PC) - Distributed Systems",
+    "context": "An optimization known as Presumed Abort (PA) or Presumed Commit (PC) modifies log records to reduce overhead. For example, Presumed Abort omits certain log writes if a transaction is likely to abort.",
+    "question": "How do presumed-abort (PA) optimizations typically reduce 2PC log overhead?",
+    "options": [
+      "A: By eliminating the need for a coordinator node",
+      "B: By not writing abort records for transactions that participants did not explicitly commit",
+      "C: By ignoring the prepare phase entirely",
+      "D: By forcing all participants to maintain separate logs for commits",
+      "E: By removing the commit phase from the protocol"
+    ],
+    "correct_options_literal": "With Presumed Abort, if a transaction is never forced to write an explicit abort record, the system assumes it aborted by default, saving some log writes.",
+    "correct_options": "B",
+    "correct_options_idx": 2
+  },
+  {
+    "topic": "2-Phase Commit (2PC) - Distributed Systems",
+    "context": "3-Phase Commit (3PC) extends 2PC to eliminate the blocking scenario by introducing an extra phase. However, it requires additional assumptions (synchronous communication or bounded network delays).",
+    "question": "Why might a system prefer 3PC over standard 2PC in certain environments?",
+    "options": [
+      "A: 3PC reduces the number of messages to a single round trip",
+      "B: 3PC guarantees non-blocking behavior under bounded-delay assumptions",
+      "C: 3PC can handle unlimited concurrent coordinator failures",
+      "D: 3PC does not require stable storage",
+      "E: 3PC never needs a prepare phase"
+    ],
+    "correct_options_literal": "3PC avoids the blocking problem of 2PC if the network is assumed synchronous, adding a phase that allows participants to make progress if the coordinator fails.",
+    "correct_options": "B",
+    "correct_options_idx": 2
+  },
+  {
+    "topic": "2-Phase Commit (2PC) - Distributed Systems",
+    "context": "Some distributed databases use 2PC primarily for short-lived transactions. Long-running or highly concurrent environments risk coordinator bottlenecks or indefinite blocking if failures occur.",
+    "question": "In practice, how do systems mitigate the blocking nature of 2PC for long-running transactions?",
+    "options": [
+      "A: By forcibly downgrading all commits to aborts under load",
+      "B: By employing transaction timeouts or coordinator failover protocols, or by using Paxos-based commits for fault-tolerant decisions",
+      "C: By ignoring concurrency control altogether",
+      "D: By requiring that the coordinator never crashes",
+      "E: By using 2PC for read-only transactions only"
+    ],
+    "correct_options_literal": "Timeouts, coordinator election, or Paxos-based commit protocols can help resolve coordinator failures and reduce indefinite blocking.",
+    "correct_options": "B",
+    "correct_options_idx": 2
+  },
+
+  {
+    "topic": "Dynamo: Amazon's Key-Value Store",
+    "context": "Dynamo partitions data using consistent hashing, distributing keys evenly across nodes. This approach reduces hot spots and simplifies node addition or removal.",
+    "question": "Why is consistent hashing particularly important for Dynamo’s design?",
+    "options": [
+      "A: It ensures all writes go to a single master node",
+      "B: It prevents load balancing across different data centers",
+      "C: It enables more uniform key distribution and easier cluster scaling by reducing data migration when nodes are added or removed",
+      "D: It enforces strict serializable semantics for transactions",
+      "E: It disallows replication entirely"
+    ],
+    "correct_options_literal": "Consistent hashing spreads data evenly with minimal re-mapping of keys when nodes join or leave, suiting Dynamo’s elasticity.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Dynamo: Amazon's Key-Value Store",
+    "context": "To maintain availability under network partitions, Dynamo uses a quorum-like system for reads and writes, typically denoted R + W > N. However, it often relaxes strict consistency in favor of high availability.",
+    "question": "What does it mean for Dynamo to use 'sloppy quorums'?",
+    "options": [
+      "A: The read/write set must always be exactly N nodes",
+      "B: The system strictly requires W = N for each write",
+      "C: Replica requests might be temporarily routed to other nodes if a primary replica is unreachable, maintaining availability but causing temporary data displacement",
+      "D: Dynamo never replicates data beyond one node",
+      "E: The system forcibly aborts any write if not all replicas respond"
+    ],
+    "correct_options_literal": "Dynamo can forward writes to 'hinted' nodes if a replica is down, ensuring the operation still completes and is later handed off when the replica recovers.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Dynamo: Amazon's Key-Value Store",
+    "context": "Dynamo employs a decentralized, leaderless architecture. Every node can receive read/write requests for any key, though requests typically route to the 'preferred' node(s) for that key via consistent hashing.",
+    "question": "How does Dynamo achieve fault tolerance without a designated primary leader?",
+    "options": [
+      "A: By forcing all requests to be broadcast to every node in the cluster",
+      "B: Through a two-phase commit protocol among all replicas",
+      "C: By using a fully decentralized, leaderless replication approach where any replica can coordinate reads/writes, combined with quorums and vector clocks to detect conflicts",
+      "D: By ignoring data partitioning entirely",
+      "E: By storing metadata in a single coordinator node"
+    ],
+    "correct_options_literal": "A leaderless approach means any replica can accept requests, while quorum rules plus versioning resolve consistency issues.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Dynamo: Amazon's Key-Value Store",
+    "context": "Vector clocks in Dynamo allow each replica to track the causal lineage of updates. Divergent branches can be reconciled by application-specific conflict resolution or by preserving multiple versions until merges occur.",
+    "question": "What is a typical use of vector clocks in Dynamo’s conflict resolution?",
+    "options": [
+      "A: They provide a total order of events across the entire cluster",
+      "B: They remove the need for quorums in write operations",
+      "C: They detect concurrent updates to the same key, enabling the system to preserve multiple versions and let the application reconcile them",
+      "D: They automatically unify identical updates into a single version",
+      "E: They guarantee immediate consistency under partitions"
+    ],
+    "correct_options_literal": "Vector clocks reveal if one update happened before another or if they were concurrent, so Dynamo can store and later merge multiple conflicting versions.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Dynamo: Amazon's Key-Value Store",
+    "context": "Dynamo emphasizes 'always writeable' semantics. Even if certain replicas are offline or if there is a network split, the client can still write to a partial set of replicas. This leads to eventual consistency, where replicas become consistent over time.",
+    "question": "In Dynamo, why might a read operation return multiple conflicting versions for the same key?",
+    "options": [
+      "A: The key was never actually written to the system",
+      "B: The protocol merges all writes into a single replica",
+      "C: Some updates were applied concurrently on different replicas, leading to diverging vector clocks that have not yet been merged",
+      "D: Dynamo uses 2PC to force a strict order of commits",
+      "E: Dynamo discards all old versions automatically"
+    ],
+    "correct_options_literal": "Multiple replicas can accept writes independently. If updates occur concurrently, Dynamo may store multiple versions until they’re reconciled.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Dynamo: Amazon's Key-Value Store",
+    "context": "Dynamo’s design is tailored for Amazon’s e-commerce platform, prioritizing availability and partition tolerance with eventual consistency. This design drastically reduces downtime even during node or network failures.",
+    "question": "Why did Dynamo’s designers favor eventual consistency over strict consistency?",
+    "options": [
+      "A: Because strict consistency is impossible in all distributed systems",
+      "B: To ensure zero data replication across nodes",
+      "C: Because high availability and continuous operation under partition or failure were more critical than always returning the latest update",
+      "D: They had a Paxos-based system that performed better",
+      "E: They only used a single data center"
+    ],
+    "correct_options_literal": "Dynamo’s primary goal is to remain write-available even under failures. Strict consistency can force unavailability, so they adopt eventual consistency instead.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+
+  {
+    "topic": "FLP Impossibility - Distributed Consensus",
+    "context": "Fischer, Lynch, and Paterson proved that in an asynchronous system with even one crash-faulty process, no deterministic algorithm can guarantee consensus termination.",
+    "question": "What is the core takeaway of the FLP impossibility result?",
+    "options": [
+      "A: Consensus can be solved with a single message exchange in asynchronous networks",
+      "B: At least two processes must fail for consensus to be unsolvable",
+      "C: Deterministic consensus cannot guarantee termination in a purely asynchronous system if at least one process may fail",
+      "D: Paxos is a synchronous-only protocol",
+      "E: The result only applies to Byzantine failures"
+    ],
+    "correct_options_literal": "FLP states that no deterministic algorithm can always decide in an asynchronous system with the possibility of one crash fault.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "FLP Impossibility - Distributed Consensus",
+    "context": "The FLP proof uses an argument about indistinguishability of system states under asynchronous message delivery and a bivalent/univalent state concept, demonstrating an algorithm can be forced to run forever.",
+    "question": "Which concept does the FLP proof introduce to demonstrate that a consensus protocol can be perpetually delayed?",
+    "options": [
+      "A: Byzantine generals model",
+      "B: Bivalent and univalent global states, which highlight that a single uncommitted state can be extended indefinitely",
+      "C: The stable leader approach for synchronous networks",
+      "D: Vector clocks for concurrent updates",
+      "E: TLA+ model checking"
+    ],
+    "correct_options_literal": "The proof relies on bivalent states (undecided) that can be extended by carefully scheduling messages, preventing the algorithm from ever reaching a univalent (decided) state.",
+    "correct_options": "B",
+    "correct_options_idx": 2
+  },
+  {
+    "topic": "FLP Impossibility - Distributed Consensus",
+    "context": "Consensus protocols circumvent FLP by adding assumptions like partial synchrony (e.g., timeouts or known bounds) or randomness (e.g., randomized leader election).",
+    "question": "How do practical consensus protocols like Paxos or Raft circumvent FLP’s impossibility result?",
+    "options": [
+      "A: They assume full asynchrony with no modifications",
+      "B: They use non-deterministic or partially synchronous assumptions (e.g., bounded message delays, random timeouts) to break adversarial scheduling",
+      "C: They rely on hardware atomicity that solves the problem trivially",
+      "D: They skip the commit phase entirely",
+      "E: They assume zero chance of node failures"
+    ],
+    "correct_options_literal": "By adding timeouts, partial synchrony, or randomness, these protocols avoid the strict FLP conditions for purely deterministic fully asynchronous environments.",
+    "correct_options": "B",
+    "correct_options_idx": 2
+  },
+  {
+    "topic": "FLP Impossibility - Distributed Consensus",
+    "context": "In FLP, an asynchronous network has unpredictable message delays, so no node can distinguish between a slow message and a crashed node with certainty.",
+    "question": "Why is distinguishing between slow and crashed processes crucial to the FLP result?",
+    "options": [
+      "A: Because the coordinator must always be replaced after a timeout",
+      "B: If a process cannot tell a delayed message from a crashed peer, it cannot definitively decide on a value, risking indefinite waiting or incorrect conclusions",
+      "C: Because 2PC is blocking by definition",
+      "D: Because synchronous networks always detect crashes instantly",
+      "E: Because nodes are guaranteed to use FIFO ordering"
+    ],
+    "correct_options_literal": "FLP’s argument hinges on the inability to differentiate crash from delay in a truly asynchronous model, preventing safe final decisions without extra assumptions.",
+    "correct_options": "B",
+    "correct_options_idx": 2
+  },
+  {
+    "topic": "FLP Impossibility - Distributed Consensus",
+    "context": "Despite FLP, real systems can still 'solve' consensus by relaxing assumptions (partial synchrony) or relying on randomized solutions that typically terminate with high probability.",
+    "question": "What is the practical significance of FLP for distributed system designers?",
+    "options": [
+      "A: It proves that all distributed systems will fail instantly",
+      "B: It implies that no system can ever reach agreement on anything",
+      "C: It reminds designers that purely asynchronous, deterministic consensus cannot guarantee progress, so they must adopt timeouts, randomization, or synchronous models",
+      "D: It only applies to cryptographic protocols",
+      "E: It forces systems to use only 2-phase commit"
+    ],
+    "correct_options_literal": "Designers circumvent FLP with partial synchrony or randomized backoff, ensuring real systems do terminate in 'almost all' scenarios despite the impossibility in pure asynchrony.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "FLP Impossibility - Distributed Consensus",
+    "context": "The FLP result is a cornerstone in distributed computing, shaping protocols like Paxos, Raft, or PBFT, all of which add conditions or assumptions that break pure asynchrony or determinism.",
+    "question": "Which best describes the role of timeouts in practical consensus algorithms vis-à-vis the FLP result?",
+    "options": [
+      "A: Timeouts ensure zero message loss in asynchronous networks",
+      "B: Timeouts transform an asynchronous system into a synchronous one after some time, letting protocols detect failures deterministically",
+      "C: Timeouts cause indefinite blocking for participants",
+      "D: Timeouts are not used in any consensus protocol",
+      "E: Timeouts only apply to read requests, not writes"
+    ],
+    "correct_options_literal": "With a timeout, the system can assume a node is 'failed' after not responding, injecting partial synchrony to eventually unify decisions and progress beyond FLP’s purely asynchronous constraints.",
+    "correct_options": "B",
+    "correct_options_idx": 2
+  },
+
+  {
+    "topic": "Groundhog (Linearly-Scalable Smart Contracting) - Distributed Systems",
+    "context": "Groundhog proposes commutative transaction semantics to enable linearly scalable blockchain-based smart contracts by reducing contention among contract updates.",
+    "question": "What core idea allows Groundhog to achieve linear scalability for certain smart contracts?",
+    "options": [
+      "A: Using a single global lock for all contract writes",
+      "B: Partitioning contract state by exploiting commutativity of operations, so that independent updates can proceed without contention",
+      "C: Replacing blockchain blocks with 2PC transactions",
+      "D: Deploying a single node to handle all transactions sequentially",
+      "E: Using only read-only contracts"
+    ],
+    "correct_options_literal": "Groundhog groups commutative operations, partitioning them across nodes so that they can run in parallel with minimal conflicts.",
+    "correct_options": "B",
+    "correct_options_idx": 2
+  },
+  {
+    "topic": "Groundhog (Linearly-Scalable Smart Contracting) - Distributed Systems",
+    "context": "To handle contract updates, Groundhog uses concurrency control that recognizes commutative actions don’t need mutual exclusion. This is analogous to multi-version concurrency but specialized for blockchains.",
+    "question": "Why does recognizing commutative transactions matter in a distributed smart contract system like Groundhog?",
+    "options": [
+      "A: It enforces strict serializability with no overhead",
+      "B: Commutative actions can proceed in parallel without forcing each other to wait, boosting throughput significantly",
+      "C: It converts all writes into no-ops",
+      "D: It automatically solves the FLP impossibility problem",
+      "E: It merges all transactions into a single giant contract call"
+    ],
+    "correct_options_literal": "If operations do not affect each other’s final outcome when reordered, they can safely run in parallel, vastly improving throughput for high-traffic systems.",
+    "correct_options": "B",
+    "correct_options_idx": 2
+  },
+  {
+    "topic": "Groundhog (Linearly-Scalable Smart Contracting) - Distributed Systems",
+    "context": "Groundhog leverages a combination of static and dynamic analysis to identify commutative regions in smart contract code, enabling safe parallel execution across shards or nodes.",
+    "question": "Which technique might Groundhog employ to identify which smart contract operations are commutative?",
+    "options": [
+      "A: Deep neural networks trained on transaction logs only",
+      "B: Manual inspection by miners for each transaction",
+      "C: Static code analysis plus runtime checks to see if operations on the same variables can commute",
+      "D: A global locking approach that stops all operations until proven commutative",
+      "E: Broadcasting all transactions to an external service for classification"
+    ],
+    "correct_options_literal": "Groundhog’s approach uses code analysis (and possibly runtime checks) to detect read/write sets or operations that yield the same result if swapped.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Groundhog (Linearly-Scalable Smart Contracting) - Distributed Systems",
+    "context": "Linearly scalable solutions like Groundhog aim to support thousands or millions of contract operations by distributing them across many nodes, each responsible for a portion of the workload.",
+    "question": "What is the primary bottleneck that Groundhog attempts to remove in blockchain-based smart contracting systems?",
+    "options": [
+      "A: The overhead of cryptographic signatures",
+      "B: The global sequential ordering of all contract operations, which hinders parallelism",
+      "C: The high memory usage of storing entire block contents on each node",
+      "D: The cost of gossip-based block propagation",
+      "E: The difficulty of generating blocks at 1-second intervals"
+    ],
+    "correct_options_literal": "By eliminating the requirement that every node sequentially process every contract update, Groundhog aims for parallelizable execution of commutative operations.",
+    "correct_options": "B",
+    "correct_options_idx": 2
+  },
+  {
+    "topic": "Groundhog (Linearly-Scalable Smart Contracting) - Distributed Systems",
+    "context": "Blockchain systems typically replicate all transactions to all nodes, ensuring strong consistency but limiting throughput. Groundhog’s partitioning approach counters this overhead for certain workloads.",
+    "question": "Why doesn’t naive sharding alone solve the throughput problem in typical smart contract platforms?",
+    "options": [
+      "A: Sharding is impossible in blockchains",
+      "B: Each shard must still handle all contract logic globally",
+      "C: Many contract operations are non-commutative, requiring careful synchronization across shards, which can reintroduce bottlenecks",
+      "D: Sharding automatically violates consensus rules",
+      "E: Sharding only applies to read operations, not writes"
+    ],
+    "correct_options_literal": "If contracts frequently conflict or share state, naive sharding fails. Groundhog’s focus on commutative operations addresses that synchronization bottleneck.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Groundhog (Linearly-Scalable Smart Contracting) - Distributed Systems",
+    "context": "Smart contract concurrency is often limited by fear of double-spend or inconsistent states. Groundhog’s design ensures linear scalability by identifying safe concurrency paths.",
+    "question": "How does Groundhog mitigate the risk of inconsistent states when multiple contract calls are executed in parallel?",
+    "options": [
+      "A: By ignoring state checks entirely",
+      "B: By adopting a 2PC approach across all contracts",
+      "C: By ensuring only operations that commute are allowed to run in parallel, thereby avoiding conflicts that could create inconsistent states",
+      "D: By letting miners manually fix conflicts post-hoc",
+      "E: By forcing all calls to run on a single node"
+    ],
+    "correct_options_literal": "Parallel execution is safe only if the final outcome is independent of the order of these operations (they commute). Groundhog enforces that rule.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+
+  {
+    "topic": "Honey Badger BFT - Distributed Systems",
+    "context": "The Honey Badger protocol is a Byzantine Fault Tolerant (BFT) consensus algorithm focusing on asynchrony and confidentiality, suitable for blockchain or other replicated systems.",
+    "question": "What primary advantage does Honey Badger BFT offer over classical PBFT in asynchronous networks?",
+    "options": [
+      "A: It never needs digital signatures",
+      "B: It only tolerates crash faults, not Byzantine faults",
+      "C: It achieves consensus under fully asynchronous conditions using threshold encryption and randomization, making it robust to unpredictable network scheduling",
+      "D: It uses 2PC to finalize commits",
+      "E: It requires all nodes to trust a single leader"
+    ],
+    "correct_options_literal": "Honey Badger BFT uses an asynchronous atomic broadcast with threshold encryption, avoiding timing assumptions common in partially synchronous protocols.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Honey Badger BFT - Distributed Systems",
+    "context": "Honey Badger uses threshold encryption to batch transactions in a way that conceals their contents until enough shares are revealed, ensuring censorship resistance and privacy.",
+    "question": "How does threshold encryption help Honey Badger defend against transaction censorship?",
+    "options": [
+      "A: It forces each node to sign every transaction",
+      "B: It hides the actual transactions until a batch is finalized, preventing a malicious node from selectively dropping or withholding specific transactions",
+      "C: It merges all transactions into a single hash to reduce overhead",
+      "D: It uses 2PC logging to confirm all steps",
+      "E: It splits transactions across multiple blockchains"
+    ],
+    "correct_options_literal": "Because transactions remain encrypted until after the protocol commits them, a malicious leader can’t discard certain transactions it disapproves of.",
+    "correct_options": "B",
+    "correct_options_idx": 2
+  },
+  {
+    "topic": "Honey Badger BFT - Distributed Systems",
+    "context": "One design goal of Honey Badger is to handle dynamic, adversarial network scheduling, so that performance does not degrade drastically under high latency or uncertain message arrival times.",
+    "question": "Which property of Honey Badger makes it particularly suitable for unpredictable or adversarial network conditions?",
+    "options": [
+      "A: It is strictly synchronous with known time bounds",
+      "B: It uses a single coordinator that times out slow nodes",
+      "C: It operates asynchronously, not relying on message delivery guarantees or time-based leader election, and thus tolerates severe scheduling unpredictability",
+      "D: It discards any nodes that fail to respond within 1 ms",
+      "E: It never implements encryption, ensuring speed"
+    ],
+    "correct_options_literal": "Honey Badger’s asynchronous BFT approach means it doesn’t stall under variable message delays or partial partitioning, as no global time assumption is required for safety.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Honey Badger BFT - Distributed Systems",
+    "context": "In a system tolerating Byzantine faults, some nodes may behave arbitrarily maliciously. Honey Badger’s layered approach combines asynchronous broadcast with robust threshold cryptography to finalize blocks of transactions.",
+    "question": "What does 'Byzantine fault tolerance' imply in the context of Honey Badger?",
+    "options": [
+      "A: Nodes only crash, never act maliciously",
+      "B: The protocol can handle a fraction of nodes actively lying, forging messages, or otherwise trying to disrupt consensus, yet still reach agreement among correct nodes",
+      "C: The protocol runs exclusively on local networks",
+      "D: The system prevents all nodes from ever failing",
+      "E: It means all nodes share a single public key"
+    ],
+    "correct_options_literal": "BFT systems remain correct even if up to f nodes behave arbitrarily (e.g., lying or forging messages), provided more than 2f+1 remain honest.",
+    "correct_options": "B",
+    "correct_options_idx": 2
+  },
+  {
+    "topic": "Honey Badger BFT - Distributed Systems",
+    "context": "Honey Badger introduced Asynchronous Common Subset (ACS) for batching transactions. Each node proposes a set of transactions, and the protocol reliably delivers a combined batch that is eventually agreed upon.",
+    "question": "How does Honey Badger use the Asynchronous Common Subset (ACS) primitive in its protocol flow?",
+    "options": [
+      "A: By running a traditional 2PC among all nodes",
+      "B: By collecting partial signatures from only one node at a time",
+      "C: Every node proposes a batch of transactions, and ACS ensures that all correct nodes eventually decide on the same combined set of proposed batches",
+      "D: By using push-based streaming to a global ordering service",
+      "E: By skipping the encryption step entirely"
+    ],
+    "correct_options_literal": "ACS merges each node’s proposed transaction batch into one final set, ensuring all correct nodes agree on that set despite asynchrony or Byzantine adversaries.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Honey Badger BFT - Distributed Systems",
+    "context": "Honey Badger's performance scales with the number of nodes, but each node must perform threshold encryption and partial decryption, which can be computationally intensive. Yet it remains robust in highly adversarial conditions.",
+    "question": "Why might Honey Badger incur higher computational costs compared to partially synchronous BFT protocols like PBFT?",
+    "options": [
+      "A: It uses no cryptography at all, ironically increasing overhead",
+      "B: It must sign every message with the coordinator’s private key",
+      "C: Its asynchronous approach relies on threshold encryption, meaning each node must handle cryptographic shares for all proposed transactions, leading to heavier CPU usage",
+      "D: It runs 2-phase commit for each transaction",
+      "E: It never batches transactions together"
+    ],
+    "correct_options_literal": "Asynchronous BFT with threshold encryption demands more cryptographic operations per consensus step. Each node processes partial encryption/decryption, driving CPU overhead.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+
+  {
+    "topic": "The Eternal Tussle: Centralization in IPFS - Distributed Systems",
+    "context": "IPFS (InterPlanetary File System) is a content-addressed, peer-to-peer network. The paper “The Eternal Tussle” explores how, in practice, factors like gateway usage or node churn can introduce centralization points.",
+    "question": "Why might IPFS, despite being a decentralized protocol, exhibit centralization in practice?",
+    "options": [
+      "A: The protocol demands all blocks be stored on one supernode",
+      "B: Users often rely on popular gateways or large pinning services, creating hubs that store or route the majority of data",
+      "C: IPFS enforces a single-trusted certificate authority",
+      "D: DHT lookups are always guaranteed to be balanced",
+      "E: There is no data replication in IPFS"
+    ],
+    "correct_options_literal": "Although IPFS is peer-to-peer, user behavior and convenience (gateways, large pinning services) can cluster data, effectively centralizing storage or bandwidth.",
+    "correct_options": "B",
+    "correct_options_idx": 2
+  },
+  {
+    "topic": "The Eternal Tussle: Centralization in IPFS - Distributed Systems",
+    "context": "IPFS uses a Kademlia-based Distributed Hash Table (DHT) to locate content by its CID (content identifier). But DHT performance and reliability can degrade under churn, leading some users to rely on stable third-party nodes.",
+    "question": "How does heavy node churn potentially lead to partial centralization in IPFS?",
+    "options": [
+      "A: Kademlia routing becomes more efficient with unstable nodes",
+      "B: The network disallows new nodes from joining",
+      "C: Frequent joins/leaves degrade the reliability of the DHT, so participants use stable, well-known nodes or gateways, reinforcing central points of access",
+      "D: DHT lookups automatically generate new hash values that unify all nodes",
+      "E: Churn does not affect IPFS in any way"
+    ],
+    "correct_options_literal": "High churn diminishes the DHT’s reliability. Hence, users or services default to stable, well-resourced nodes, fostering partial centralization.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "The Eternal Tussle: Centralization in IPFS - Distributed Systems",
+    "context": "IPFS addresses files by content (hash), not location. However, typical web usage patterns (HTTP gateways, pinned content) can funnel traffic through certain large providers, undermining full decentralization goals.",
+    "question": "Which factor most undermines IPFS's vision of fully peer-to-peer content distribution?",
+    "options": [
+      "A: The protocol’s mandatory proof-of-work",
+      "B: The total absence of any form of DHT",
+      "C: The widespread reliance on HTTP gateways that retrieve content on behalf of clients, creating a de-facto central access point",
+      "D: The impossibility of hashing content",
+      "E: The inability to replicate data at all"
+    ],
+    "correct_options_literal": "Gateways circumvent the need for each client to run an IPFS node, pushing traffic through a few large gateway operators that store or fetch data for everyone.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "The Eternal Tussle: Centralization in IPFS - Distributed Systems",
+    "context": "Research identifies how real-world usage patterns, economic incentives, and user convenience consistently push decentralized protocols toward partial or complete centralization. IPFS is no exception.",
+    "question": "What broader lesson does 'The Eternal Tussle' highlight about decentralized protocols like IPFS?",
+    "options": [
+      "A: Pure decentralization is easy to sustain in practice",
+      "B: User and economic factors often lead to emergent centralization, even if the protocol design is decentralized",
+      "C: Centralized systems never outperform peer-to-peer networks",
+      "D: BFT consensus is mandatory for IPFS content distribution",
+      "E: All decentralized systems automatically guarantee anonymity"
+    ],
+    "correct_options_literal": "Despite protocol-level decentralization, real-world usage patterns can consolidate control or resources, partially defeating the goal of full decentralization.",
+    "correct_options": "B",
+    "correct_options_idx": 2
+  },
+  {
+    "topic": "The Eternal Tussle: Centralization in IPFS - Distributed Systems",
+    "context": "IPFS nodes can pin content to guarantee persistence. Third-party pinning services become major providers, leading to fewer, more heavily utilized nodes that can serve large volumes of content quickly.",
+    "question": "Why do commercial pinning services potentially create a centralization vector in IPFS?",
+    "options": [
+      "A: They block DHT usage for smaller nodes",
+      "B: They rewrite all content identifiers (CIDs)",
+      "C: A small number of commercial pinning providers host large swaths of data, effectively controlling data availability and serving as critical infrastructure points",
+      "D: They forcibly merge all nodes into a single cluster",
+      "E: They remove hashing from the protocol"
+    ],
+    "correct_options_literal": "When a few services hold large amounts of pinned data, the network’s ability to retrieve that content depends heavily on those centralized entities.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "The Eternal Tussle: Centralization in IPFS - Distributed Systems",
+    "context": "Solutions to mitigate centralization in IPFS might include improved DHT resilience, incentivized node operation, or distributed gateways. However, these require sustained community or economic support.",
+    "question": "How might IPFS developers address the practical centralization issues found in real deployments?",
+    "options": [
+      "A: By removing content hashing entirely",
+      "B: By building more robust DHT mechanisms, incentivizing nodes to remain online, and promoting decentralized gateways rather than relying on a few large providers",
+      "C: By disallowing new nodes to join the network",
+      "D: By adopting a single global gateway with a load balancer",
+      "E: By forcing all users to pin all data locally"
+    ],
+    "correct_options_literal": "Strengthening the DHT’s reliability, encouraging broad node participation, and distributing gateway functionality can reduce reliance on a handful of powerful nodes.",
+    "correct_options": "B",
+    "correct_options_idx": 2
+  },
+
+  {
+    "topic": "Microsecond Consensus (Aguilera et al.) - Distributed Systems",
+    "context": "The 'Microsecond Consensus' paper proposes a highly optimized consensus protocol for systems requiring extremely low-latency decisions, leveraging advanced NIC features and kernel-bypass networking.",
+    "question": "Which primary technological advance underlies microsecond-scale consensus protocols?",
+    "options": [
+      "A: Use of blockchain-based POW",
+      "B: Disk-based swap memory for logging",
+      "C: Kernel-bypass networking (e.g., RDMA or DPDK) and hardware acceleration, drastically cutting round-trip times",
+      "D: 2-phase commit only",
+      "E: Storing logs in remote object stores"
+    ],
+    "correct_options_literal": "Using NICs that bypass the OS network stack, plus specialized hardware, reduces latency enough to achieve microsecond-scale consensus messages.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Microsecond Consensus (Aguilera et al.) - Distributed Systems",
+    "context": "Traditional consensus implementations (like classic Paxos) often assume millisecond-level round-trip latencies. Microsecond consensus explores how to reduce overhead in CPU scheduling, OS interrupts, and network stacks.",
+    "question": "Why do typical Paxos implementations not reach microsecond latencies without modifications?",
+    "options": [
+      "A: They do not implement quorums",
+      "B: They rely on proof-of-work computations",
+      "C: OS kernel context switches, interrupt handling, and conventional TCP/IP stacks introduce delays on the order of microseconds to milliseconds",
+      "D: They run 3-phase commit after every message",
+      "E: They store all messages in disk-based logs"
+    ],
+    "correct_options_literal": "Classic Paxos typically uses standard networking and OS primitives with higher overhead than the tight hardware-level loops needed for microsecond latencies.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Microsecond Consensus (Aguilera et al.) - Distributed Systems",
+    "context": "Achieving microsecond latency requires careful design: minimal message copies, direct user-space networking, possibly even bypassing standard CPU caches. The approach must handle or eliminate typical overheads.",
+    "question": "What technique can be used to avoid copying data multiple times through the OS networking stack in microsecond consensus protocols?",
+    "options": [
+      "A: Periodic system calls for every packet",
+      "B: Storing data in GPU memory only",
+      "C: Zero-copy user-space I/O with RDMA or DPDK, bypassing the kernel’s TCP/IP stack",
+      "D: Writing data to a distributed filesystem first",
+      "E: Using batch mode in the kernel"
+    ],
+    "correct_options_literal": "User-level networking frameworks like DPDK or RDMA can directly send/receive packets from NIC buffers without extra copies or kernel context switches.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Microsecond Consensus (Aguilera et al.) - Distributed Systems",
+    "context": "Consensus typically requires multiple round trips among nodes. By using high-speed interconnects and specialized protocols, microsecond consensus aims to reduce each round trip to tens of microseconds.",
+    "question": "Which factor is critical to lowering each consensus round’s latency to microseconds?",
+    "options": [
+      "A: Implementing FLP-impossibility in hardware",
+      "B: Having a single node do all the computation",
+      "C: Minimizing software overhead in message sending/receiving (e.g., bypassing kernel and using high-speed NICs), ensuring sub-µs or low-µs RPC times",
+      "D: Introducing a large random delay to group messages",
+      "E: Requiring nodes be physically co-located in the same CPU socket"
+    ],
+    "correct_options_literal": "High-performance NICs plus user-space networking drastically cut the overhead for each communication step, making sub-µs round trips feasible.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Microsecond Consensus (Aguilera et al.) - Distributed Systems",
+    "context": "Even with hardware acceleration, microsecond consensus must handle node failures. The protocol must quickly detect a failed node and reconfigure or skip it to maintain liveness without incurring large timeouts.",
+    "question": "How do microsecond consensus protocols typically handle node failures without introducing large timeouts that break the microsecond goal?",
+    "options": [
+      "A: They ignore faults altogether",
+      "B: They rely solely on disk-based logs to detect and skip faulty nodes",
+      "C: They use fast failure detection (e.g., hardware watchdogs or frequent heartbeats at microsecond intervals) so that unresponsive nodes are quickly excluded from quorums",
+      "D: They require an external leader to run 2PC",
+      "E: They wait for multiple seconds to confirm a node is down"
+    ],
+    "correct_options_literal": "Frequent microsecond-level heartbeats or hardware-level signals can quickly detect a node not responding in a timescale matching the protocol’s latency targets.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Microsecond Consensus (Aguilera et al.) - Distributed Systems",
+    "context": "Microsecond consensus might limit node geography to a single data center or specialized HPC cluster. Inter-continental latencies of tens or hundreds of milliseconds overshadow the microsecond improvements.",
+    "question": "What is a practical deployment constraint for microsecond-scale consensus protocols?",
+    "options": [
+      "A: They require worldwide distribution for best performance",
+      "B: They only work if each node uses blockchain proof-of-work",
+      "C: They are typically deployed in tightly coupled data centers or HPC clusters, as wide-area latencies would negate microsecond advantages",
+      "D: They require each node to be on a slow DSL line",
+      "E: They are designed for intermittent offline operations"
+    ],
+    "correct_options_literal": "Microsecond optimizations lose their significance across high-latency WAN links, so these protocols are best for local or HPC clusters with sub-100µs round trips.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+
+  {
+    "topic": "ORCA: Distributed Serving for Transformer Models - Distributed Systems",
+    "context": "ORCA is a serving system that distributes large transformer-based generative models across multiple GPUs or servers, enabling low-latency inference for large-scale use cases.",
+    "question": "Which challenge does ORCA address in serving large transformer models?",
+    "options": [
+      "A: Training the model from scratch",
+      "B: Minimizing model accuracy",
+      "C: Partitioning model parameters and computation across multiple devices to achieve efficient inference without exceeding memory limits or incurring large communication overheads",
+      "D: Removing all concurrency from GPU pipelines",
+      "E: Eliminating the need for attention mechanisms"
+    ],
+    "correct_options_literal": "ORCA focuses on splitting enormous transformer layers across GPUs or nodes, balancing memory usage and communication overhead for fast inference.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "ORCA: Distributed Serving for Transformer Models - Distributed Systems",
+    "context": "Transformers can have billions of parameters, exceeding the memory of a single GPU. ORCA uses pipeline parallelism, tensor parallelism, or other partitioning strategies to distribute the load.",
+    "question": "Why do large transformer-based models require advanced parallelism strategies (e.g., pipeline or tensor parallelism) in a serving system like ORCA?",
+    "options": [
+      "A: They run best on a single CPU core",
+      "B: One GPU always has enough memory for any model",
+      "C: Models of billions of parameters exceed a single device’s VRAM; parallelism splits the model across multiple GPUs to handle memory constraints and speed up inference",
+      "D: They only run offline inference",
+      "E: GPU memory usage is irrelevant to large models"
+    ],
+    "correct_options_literal": "To serve multi-billion parameter models, the parameters must be partitioned among devices, otherwise a single GPU’s memory could be insufficient.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "ORCA: Distributed Serving for Transformer Models - Distributed Systems",
+    "context": "ORCA aims to reduce inference latency by overlapping communication with computation, optimizing scheduling so that GPUs stay busy while data is transmitted in parallel.",
+    "question": "How can ORCA maintain high GPU utilization despite the need to communicate intermediate activations across GPUs?",
+    "options": [
+      "A: By never sending any data between GPUs",
+      "B: By scheduling computation in pipelined fashion, so while one stage computes on GPU A, another stage sends or receives data on GPU B, overlapping communication and compute",
+      "C: By forcing all data transfers to happen at the end of inference",
+      "D: By dividing each token into a separate model copy",
+      "E: By only using CPU-based matrix multiplication"
+    ],
+    "correct_options_literal": "A pipeline approach can keep GPUs occupied with local work while data is asynchronously transferred for the next stage, reducing idle times.",
+    "correct_options": "B",
+    "correct_options_idx": 2
+  },
+  {
+    "topic": "ORCA: Distributed Serving for Transformer Models - Distributed Systems",
+    "context": "Transformer inference typically involves multiple attention layers and feed-forward blocks. Distributing these blocks among GPUs can reduce memory footprints per device while preserving throughput.",
+    "question": "What is the main goal of pipeline parallelism in large-scale transformer serving?",
+    "options": [
+      "A: Merging all layers into a single GPU kernel",
+      "B: Running only the last attention layer repeatedly",
+      "C: Assigning distinct layers (or sets of layers) to different GPUs, so data flows through a pipeline of devices rather than requiring each GPU to store the entire model",
+      "D: Disabling multi-head attention",
+      "E: Forcing a single sequential queue on the CPU"
+    ],
+    "correct_options_literal": "By dividing layers across GPUs, pipeline parallelism ensures each device loads only its portion of the model, passing intermediate results along.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "ORCA: Distributed Serving for Transformer Models - Distributed Systems",
+    "context": "Inference throughput can be improved by batching multiple requests. ORCA must carefully schedule batches so that pipeline stages are balanced and no GPU is starved or overloaded.",
+    "question": "Which factor is crucial when batching multiple inference requests in a pipeline-parallel system like ORCA?",
+    "options": [
+      "A: Ensuring each request runs in a strictly isolated pipeline with no concurrency",
+      "B: Making sure all requests arrive at the same time from the same client",
+      "C: Balancing the pipeline stages to avoid bottlenecks, so that GPU resources are well-utilized across all stages even with varying request batch sizes",
+      "D: Randomly assigning requests to GPUs without measuring load",
+      "E: Turning off data parallelism when multiple requests are inbound"
+    ],
+    "correct_options_literal": "You must keep each pipeline stage busy and avoid waiting on upstream/downstream GPUs, requiring careful scheduling of requests in parallel.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "ORCA: Distributed Serving for Transformer Models - Distributed Systems",
+    "context": "Large distributed inference introduces new failure modes. ORCA must handle partial GPU failures or network disruptions without crashing the entire service, possibly retrying or rerouting requests.",
+    "question": "How might ORCA handle a GPU failure without bringing down the entire inference service?",
+    "options": [
+      "A: By forcing the entire cluster to shut down",
+      "B: By ignoring all requests to that model until an admin intervenes",
+      "C: By rerouting requests to remaining healthy GPUs and re-partitioning or replicating the pipeline to maintain partial functionality, albeit with possibly reduced capacity",
+      "D: By discarding all request data immediately",
+      "E: By using 2-phase commit for each neural network layer"
+    ],
+    "correct_options_literal": "A robust distributed serving system can detect a failed device, then re-shard or re-route pipeline stages to other GPUs to preserve uptime.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+
+  {
+    "topic": "Ownership: A Distributed Futures System (UC Berkeley & Anyscale) - Distributed Systems",
+    "context": "Ownership is a framework extending Ray or similar systems with fine-grained distributed futures, letting tasks pass references to large objects while controlling concurrency and data placement.",
+    "question": "What does 'ownership' refer to in this context of distributed futures?",
+    "options": [
+      "A: A single node controlling all object creation",
+      "B: A concept where each future or object has a designated 'owner' node responsible for tracking dependencies and orchestrating data transfers",
+      "C: The lexical scoping rules for Python variables",
+      "D: The system that merges CPU and GPU memory automatically",
+      "E: A scheme to store all data in the coordinator’s memory"
+    ],
+    "correct_options_literal": "In Ownership, each distributed object/future has a specific owner that manages references, ensuring correct lifecycle and location decisions.",
+    "correct_options": "B",
+    "correct_options_idx": 2
+  },
+  {
+    "topic": "Ownership: A Distributed Futures System (UC Berkeley & Anyscale) - Distributed Systems",
+    "context": "The system aims for fine-grained task parallelism without overwhelming the cluster. Each future encapsulates a result that can be stored in the object store, referenced by subsequent tasks.",
+    "question": "Why is fine-grained task parallelism often beneficial in a distributed system like Ownership?",
+    "options": [
+      "A: It maximizes load balancing and concurrency, allowing many small tasks to run in parallel across the cluster while referencing shared data via futures",
+      "B: It forces tasks to run sequentially on a single node",
+      "C: It reduces scheduling overhead by merging tasks into large monoliths",
+      "D: It prevents network communication altogether",
+      "E: It ensures that no data is ever persisted"
+    ],
+    "correct_options_literal": "Small tasks can be distributed broadly, improving resource utilization, while the object store handles data sharing among them.",
+    "correct_options": "A",
+    "correct_options_idx": 1
+  },
+  {
+    "topic": "Ownership: A Distributed Futures System (UC Berkeley & Anyscale) - Distributed Systems",
+    "context": "A key challenge is avoiding data copies. With a reference-passing model, tasks pass object references rather than large data blobs, relying on the object store to handle actual data movement on demand.",
+    "question": "How does passing references (futures) instead of raw data benefit distributed tasks?",
+    "options": [
+      "A: It blocks concurrency in the system",
+      "B: It copies the entire data each time anyway",
+      "C: It avoids repeatedly serializing and transferring large objects; only the references are shared, and data is pulled from the store when actually needed",
+      "D: It breaks the system’s fault tolerance model",
+      "E: It merges all tasks into a single process"
+    ],
+    "correct_options_literal": "By sending only an object ID or future, tasks do not copy the entire payload, saving bandwidth and enabling lazy data movement.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Ownership: A Distributed Futures System (UC Berkeley & Anyscale) - Distributed Systems",
+    "context": "If multiple tasks depend on the same large dataset, Ownership’s runtime ensures the data is fetched or stored in the best location, possibly caching it near workers that need it frequently.",
+    "question": "Which mechanism might Ownership use to minimize repeated network transfers of large objects?",
+    "options": [
+      "A: Full replication of all data on every node",
+      "B: Storing objects exclusively in the coordinator’s memory",
+      "C: Transparent caching or pinning objects on certain nodes that frequently request them, so subsequent tasks retrieve data locally without remote transfers",
+      "D: Sending data via broadcast for each new task",
+      "E: Forcing tasks to wait until the entire cluster is idle"
+    ],
+    "correct_options_literal": "By caching or placing objects near the tasks that use them most, Ownership reduces cross-network fetch overhead and repeated transfers.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Ownership: A Distributed Futures System (UC Berkeley & Anyscale) - Distributed Systems",
+    "context": "Fault tolerance requires that if the owner node fails, object references and data can be reconstructed or re-owned by another node. The system logs metadata or replicates essential info for recovery.",
+    "question": "How does Ownership handle the scenario in which the owner node of a particular object fails?",
+    "options": [
+      "A: All data belonging to that node is permanently lost",
+      "B: The system ignores that object reference",
+      "C: Metadata replication or logging allows another node to adopt ownership, re-creating or retrieving the object from backups or other replicas",
+      "D: It triggers a global stop-the-world checkpoint",
+      "E: It runs a 2PC abort protocol for all tasks"
+    ],
+    "correct_options_literal": "To maintain availability and correctness, the system tracks ownership metadata so a surviving node can reacquire and serve the object references if the original owner fails.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Ownership: A Distributed Futures System (UC Berkeley & Anyscale) - Distributed Systems",
+    "context": "Tasks can become data-intensive if they inadvertently copy large objects multiple times. The Ownership model ensures references are used instead, letting the system orchestrate data location behind the scenes.",
+    "question": "Why might direct copying of large objects among tasks be discouraged in an Ownership-based system?",
+    "options": [
+      "A: Because large objects cannot be stored in memory",
+      "B: Copying breaks the system’s consistency model",
+      "C: Copying large data repeatedly wastes bandwidth and memory; passing futures (references) is more efficient and allows lazy or on-demand data movement",
+      "D: The system requires manual pointer arithmetic",
+      "E: The model disallows concurrency if objects are copied"
+    ],
+    "correct_options_literal": "Reference passing fosters a single logical copy in the object store, fetched only when a task truly needs it, preventing duplicative data transfers.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+
+  {
+    "topic": "Raft (Ongaro & Ousterhout) - Distributed Systems",
+    "context": "Raft is a consensus algorithm designed to be understandable and implementable, using a leader-based approach with log replication, leader election, and safety properties guaranteeing a consistent replicated log.",
+    "question": "What was Raft’s primary design objective compared to Paxos?",
+    "options": [
+      "A: To use a fully asynchronous approach with no leader",
+      "B: To obscure the consensus process for security reasons",
+      "C: To offer a simpler, more understandable consensus algorithm using a strong leader concept, making it easier to implement and reason about than Paxos",
+      "D: To remove all reliability guarantees from the system",
+      "E: To merge 2PC into Paxos"
+    ],
+    "correct_options_literal": "Raft’s authors explicitly aimed for an easy-to-follow algorithm with clear roles (leader, followers) and steps, improving clarity over Paxos.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Raft (Ongaro & Ousterhout) - Distributed Systems",
+    "context": "Raft uses leader election with randomized timers. A node times out if it doesn’t hear from the leader, transitions to candidate, increments its term, and requests votes from peers.",
+    "question": "How does Raft typically avoid simultaneous multiple-leader elections?",
+    "options": [
+      "A: By ignoring timeouts",
+      "B: By only letting one node hold a timer",
+      "C: With randomized election timeouts, reducing the chance that all followers become candidates at once",
+      "D: By guaranteeing the leader never fails",
+      "E: By forcing 2-phase commit for the election"
+    ],
+    "correct_options_literal": "Different nodes have slightly different timeouts; one typically triggers first, starts an election, and becomes leader without everyone else timing out simultaneously.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Raft (Ongaro & Ousterhout) - Distributed Systems",
+    "context": "Once elected, a Raft leader handles all client requests, appending them to its log. Followers replicate the log entries. A committed entry is guaranteed to eventually be stored by all servers in the same log index.",
+    "question": "Which mechanism ensures log consistency among all replicas in Raft once an entry is committed on the leader?",
+    "options": [
+      "A: The leader must wait for 2PC from every node",
+      "B: The leader replicates the entry to a majority of servers (quorum), and that entry is then considered committed, eventually making all followers store it in the same index",
+      "C: The leader uses a single-phase broadcast with no acknowledgments",
+      "D: The system uses a token-ring approach for log distribution",
+      "E: The log is purely local to the coordinator node"
+    ],
+    "correct_options_literal": "Raft commits an entry once it’s safely replicated on a majority. That ensures the entry can’t be lost if the leader fails and a new leader arises.",
+    "correct_options": "B",
+    "correct_options_idx": 2
+  },
+  {
+    "topic": "Raft (Ongaro & Ousterhout) - Distributed Systems",
+    "context": "If a leader crashes, a follower with the highest term eventually times out, becomes a candidate, and gathers votes to become the new leader. The new leader ensures the log is consistent by truncating or overwriting conflicting entries if needed.",
+    "question": "How does the newly elected Raft leader handle log entries that do not match its own log?",
+    "options": [
+      "A: It discards its local log entirely",
+      "B: It forcibly replays all previous terms’ logs on every node",
+      "C: It overwrites conflicting follower entries using the leader’s current log as authoritative, ensuring all followers eventually match the leader’s log up to the commit index",
+      "D: It triggers a 3-phase commit across the cluster",
+      "E: It merges all conflicting entries by timestamp"
+    ],
+    "correct_options_literal": "Raft’s log matching property ensures the leader’s log is the source of truth; conflicting follower entries beyond the last matched index are overwritten to maintain a single consistent log.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Raft (Ongaro & Ousterhout) - Distributed Systems",
+    "context": "Clients can read from the leader to ensure a strongly consistent view of the system. If linearizable reads are required, Raft must confirm the leader is still valid or use a read-index mechanism to maintain correctness.",
+    "question": "How does Raft ensure a read operation sees the latest committed state?",
+    "options": [
+      "A: It does not support consistent reads",
+      "B: By letting any follower respond to read requests arbitrarily",
+      "C: By reading only from the leader after the leader has committed the log entries, possibly using a mechanism (like lease or read-index) to confirm it is still the leader",
+      "D: By employing a global lock on all nodes",
+      "E: By using a separate 2PC for read requests"
+    ],
+    "correct_options_literal": "Raft’s strong consistency design means only the leader can serve up-to-date reads, and the protocol includes methods to verify the leader’s authority for linearizable reads.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Raft (Ongaro & Ousterhout) - Distributed Systems",
+    "context": "The paper emphasizes Raft’s understandability and reliability, claiming that a well-defined leader-based approach is easier to reason about than Paxos’s flexible roles for replicas.",
+    "question": "Why do many practitioners favor Raft over classic Paxos for production systems?",
+    "options": [
+      "A: Raft always uses 2-phase commit for replication",
+      "B: Raft is ambiguous and open to multiple interpretations",
+      "C: Raft is typically simpler to implement and reason about due to its explicit leader-follower structure and fewer corner cases in the original specification",
+      "D: Paxos cannot handle failure at all",
+      "E: Raft eliminates the use of stable storage"
+    ],
+    "correct_options_literal": "Raft’s authors aimed for clarity, with explicit roles and well-defined states, making it less error-prone to implement than Paxos.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+
+  {
+    "topic": "Ray: A Distributed Framework for AI Applications - Distributed Systems",
+    "context": "Ray provides a distributed execution engine for Python tasks and actors, enabling scalable machine learning and reinforcement learning workloads with minimal user effort.",
+    "question": "Which fundamental abstraction does Ray introduce for parallel computation?",
+    "options": [
+      "A: Manual threading per node",
+      "B: A single global queue for all tasks",
+      "C: Remote functions and actors, where remote calls return futures (ObjectRefs) that Ray schedules on a cluster",
+      "D: A Paxos-based consensus for all tasks",
+      "E: A single process that runs each Python function sequentially"
+    ],
+    "correct_options_literal": "Ray’s remote function model and actor model let users write Python but execute tasks on a cluster seamlessly, returning futures for asynchronous results.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Ray: A Distributed Framework for AI Applications - Distributed Systems",
+    "context": "Ray’s object store holds task outputs in shared memory, letting other tasks fetch them by reference. This approach avoids copying large objects across process boundaries.",
+    "question": "How does Ray avoid unnecessary data copies between tasks running on the same node?",
+    "options": [
+      "A: By rewriting all data in text form",
+      "B: By storing intermediate results in the central coordinator’s memory",
+      "C: By using a shared-memory object store so tasks can pass references (ObjectRefs) rather than shipping data around",
+      "D: By forcing all tasks to serialize results to disk first",
+      "E: By merging all tasks into a single function call"
+    ],
+    "correct_options_literal": "Ray’s object store uses shared memory. Tasks just share references to that memory region, not the actual data bytes, minimizing copies.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Ray: A Distributed Framework for AI Applications - Distributed Systems",
+    "context": "Ray’s scheduling is decentralized: a head node tracks the cluster’s resource usage, but worker nodes can retrieve tasks that fit their resources. This approach balances load among available CPUs/GPUs.",
+    "question": "Which resource-aware scheduling feature does Ray offer?",
+    "options": [
+      "A: A single CPU for all tasks in the cluster",
+      "B: Hard-coded GPU usage in the Python script",
+      "C: Declaring required resources (e.g., num_cpus, num_gpus) for tasks/actors, letting Ray automatically place them on suitable nodes",
+      "D: Manual job assignment by the user for each function",
+      "E: No scheduling mechanism at all"
+    ],
+    "correct_options_literal": "Users can specify resource needs in @ray.remote decorators or actor definitions, and Ray’s scheduler places tasks on nodes that have the requested resources.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Ray: A Distributed Framework for AI Applications - Distributed Systems",
+    "context": "Ray supports library extensions such as Ray Tune (hyperparameter search), RLlib (reinforcement learning), and Ray Serve (model serving), making it an end-to-end platform for AI pipelines.",
+    "question": "What is the benefit of using Ray’s built-in libraries (Tune, RLlib, Serve) instead of separate specialized systems for each task?",
+    "options": [
+      "A: It disallows concurrency across tasks",
+      "B: They run only on CPU, ignoring GPU clusters",
+      "C: They integrate seamlessly with Ray’s core scheduling and object store, enabling a unified workflow from data processing to hyperparameter tuning to model deployment",
+      "D: They replace the need for any Python code",
+      "E: They require a separate cluster for each library"
+    ],
+    "correct_options_literal": "All these libraries build on the same Ray runtime, so data, tasks, and scheduling unify under one system, simplifying complex AI pipelines.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Ray: A Distributed Framework for AI Applications - Distributed Systems",
+    "context": "Ray’s actor model extends the concept of remote functions by giving each actor state and concurrency semantics, letting it handle method calls in sequence or with concurrency if specified.",
+    "question": "Why might you use Ray actors instead of Ray tasks for certain workloads?",
+    "options": [
+      "A: To remove all concurrency from the system",
+      "B: Because actors cannot store any state",
+      "C: Actors allow you to maintain stateful computations or long-lived services, preserving data across multiple method invocations in a single process",
+      "D: Actors always run on the head node only",
+      "E: Tasks have no concept of resource constraints"
+    ],
+    "correct_options_literal": "Actors have their own process and can hold local state between calls, which is crucial for some services or incremental computations.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Ray: A Distributed Framework for AI Applications - Distributed Systems",
+    "context": "Large-scale use of Ray might involve hundreds or thousands of nodes. Ray’s autoscaler can launch or terminate nodes in the cloud based on real-time workload demands.",
+    "question": "Which feature of Ray handles dynamic cluster resource scaling in the cloud?",
+    "options": [
+      "A: The manual CLI tool for each node",
+      "B: No scaling feature is provided",
+      "C: Ray’s autoscaler, which monitors pending tasks and idle resources, adjusting cluster size up or down in supported cloud environments",
+      "D: A dedicated load balancer that merges tasks into a single node",
+      "E: A 2-phase commit autoscaling algorithm"
+    ],
+    "correct_options_literal": "The Ray autoscaler reads usage metrics and can start or stop nodes in the chosen cloud provider to match the workload demands.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+
+  {
+    "topic": "SkyPilot (Intercloud Broker) - Distributed Systems",
+    "context": "SkyPilot is an intercloud broker that unifies multiple cloud providers under a single interface, automatically choosing the cheapest or most available resources for computational jobs.",
+    "question": "What is the core advantage of using SkyPilot for running distributed workloads?",
+    "options": [
+      "A: It relies on a single data center with no multi-cloud support",
+      "B: It prohibits scaling beyond one VM",
+      "C: It can seamlessly launch jobs on different cloud providers (AWS, GCP, Azure, etc.) based on availability and cost, without manual reconfiguration",
+      "D: It forces all computations to run locally on the user’s machine",
+      "E: It converts tasks into 2PC transactions"
+    ],
+    "correct_options_literal": "SkyPilot automatically picks a suitable cloud resource (cheapest or available zone) for each job, freeing users from manually dealing with multi-cloud setups.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "SkyPilot (Intercloud Broker) - Distributed Systems",
+    "context": "By bridging multiple cloud providers, SkyPilot can exploit spot instances or ephemeral capacity in different regions, aiming to reduce costs while keeping performance consistent.",
+    "question": "How does SkyPilot help users minimize cloud compute costs?",
+    "options": [
+      "A: By ignoring spot instances entirely",
+      "B: By providing an on-prem HPC cluster for free",
+      "C: By automatically checking multiple providers/regions for cheaper spot or on-demand instances, migrating tasks to whichever resource offers the best price/performance ratio",
+      "D: By forcing all tasks to complete within 1 second",
+      "E: By removing data replication from the system"
+    ],
+    "correct_options_literal": "SkyPilot’s logic looks across providers for cheaper spots or discounts, scheduling jobs accordingly to lower cost while meeting user constraints.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "SkyPilot (Intercloud Broker) - Distributed Systems",
+    "context": "One challenge in multi-cloud environments is data egress costs. SkyPilot attempts to minimize cross-provider data transfers by caching data in cheap storage or reusing local copies on each cloud region.",
+    "question": "Why are data egress costs a significant concern in intercloud setups?",
+    "options": [
+      "A: Because data transfers never happen across clouds",
+      "B: Because egress is usually free but very slow",
+      "C: Because data egress fees can be high when moving large volumes between different cloud providers, overshadowing the benefits of cheaper VM pricing",
+      "D: Because internal HPC networks never charge for bandwidth",
+      "E: Because storing data is always free everywhere"
+    ],
+    "correct_options_literal": "Transferring data between providers often incurs steep egress fees, which can wipe out savings from cheaper compute resources if not managed carefully.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "SkyPilot (Intercloud Broker) - Distributed Systems",
+    "context": "SkyPilot’s architecture uses a lightweight CLI or API that spawns tasks. Under the hood, it creates or tears down VMs or containers in each target cloud, sets up the environment, and runs the user’s job, retrieving logs and results.",
+    "question": "Which component typically orchestrates the life cycle of VMs or containers across different clouds in SkyPilot?",
+    "options": [
+      "A: A separate 2-phase commit coordinator",
+      "B: The user manually logs in to each cloud console",
+      "C: SkyPilot’s manager process or CLI, which issues provider-specific API calls to create, configure, and destroy resources automatically",
+      "D: A hidden Paxos cluster running in each region",
+      "E: A local YAML file with no access to cloud APIs"
+    ],
+    "correct_options_literal": "SkyPilot centralizes the multi-cloud provisioning steps so the user sees a unified interface, but behind the scenes it calls AWS/GCP/Azure APIs, etc.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "SkyPilot (Intercloud Broker) - Distributed Systems",
+    "context": "SkyPilot also supports advanced features like auto-retry on spot eviction, checkpointing tasks, or caching containers across providers, ensuring minimal reconfiguration overhead.",
+    "question": "How does SkyPilot handle transient spot instance failures during a job’s execution?",
+    "options": [
+      "A: It immediately aborts the entire job",
+      "B: It forces the user to manually handle restarts",
+      "C: It can automatically retry the job on a new instance or a different provider, using cached state or checkpointing if supported by the job framework",
+      "D: It runs a final 2-phase commit to confirm partial progress",
+      "E: It duplicates all processes across all providers simultaneously"
+    ],
+    "correct_options_literal": "SkyPilot’s logic can detect if a spot instance is reclaimed, then switch the job to another available instance or region without user intervention.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "SkyPilot (Intercloud Broker) - Distributed Systems",
+    "context": "Intercloud solutions like SkyPilot address vendor lock-in concerns, letting organizations flexibly run workloads wherever is cheapest or most performant at any given time.",
+    "question": "What long-term benefit can an intercloud broker provide to organizations beyond short-term cost savings?",
+    "options": [
+      "A: It forces them to remain on a single provider forever",
+      "B: It eliminates the possibility of HPC usage",
+      "C: It reduces dependency on one vendor, mitigating lock-in risk and enabling agile response to changing provider pricing or regional availability",
+      "D: It uses 2PC for all cloud provisioning calls",
+      "E: It stops all data replication across regions"
+    ],
+    "correct_options_literal": "The ability to move seamlessly among cloud vendors prevents being trapped by one provider’s pricing or policy changes and fosters resilience.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+
+  {
+    "topic": "Spanner: Google’s Globally-Distributed Database",
+    "context": "Spanner provides external consistency (strict serializability) across geographically distributed data centers by leveraging synchronized clocks (TrueTime) and multi-version concurrency control.",
+    "question": "What key mechanism does Spanner use to assign globally valid timestamps for transactions?",
+    "options": [
+      "A: A single global coordinator that doles out timestamps",
+      "B: A purely asynchronous approach with no clock synchronization",
+      "C: The TrueTime API, which provides bounded-error clock readings, letting Spanner assign timestamps with guaranteed minimal uncertainty",
+      "D: A 2-phase commit across all data centers for each timestamp",
+      "E: Vector clocks for every key"
+    ],
+    "correct_options_literal": "TrueTime gives each node an interval [earliest, latest], ensuring timestamps reflect global partial ordering with tight error bounds on real-time.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Spanner: Google’s Globally-Distributed Database",
+    "context": "By using TrueTime and carefully designed concurrency control, Spanner can produce strict serializable reads and writes across data centers, effectively making the database behave as if all operations occurred in a single global timeline.",
+    "question": "How does Spanner achieve strict serializability across geographically distant data centers?",
+    "options": [
+      "A: It only stores data in one location",
+      "B: It uses indefinite blocking whenever a data center is unreachable",
+      "C: TrueTime-based commit protocols ensure that once a transaction commits with a timestamp, all subsequent transactions use a strictly greater timestamp, preserving a linearizable order",
+      "D: It never replicates data beyond a single region",
+      "E: It relies solely on network RTT for timestamping"
+    ],
+    "correct_options_literal": "Spanner carefully sequences commits so that no transaction can appear to commit in the past relative to an already completed transaction.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Spanner: Google’s Globally-Distributed Database",
+    "context": "Data in Spanner is partitioned into tablets. Each tablet is replicated via Paxos across multiple replicas in different datacenters, ensuring fault tolerance and low-latency local reads.",
+    "question": "What role does Paxos play within each partition (tablet) in Spanner?",
+    "options": [
+      "A: Paxos is not used in Spanner",
+      "B: Paxos ensures each tablet’s log is consistently replicated across multiple replicas, providing fault-tolerant updates with strong consistency",
+      "C: Paxos only handles 2-phase commits",
+      "D: Spanner uses PBFT instead of Paxos",
+      "E: Paxos is only used for read requests"
+    ],
+    "correct_options_literal": "Each tablet group uses Paxos for consistent replication so that if the leader fails, another replica can safely take over with the same log state.",
+    "correct_options": "B",
+    "correct_options_idx": 2
+  },
+  {
+    "topic": "Spanner: Google’s Globally-Distributed Database",
+    "context": "Spanner’s TrueTime uses atomic clocks and GPS receivers to bound clock drift. The system must wait out the uncertainty interval to ensure no concurrency violations if clocks are misaligned.",
+    "question": "Why might Spanner occasionally introduce small delays (called 'certainty waits') before committing a transaction?",
+    "options": [
+      "A: To run 2PC among all tablets",
+      "B: To ensure the next GPS update arrives",
+      "C: To ensure that the real-time ordering is not violated due to potential clock skew, letting the transaction’s timestamp safely pass any earlier events",
+      "D: To block all other transactions from reading data",
+      "E: To switch to a new Paxos leader"
+    ],
+    "correct_options_literal": "Spanner can wait out the worst-case clock error interval so that no later transaction can appear to have committed earlier in real-time.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Spanner: Google’s Globally-Distributed Database",
+    "context": "Spanner’s design solves the 'clock uncertainty' challenge in a mostly-synchronous system. The cost includes specialized hardware for timekeeping and carefully orchestrated replication across wide-area links.",
+    "question": "What is one downside or requirement of Spanner’s approach to global strongly consistent transactions?",
+    "options": [
+      "A: It never replicates data across regions",
+      "B: It requires commodity hardware with no special timekeeping",
+      "C: It demands sophisticated time synchronization infrastructure (GPS, atomic clocks) to keep clock drift within a known bound and ensure correctness",
+      "D: It uses a fully asynchronous model with random election",
+      "E: It forces all transactions to run in single-threaded mode"
+    ],
+    "correct_options_literal": "Deploying TrueTime means physically equipping datacenters with accurate clock references so that each server has minimal time skew.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Spanner: Google’s Globally-Distributed Database",
+    "context": "Spanner is often used for globally distributed services that need strong consistency for financial or mission-critical data, balancing performance with guaranteed external consistency.",
+    "question": "What use case especially benefits from Spanner’s strong consistency guarantees across multiple continents?",
+    "options": [
+      "A: A basic single-node cache",
+      "B: Ultra-latency-sensitive stock trading with microsecond round trips",
+      "C: Enterprise applications requiring global ACID transactions on a consistent database, e.g., financial transactions or inventory management across regions",
+      "D: A purely ephemeral chat application with no data durability",
+      "E: A GPU-based neural network training with eventual logs"
+    ],
+    "correct_options_literal": "Spanner’s cross-region ACID transactions are ideal for large enterprises that require globally consistent records (banking, inventory, critical data).",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+
+  {
+    "topic": "Spark: Cluster Computing with Working Sets",
+    "context": "Spark introduced the Resilient Distributed Dataset (RDD) abstraction, letting users create fault-tolerant data pipelines with in-memory caching, suitable for iterative or interactive workloads.",
+    "question": "Which abstraction is the cornerstone of Spark’s fault-tolerant, in-memory computations?",
+    "options": [
+      "A: MapReduce Mappers only",
+      "B: The Hadoop Distributed File System",
+      "C: RDDs (Resilient Distributed Datasets), which track lineage for recovery and enable in-memory caching of intermediate results",
+      "D: A single global Java VM",
+      "E: Two-phase commit logs"
+    ],
+    "correct_options_literal": "RDDs are Spark’s fundamental data structure, storing lineage for recomputation and allowing in-memory iterative processing.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Spark: Cluster Computing with Working Sets",
+    "context": "MapReduce is efficient for batch jobs but can be slow for iterative algorithms (like ML) that re-scan the same data. Spark’s in-memory RDD approach speeds up repeated data accesses.",
+    "question": "Why does Spark outperform classic MapReduce for iterative machine learning tasks?",
+    "options": [
+      "A: It removes all data replication",
+      "B: It forbids parallel operations",
+      "C: Spark caches intermediate data in RAM (RDDs), avoiding repeated disk I/O across multiple iterations, significantly accelerating iterative computations",
+      "D: Spark never uses a shuffle step",
+      "E: Spark only runs on GPU clusters"
+    ],
+    "correct_options_literal": "Keeping frequently used data in memory drastically reduces the overhead of repeated reads from disk or distributed file systems.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Spark: Cluster Computing with Working Sets",
+    "context": "An RDD’s lineage is a record of how it was derived from other datasets, allowing Spark to recompute lost partitions if a node fails, without needing full data replication for fault tolerance.",
+    "question": "How does Spark recover lost data partitions in an RDD if a worker node fails?",
+    "options": [
+      "A: By running 2-phase commit for every record",
+      "B: By storing triple replication of every RDD partition",
+      "C: By recomputing the lost partitions using the RDD’s lineage (the transformation graph) from the original data or intermediate steps",
+      "D: By ignoring the lost data entirely",
+      "E: By re-reading the entire HDFS dataset from scratch"
+    ],
+    "correct_options_literal": "Spark reconstructs missing partitions through the transformation lineage instead of fully replicating every intermediate result.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Spark: Cluster Computing with Working Sets",
+    "context": "Spark provides actions (like reduce, collect) that trigger execution of the transformation DAG. Transformations (e.g., map, filter) are lazy, building up a DAG until an action demands results.",
+    "question": "In Spark’s execution model, why are transformations described as 'lazy'?",
+    "options": [
+      "A: They are never actually executed",
+      "B: They force immediate computation of each step",
+      "C: They build up a DAG of operations without performing them immediately, deferring actual data processing until an action is invoked",
+      "D: They discard all user-defined functions",
+      "E: They run on a single local thread only"
+    ],
+    "correct_options_literal": "Spark queues transformations in a DAG, executing them only when an action (like reduce) demands a final result, optimizing the pipeline in the process.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Spark: Cluster Computing with Working Sets",
+    "context": "Spark’s data shuffle can be more efficient than MapReduce for certain iterative or interactive workloads, though large shuffles can still be costly if data is huge or cross-node communication is high.",
+    "question": "What happens during a 'shuffle' in Spark?",
+    "options": [
+      "A: No data movement occurs",
+      "B: The RDD is stored in local memory only",
+      "C: Data is redistributed across the cluster based on partitioning (e.g., key-based) so that subsequent stages can group relevant records together for processing",
+      "D: The user manually copies data files to each worker",
+      "E: All transformations skip intermediate results"
+    ],
+    "correct_options_literal": "The shuffle step rearranges data partitions across workers, grouping keys or data slices for the next stage’s computations.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Spark: Cluster Computing with Working Sets",
+    "context": "Spark introduced high-level APIs (e.g., DataFrame, Dataset) which further optimize queries using a relational optimizer (Catalyst), building on the underlying RDD model for fault tolerance.",
+    "question": "How do Spark DataFrames improve upon raw RDDs for many analytic workloads?",
+    "options": [
+      "A: They remove all fault tolerance",
+      "B: They only run on a single machine",
+      "C: They provide a higher-level relational interface with an optimizer (Catalyst) that can plan efficient execution strategies, using RDDs under the hood for fault tolerance",
+      "D: They rely on manual user partitioning code",
+      "E: They can’t handle SQL-like operations"
+    ],
+    "correct_options_literal": "Spark DataFrames let you use declarative queries (like SQL) and benefit from an advanced planner while still preserving the distributed, fault-tolerant RDD engine beneath.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+
+  {
+    "topic": "Fast and Secure Global Payments with Stellar",
+    "context": "Stellar is a payment network using a consensus protocol (Stellar Consensus Protocol, SCP) for fast transaction finality, focusing on cross-border transfers. It supports federated Byzantine agreements.",
+    "question": "How does Stellar’s consensus model differ from classical PBFT or Paxos?",
+    "options": [
+      "A: It uses proof-of-work mining",
+      "B: It uses random coordinator election each round",
+      "C: It employs a Federated Byzantine Agreement (FBA) model, where each node selects 'quorum slices' and trust is decentrally configured rather than relying on a static membership or single leader",
+      "D: It relies solely on 2-phase commit for finality",
+      "E: It is identical to Paxos in all respects"
+    ],
+    "correct_options_literal": "SCP is an FBA protocol, letting each participant define trust slices; enough overlap leads to consensus among cooperating sets of validators.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Fast and Secure Global Payments with Stellar",
+    "context": "Stellar’s ledger is replicated by validators around the world. Transactions settle in a few seconds. SCP ensures 'eventual consensus' given honest majorities in chosen slices.",
+    "question": "What is a major goal of the Stellar network?",
+    "options": [
+      "A: To run massive GPU-based machine learning",
+      "B: To store all data in a single node",
+      "C: To facilitate low-cost, near-instant cross-border payments and currency exchanges on a decentralized ledger, aiming to include unbanked populations",
+      "D: To implement strongly consistent key-value storage",
+      "E: To run 3-phase commit among all nodes"
+    ],
+    "correct_options_literal": "Stellar is designed for quick, low-fee international payments, bridging currencies via a federated ledger.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Fast and Secure Global Payments with Stellar",
+    "context": "SCP claims to provide 'conditional safety' if sufficient overlap exists in the trust configurations. If nodes choose conflicting or disjoint slices, the network can fracture.",
+    "question": "Why is it critical for Stellar validators to maintain overlapping quorum slices?",
+    "options": [
+      "A: So the protocol can rely on 2PC logs",
+      "B: Because if slices are disjoint (no overlap), the network can fork, with different sets of nodes each forming separate ledgers, losing global agreement",
+      "C: Because the protocol requires a single coordinator",
+      "D: Because hashed time locks secure the data",
+      "E: Because each node must replicate all slices"
+    ],
+    "correct_options_literal": "FBA requires intersection among nodes’ trust groups; without intersection, different sets can confirm conflicting transactions or states.",
+    "correct_options": "B",
+    "correct_options_idx": 2
+  },
+  {
+    "topic": "Fast and Secure Global Payments with Stellar",
+    "context": "Stellar includes a built-in decentralized exchange for multi-currency payments, automatically matching orders for path payments. This broadens financial accessibility beyond single-currency use.",
+    "question": "How does Stellar handle multi-currency transactions on its ledger?",
+    "options": [
+      "A: It only supports a single base currency",
+      "B: It requires an external 2PC with banks",
+      "C: It provides built-in path payments and a decentralized exchange, letting users trade or convert currencies within the protocol itself",
+      "D: It always denies cross-currency transactions",
+      "E: It merges them into a single asset type"
+    ],
+    "correct_options_literal": "Stellar’s design includes a native DEX that can match user offers and enable atomic multi-step conversions across different currencies or assets in a single transaction flow.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Fast and Secure Global Payments with Stellar",
+    "context": "Stellar aims to remain lightweight, running on commodity hardware, and uses simpler data structures than some heavier blockchains. SCP finality times typically range a few seconds per ledger close.",
+    "question": "Which aspect of Stellar’s design allows it to run on relatively simple hardware while still achieving quick settlement?",
+    "options": [
+      "A: A heavy proof-of-work mining scheme",
+      "B: A single global coordinator with infinite bandwidth",
+      "C: SCP’s reliance on partial trust settings and minimal block size, ensuring that participants can validate transactions rapidly without massive computations",
+      "D: Full replication of all blocks on every IoT device",
+      "E: The system processes only one transaction per hour"
+    ],
+    "correct_options_literal": "SCP’s consensus overhead is modest, especially with well-chosen quorum slices, and the ledger throughput remains moderate so typical machines can keep up.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Fast and Secure Global Payments with Stellar",
+    "context": "Stellar emphasizes ease of account creation and low transaction fees, aiming to make global micropayments feasible. However, trust configuration can be tricky for new participants lacking well-known validators.",
+    "question": "What is one challenge for new Stellar network participants who want to run their own validators?",
+    "options": [
+      "A: They must run proof-of-work computations",
+      "B: They are forced to store billions of large blocks",
+      "C: They must configure their quorum slices carefully, choosing trusted validators that overlap with the broader network, or risk forming an isolated fork",
+      "D: They must handle 2-Phase Commit for every transaction",
+      "E: They never need to define trust relationships"
+    ],
+    "correct_options_literal": "To join an FBA network effectively, a new validator must pick existing well-connected nodes it trusts; poor slice choices can isolate it.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+
+  {
+    "topic": "Streamlet: Textbook Streamlined Blockchains",
+    "context": "Streamlet is a simplified, educational blockchain protocol with a proof-of-stake approach, focusing on clarity in its rounds-based block voting and finalization mechanism.",
+    "question": "What is the primary goal of the Streamlet protocol as described by the authors?",
+    "options": [
+      "A: To illustrate a simple, provably correct PoS blockchain protocol that is easier to understand than many production systems",
+      "B: To force a 2PC approach on all blocks",
+      "C: To replace proof-of-work with CPU-based hashing only",
+      "D: To handle purely asynchronous BFT with no finality",
+      "E: To run GPU-based reinforcement learning"
+    ],
+    "correct_options_literal": "Streamlet is designed as a minimalistic, pedagogical PoS protocol, clarifying how committees can finalize blocks with straightforward rules.",
+    "correct_options": "A",
+    "correct_options_idx": 1
+  },
+  {
+    "topic": "Streamlet: Textbook Streamlined Blockchains",
+    "context": "Block proposers take turns each round. Other validators vote on the proposed block. A block becomes committed (final) when it gathers enough votes in two consecutive rounds, demonstrating BFT-style finality.",
+    "question": "Which step is key to committing (finalizing) a block in Streamlet?",
+    "options": [
+      "A: Getting a single vote from the coordinator",
+      "B: Overwriting all previous blocks forcibly",
+      "C: Acquiring enough validator votes in two consecutive rounds, ensuring no conflicting chain can gain majority support",
+      "D: Running a 3-phase commit approach",
+      "E: Storing the block only in local memory"
+    ],
+    "correct_options_literal": "Streamlet requires each block to pass two consecutive majority votes across rounds, guaranteeing it can’t be reversed without a large adversarial share.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Streamlet: Textbook Streamlined Blockchains",
+    "context": "Streamlet’s leaders produce blocks in a round-robin style. If the leader is Byzantine or offline, it can fail to produce a valid block for that round, but subsequent rounds can still progress with new leaders.",
+    "question": "How does Streamlet handle a faulty leader that does not propose a valid block in its assigned round?",
+    "options": [
+      "A: The chain halts indefinitely",
+      "B: The protocol punishes all nodes by slashing tokens randomly",
+      "C: The round is effectively skipped if no valid block is produced, and the next leader in rotation can propose in the following round",
+      "D: The protocol reverts to a single coordinator approach",
+      "E: It triggers a 2-phase commit to fix the block"
+    ],
+    "correct_options_literal": "If the leader fails, that round yields no block. The next leader tries in the next round, and the chain continues without indefinite blocking.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Streamlet: Textbook Streamlined Blockchains",
+    "context": "The protocol aims for eventual finality under partial synchrony. That is, once network conditions stabilize, honest validators consistently finalize blocks in a linear chain.",
+    "question": "Under which network assumption does Streamlet guarantee eventual block finalization?",
+    "options": [
+      "A: Fully asynchronous with no bound on message delays",
+      "B: Perfect synchrony with zero latency",
+      "C: Partial synchrony, meaning after some unknown bounded time, messages are delivered within known bounds, allowing consensus to complete",
+      "D: Synchronous BFS tree routing",
+      "E: Proof-of-work with difficulty adjustments"
+    ],
+    "correct_options_literal": "Streamlet, like many PoS protocols, assumes partial synchrony: eventually messages arrive in bounded time so the protocol can converge.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Streamlet: Textbook Streamlined Blockchains",
+    "context": "Stake is used for Sybil resistance: only validators holding tokens can sign blocks. An adversary must control >1/3 of total stake to disrupt finalization in a classical BFT setting.",
+    "question": "What prevents an attacker with little stake from controlling the Streamlet blockchain?",
+    "options": [
+      "A: Streamlet uses proof-of-work",
+      "B: There is a single coordinator that blocks the attacker",
+      "C: Because voting weight correlates with stake, an attacker with insufficient stake lacks enough voting power to outvote honest validators, thus cannot finalize an adversarial chain",
+      "D: The protocol depends on 2-phase commit logs",
+      "E: The attacker can always override final decisions"
+    ],
+    "correct_options_literal": "Possessing less than 1/3 of the total stake means the adversary can’t create a conflicting chain that the majority will accept.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Streamlet: Textbook Streamlined Blockchains",
+    "context": "Streamlet’s authors position it as a 'textbook' protocol. Production PoS blockchains often have additional features like slashing conditions, detailed reward schedules, or more complex committees.",
+    "question": "Why might Streamlet omit certain practical features like slashing or dynamic validator sets in its description?",
+    "options": [
+      "A: Because the protocol is designed for large-scale production with no modifications",
+      "B: Because it uses 2-phase commit for all blocks",
+      "C: It aims to illustrate the core principles of PoS BFT consensus as simply as possible, leaving out real-world complexities for clarity",
+      "D: It disallows any form of stake-based voting",
+      "E: It only supports one validator node"
+    ],
+    "correct_options_literal": "Streamlet is meant as an instructive minimal system, focusing on the essential consensus logic, not every real-world detail like slashing or dynamic membership.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+
+  {
+    "topic": "ZooKeeper: Wait-Free Coordination for Internet-Scale Systems",
+    "context": "ZooKeeper is a coordination service offering shared configuration, naming, group services, and leader election primitives. It uses a replicated state machine approach to provide a consistent view of data.",
+    "question": "Why do many distributed systems rely on ZooKeeper for leader election and configuration management?",
+    "options": [
+      "A: It uses a single central server with no replication",
+      "B: It provides a strongly consistent view of a hierarchical key-value store, allowing reliable leader election and config updates across multiple nodes",
+      "C: It always runs in ephemeral mode only",
+      "D: It only handles ephemeral metadata, never stable config",
+      "E: It merges Paxos with 2-phase commit"
+    ],
+    "correct_options_literal": "ZooKeeper replicates a small data tree across its ensemble, ensuring consistent updates, which is ideal for tasks like electing a leader or storing global configs.",
+    "correct_options": "B",
+    "correct_options_idx": 2
+  },
+  {
+    "topic": "ZooKeeper: Wait-Free Coordination for Internet-Scale Systems",
+    "context": "Clients can create ephemeral znodes that vanish if the client session ends. This is used for ephemeral locks or group membership. ZooKeeper’s atomic broadcast (Zab) ensures linearizable writes.",
+    "question": "How does ZooKeeper handle ephemeral nodes that represent a client’s temporary state?",
+    "options": [
+      "A: They remain indefinitely, requiring manual deletion",
+      "B: They become permanent once the coordinator commits them",
+      "C: They are automatically deleted if the client’s session ends or times out, preventing stale lock entries or membership references",
+      "D: They are replaced by read-only nodes",
+      "E: They revert to a 2PC scheme"
+    ],
+    "correct_options_literal": "Ephemeral znodes bind to a session; if the client disconnects, ZooKeeper removes those znodes, cleaning up transient states automatically.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "ZooKeeper: Wait-Free Coordination for Internet-Scale Systems",
+    "context": "ZooKeeper’s architecture typically comprises an ensemble of servers. Each update is written to a majority quorum, ensuring fault tolerance. Clients connect to any server for reads.",
+    "question": "Which fault-tolerance approach does ZooKeeper’s replication rely on?",
+    "options": [
+      "A: 2-phase commit across the ensemble",
+      "B: A single primary with no backups",
+      "C: Quorum-based replication using Zab (ZooKeeper Atomic Broadcast), ensuring that a majority of servers log each write before it’s considered committed",
+      "D: Strict eventual consistency with no ordering",
+      "E: Full asynchronous model with no stable storage"
+    ],
+    "correct_options_literal": "Zab is a protocol that ensures each write is replicated to a quorum and leads to a single global order of updates across the ensemble.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "ZooKeeper: Wait-Free Coordination for Internet-Scale Systems",
+    "context": "ZooKeeper is designed for high read throughput, as many distributed coordination patterns rely on frequent reads of small config or status data. Writes are less frequent but must be consistent.",
+    "question": "Why is ZooKeeper often used for frequent-read, infrequent-write workloads in distributed systems?",
+    "options": [
+      "A: It has no concept of replication",
+      "B: It only allows a single read per session",
+      "C: The system is optimized for low-latency reads from in-memory state, while writes must go through a replicated commit path, suiting config/status use cases with many reads and fewer writes",
+      "D: It merges all writes into a single transaction",
+      "E: It runs 2-phase commit for every read operation"
+    ],
+    "correct_options_literal": "ZooKeeper caches data in memory on each server, enabling fast reads, while writes must replicate to the ensemble, typically a less common operation.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  }
+]

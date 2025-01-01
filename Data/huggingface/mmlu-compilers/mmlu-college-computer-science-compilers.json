@@ -1,0 +1,1436 @@
+[
+  {
+    "topic": "Lexical Analysis",
+    "context": "A lexical analyzer (lexer) reads characters from the source program and groups them into tokens based on patterns defined by regular expressions.",
+    "question": "Which method is commonly used to automatically generate a lexer from regular expressions?",
+    "options": [
+      "A: Naive top-down manual matching",
+      "B: Finite automata-based generator (e.g., Lex/Flex)",
+      "C: Hashtable token indexing only",
+      "D: Dynamic backtracking with an LL(1) parser",
+      "E: Using direct context-free grammar productions"
+    ],
+    "correct_options_literal": "Lexer generators such as Lex or Flex construct deterministic finite automata from regular expressions for token recognition.",
+    "correct_options": "B",
+    "correct_options_idx": 2
+  },
+  {
+    "topic": "Lexical Analysis",
+    "context": "Deterministic finite automata (DFA) are often minimized to reduce the number of states. They can then be used by the lexer to match tokens efficiently.",
+    "question": "What is the main benefit of using a minimized DFA in lexical analysis?",
+    "options": [
+      "A: It ensures the parser is always LL(1)",
+      "B: It increases the number of transitions for ambiguity resolution",
+      "C: It reduces the total number of states, leading to faster token recognition and smaller tables",
+      "D: It forces the lexer to ignore whitespace",
+      "E: It eliminates all lookahead requirements in parsing"
+    ],
+    "correct_options_literal": "Minimizing a DFA merges equivalent states, reducing storage and potentially improving the lexer’s efficiency.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Lexical Analysis",
+    "context": "Lexical errors occur when the input character stream cannot be matched against any token pattern. A robust lexer might skip or report them.",
+    "question": "How is an unexpected character typically handled during lexical analysis?",
+    "options": [
+      "A: It is always mapped to a default token named ‘UNKNOWN’",
+      "B: The lexer terminates compilation immediately",
+      "C: The lexer either reports an error or skips unrecognized characters based on its design",
+      "D: The lexer upgrades the character to a keyword token automatically",
+      "E: It is passed straight to the parser for handling"
+    ],
+    "correct_options_literal": "Usually, the lexer flags an error token or skips it, depending on the error recovery strategy in place.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Lexical Analysis",
+    "context": "Token attributes often store lexeme-specific information (e.g., integer value, identifier name). This data is used by later phases (parser, semantic analysis).",
+    "question": "Why does the lexer embed additional attributes (e.g., numeric value) in tokens?",
+    "options": [
+      "A: So that the lexer can parse the grammar by itself",
+      "B: To store textual logs for debugging",
+      "C: To carry semantic information (like an integer’s value) needed for further compilation stages",
+      "D: To prevent the parser from reading the token type",
+      "E: Because tokens must store all library function names in their attributes"
+    ],
+    "correct_options_literal": "Attributes (like integer constants’ values) are required in later phases for type checking, code generation, etc.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Lexical Analysis",
+    "context": "A language’s lexical specification can have priorities (e.g., longest match or reserved keywords) to disambiguate overlapping token patterns.",
+    "question": "Which approach best resolves conflicts when two or more token patterns match the same input substring?",
+    "options": [
+      "A: Always choose the shortest match",
+      "B: Reject the input immediately",
+      "C: Use the longest match and then, among ties, a priority rule (e.g., keyword vs. identifier)",
+      "D: Convert them all to integer tokens",
+      "E: Randomly pick any recognized pattern"
+    ],
+    "correct_options_literal": "The ‘maximal munch’ rule picks the longest valid lexeme, and then lexical priority can break ties (e.g., keywords over identifiers).",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Lexical Analysis",
+    "context": "When building a lexical analyzer manually, you might use a transition diagram to represent a DFA’s states and edges for each pattern.",
+    "question": "How does a transition diagram assist in hand-coding a lexer?",
+    "options": [
+      "A: It shows parse trees for entire language constructs",
+      "B: It optimizes final machine code generation",
+      "C: It represents how each input character transitions the lexer from one state to another in a DFA-based approach",
+      "D: It blocks any ambiguous transitions for context-free grammars",
+      "E: It directly implements shift/reduce parsing decisions"
+    ],
+    "correct_options_literal": "A transition diagram outlines a state machine for token patterns, guiding how each character leads to a new state or token acceptance.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Lexical Analysis",
+    "context": "A sentinel is often appended to the input buffer, marking its end. This approach can simplify checking for buffer boundaries within a lexer.",
+    "question": "Why might a lexical analyzer add a sentinel (often an EOF marker) at the end of the input buffer?",
+    "options": [
+      "A: To ensure the parser sees the start symbol",
+      "B: To avoid having to check for end-of-buffer repeatedly when consuming characters",
+      "C: To force immediate acceptance of all tokens",
+      "D: To bypass lexical errors automatically",
+      "E: To enable parallel lexical analysis across multiple files"
+    ],
+    "correct_options_literal": "By placing a sentinel, the lexer can safely read ahead without constantly testing for buffer end conditions, simplifying logic.",
+    "correct_options": "B",
+    "correct_options_idx": 2
+  },
+  {
+    "topic": "Lexical Analysis",
+    "context": "Regular expressions define patterns for lexical tokens. A single regular expression can be converted into an NFA, and then to a minimized DFA.",
+    "question": "Which is the correct sequence to build a DFA from a regular expression?",
+    "options": [
+      "A: Regular expression -> parse tree -> DP algorithm -> minimal DFA",
+      "B: Regular expression -> context-free grammar -> LL(1) table -> NFA -> partial DFA",
+      "C: Regular expression -> NFA -> DFA -> minimized DFA",
+      "D: Regular expression -> LR(1) items -> canonical collection -> final states",
+      "E: Regular expression -> direct shift/reduce automaton"
+    ],
+    "correct_options_literal": "The standard process is RE -> NFA (Thompson’s construction) -> DFA (subset construction) -> minimized DFA.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Lexical Analysis",
+    "context": "Keyword recognition can be done via separate checks in the lexer. If an identifier matches a reserved word, it is reclassified as a keyword token.",
+    "question": "How do typical lexers differentiate identifiers from reserved keywords?",
+    "options": [
+      "A: By ignoring all reserved keywords for later phases",
+      "B: By assigning all words to the same token type",
+      "C: By initially recognizing them as identifiers, then checking against a keyword table to reclassify if matched",
+      "D: By forcing the parser to check each string against a dictionary",
+      "E: By generating a dedicated regular expression for each possible identifier name"
+    ],
+    "correct_options_literal": "Commonly, the lexer recognizes a lexeme as an identifier, then does a table lookup to see if it’s a reserved keyword, adjusting its token type if so.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Lexical Analysis",
+    "context": "Lexical analyzers typically skip whitespace (spaces, tabs, newlines) unless the language uses indentation or layout-based syntax (e.g., Python).",
+    "question": "Why is whitespace usually not returned as a token in most languages?",
+    "options": [
+      "A: It carries no syntactic or semantic meaning for most grammars",
+      "B: It must be parsed by a special context-free grammar",
+      "C: The lexer merges whitespace with the next token automatically",
+      "D: It is only used for error detection",
+      "E: It must always be turned into a single invisible token"
+    ],
+    "correct_options_literal": "Unless significant (as in indentation-based languages), whitespace is ignored by not producing tokens for it, simplifying parsing.",
+    "correct_options": "A",
+    "correct_options_idx": 1
+  },
+
+  {
+    "topic": "Parsing",
+    "context": "Top-down parsing attempts to construct a parse tree from the start symbol down to the leaves, often relying on lookahead tokens to make decisions.",
+    "question": "Which property is typically required for an LL(1) grammar?",
+    "options": [
+      "A: The grammar has no productions at all",
+      "B: It must not contain left recursion or ambiguous productions",
+      "C: It can only generate finite languages",
+      "D: It allows arbitrary amounts of backtracking to parse a single token",
+      "E: It must be typed with strong static semantics"
+    ],
+    "correct_options_literal": "LL(1) parsing demands no left recursion and no ambiguous first/follow overlaps, ensuring decisions are made with one-token lookahead.",
+    "correct_options": "B",
+    "correct_options_idx": 2
+  },
+  {
+    "topic": "Parsing",
+    "context": "Bottom-up parsing (e.g., LR) shifts tokens onto a stack and reduces them to nonterminals when a right-hand side matches a handle.",
+    "question": "What is a 'handle' in bottom-up parsing?",
+    "options": [
+      "A: The next token to be read by the scanner",
+      "B: A substring of the input that matches the right-hand side of a production and whose reduction is a valid step in the rightmost derivation",
+      "C: The entire parse tree from start to finish",
+      "D: A special pointer to the symbol table",
+      "E: An empty string recognized as epsilon"
+    ],
+    "correct_options_literal": "A handle is the correct substring to reduce, matching a production’s RHS that leads toward the start symbol in a rightmost derivation.",
+    "correct_options": "B",
+    "correct_options_idx": 2
+  },
+  {
+    "topic": "Parsing",
+    "context": "Recursive-descent parsers are hand-crafted top-down parsers. They must avoid left recursion and backtracking for efficiency, typically requiring an LL(k) grammar.",
+    "question": "Which issue arises directly if a grammar contains immediate left recursion when using a naive recursive-descent parser?",
+    "options": [
+      "A: The parser is forced to do bottom-up matching",
+      "B: The parser enters infinite recursion on that production",
+      "C: The grammar becomes ambiguous",
+      "D: The parser automatically rewrites the grammar",
+      "E: The parser always accepts any input"
+    ],
+    "correct_options_literal": "Immediate left recursion causes a naive recursive procedure to call itself repeatedly without consuming input, leading to nontermination.",
+    "correct_options": "B",
+    "correct_options_idx": 2
+  },
+  {
+    "topic": "Parsing",
+    "context": "LL(1) parsing tables map (nonterminal, lookahead) pairs to a production. Conflicts occur when more than one production is possible for the same pair.",
+    "question": "How can you detect that a grammar is not LL(1) from its parsing table?",
+    "options": [
+      "A: The table has more nonterminals than terminals",
+      "B: Multiple productions appear in the same table cell, indicating a conflict",
+      "C: The grammar has more than one start symbol",
+      "D: The grammar references tokens that don’t exist in the lexer",
+      "E: There are no epsilon-productions at all"
+    ],
+    "correct_options_literal": "If a single table entry requires multiple productions, it indicates LL(1) conflict (FIRST/FOLLOW overlap), making the grammar non-LL(1).",
+    "correct_options": "B",
+    "correct_options_idx": 2
+  },
+  {
+    "topic": "Parsing",
+    "context": "LR parsing uses an automaton built from LR items. Items indicate the parser’s position in a production, guiding shift/reduce or reduce/reduce decisions.",
+    "question": "In LR parsing, an LR(0) item has the form A → α • β. What does the '•' (dot) signify?",
+    "options": [
+      "A: The next symbol to match or shift is immediately to the right of the dot",
+      "B: An epsilon-production placeholder",
+      "C: The end of the entire grammar",
+      "D: A marker that the production is left-recursive",
+      "E: The dot is an optional symbol that can be ignored"
+    ],
+    "correct_options_literal": "In LR items, the dot indicates how much of the production has been recognized and which symbol is expected next.",
+    "correct_options": "A",
+    "correct_options_idx": 1
+  },
+  {
+    "topic": "Parsing",
+    "context": "SLR, LALR, and LR(1) are variants of LR parsing with different methods of constructing and using lookaheads. LR(1) is more powerful but produces larger tables than SLR or LALR.",
+    "question": "What is the primary difference between SLR(1) and LR(1) parsing methods?",
+    "options": [
+      "A: SLR(1) never uses shift actions, while LR(1) does",
+      "B: LR(1) includes explicit lookahead symbols in each item, whereas SLR(1) uses FOLLOW sets from the entire grammar to decide reduce actions",
+      "C: LR(1) only applies to ambiguous grammars",
+      "D: SLR(1) is a top-down parser, LR(1) is bottom-up",
+      "E: They are actually identical in every aspect"
+    ],
+    "correct_options_literal": "LR(1) items explicitly track lookahead tokens in each state, while SLR uses simplified global FOLLOW sets, often merging states.",
+    "correct_options": "B",
+    "correct_options_idx": 2
+  },
+  {
+    "topic": "Parsing",
+    "context": "A reduce/reduce conflict in an LR parsing table arises when two productions can be reduced at the same state and lookahead. This often indicates grammar ambiguity or insufficient lookahead.",
+    "question": "How might you resolve a reduce/reduce conflict in an LR grammar?",
+    "options": [
+      "A: Remove all productions from the grammar",
+      "B: Increase lookahead (e.g., from SLR to LALR or LR(1)), or rewrite the grammar to eliminate ambiguity",
+      "C: Always prefer shifting over reducing",
+      "D: Use a predictive parsing table instead",
+      "E: Treat it as a lexical error"
+    ],
+    "correct_options_literal": "Upgrading to more powerful lookahead (LR(1)) or modifying the grammar structure can disambiguate the reduce/reduce conflict.",
+    "correct_options": "B",
+    "correct_options_idx": 2
+  },
+  {
+    "topic": "Parsing",
+    "context": "Operator-precedence parsing is a bottom-up technique that can handle ambiguous grammars for expressions by defining precedence and associativity rules.",
+    "question": "How does operator-precedence parsing decide which operation to reduce first?",
+    "options": [
+      "A: It always reduces leftmost operators first",
+      "B: By referencing a precedence table that indicates which operator has higher or lower precedence",
+      "C: By scanning the entire input to find the global maximum-precedence operator",
+      "D: By using a specialized top-down LL(2) approach",
+      "E: It inlines the tokens directly into the parse tree"
+    ],
+    "correct_options_literal": "Operator-precedence tables define, for each pair of operators, which has higher precedence or whether to group them left/right, guiding the reduce step.",
+    "correct_options": "B",
+    "correct_options_idx": 2
+  },
+  {
+    "topic": "Parsing",
+    "context": "An ambiguous grammar can produce multiple parse trees for the same input. Some parser generators use precedence/associativity declarations or grammar rewrites to handle typical ambiguous constructs (e.g., expressions).",
+    "question": "Why is grammar ambiguity problematic for many standard parser generators?",
+    "options": [
+      "A: It forces the lexer to build NFAs",
+      "B: It leads to conflicts (shift/reduce, reduce/reduce) in LR or LL parsing tables",
+      "C: It allows the parser to run in linear time",
+      "D: Ambiguity never appears in real languages",
+      "E: It is required for operator-precedence parsing"
+    ],
+    "correct_options_literal": "Ambiguous grammars cause parser table conflicts because there is no single correct parse derivation for some input.",
+    "correct_options": "B",
+    "correct_options_idx": 2
+  },
+
+  {
+    "topic": "Syntax-Directed Translation",
+    "context": "Syntax-directed translation extends grammar rules with semantic actions that generate intermediate representations or compute attributes.",
+    "question": "What is the main role of semantic actions in a syntax-directed definition?",
+    "options": [
+      "A: They separate the lexer from the parser",
+      "B: They interpret machine code at runtime",
+      "C: They are attached to grammar productions to specify how attribute values or code fragments are computed during parsing",
+      "D: They define the final x86 machine instructions directly",
+      "E: They rename tokens to avoid conflicts"
+    ],
+    "correct_options_literal": "Semantic actions detail how to compute or build additional structures (like AST nodes) when a production is recognized.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Syntax-Directed Translation",
+    "context": "An S-attributed grammar has only synthesized attributes, while an L-attributed grammar allows attributes to be passed down (inherited) as well, with certain ordering constraints.",
+    "question": "Which property distinguishes L-attributed grammars from simple S-attributed grammars?",
+    "options": [
+      "A: L-attributed grammars cannot have semantic actions",
+      "B: They allow inherited attributes that can be evaluated in a single left-to-right pass",
+      "C: L-attributed grammars must be ambiguous",
+      "D: They do not allow any syntax-directed translation scheme",
+      "E: L stands for ‘lexical’, meaning attributes are stored in the lexer only"
+    ],
+    "correct_options_literal": "L-attributed grammars support inherited attributes in a left-to-right evaluation order that avoids forward references.",
+    "correct_options": "B",
+    "correct_options_idx": 2
+  },
+  {
+    "topic": "Syntax-Directed Translation",
+    "context": "Annotated parse trees incorporate semantic rules at each production node. The computed attributes can build an abstract syntax tree (AST) or generate code on the fly.",
+    "question": "What is typically contained in an annotated parse tree node for syntax-directed translation?",
+    "options": [
+      "A: Only the token type",
+      "B: The entire runtime environment and memory map",
+      "C: Symbolic references to other parse trees from previous runs",
+      "D: Attributes that store semantic information (e.g., type, value) derived from grammar productions",
+      "E: Directly linked machine code instructions"
+    ],
+    "correct_options_literal": "Each node in an annotated tree holds attributes computed by semantic rules, capturing essential type or value info.",
+    "correct_options": "D",
+    "correct_options_idx": 4
+  },
+  {
+    "topic": "Syntax-Directed Translation",
+    "context": "Postfix notation (Reverse Polish Notation) is often generated by syntax-directed definitions for arithmetic expressions, serving as an intermediate form.",
+    "question": "How is postfix notation obtained from an expression grammar using syntax-directed rules?",
+    "options": [
+      "A: By always pushing tokens onto a single stack until the end of input",
+      "B: By applying transformations that output operands as soon as they are recognized and operators after their operands",
+      "C: By reversing the entire input string ignoring grammar productions",
+      "D: By building an LR(1) automaton first, then discarding it",
+      "E: By turning all operators into parentheses"
+    ],
+    "correct_options_literal": "During a production’s semantic action, operands are output immediately and the operator is appended after both operands are processed.",
+    "correct_options": "B",
+    "correct_options_idx": 2
+  },
+  {
+    "topic": "Syntax-Directed Translation",
+    "context": "Abstract Syntax Trees (ASTs) simplify language constructs by omitting certain syntactic details (parentheses, some keywords), focusing on the essential structure.",
+    "question": "What is the core difference between a parse tree and an AST?",
+    "options": [
+      "A: The parse tree always has fewer nodes than the AST",
+      "B: The AST strictly contains lexical tokens only, parse tree does not",
+      "C: The AST is a condensed representation focusing on semantic structure, ignoring some syntactic forms like parentheses",
+      "D: The parse tree is built after code generation",
+      "E: They are identical in all compiler designs"
+    ],
+    "correct_options_literal": "An AST is a more abstract structure that omits extraneous parsing details but retains essential semantic constructs.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Syntax-Directed Translation",
+    "context": "Directed acyclic graphs (DAGs) can be used instead of ASTs to share common subexpressions, preventing redundant computations.",
+    "question": "When would a compiler use a DAG representation rather than a simple AST?",
+    "options": [
+      "A: Only for tokenization tasks",
+      "B: To share identical subtrees representing the same subexpression, optimizing repeated computations",
+      "C: To ensure more parse tree nodes are introduced",
+      "D: To enable ambiguous grammar resolution",
+      "E: DAGs never appear in a compiler pipeline"
+    ],
+    "correct_options_literal": "A DAG merges common subexpressions, eliminating duplicate subtrees to optimize code generation or partial evaluation.",
+    "correct_options": "B",
+    "correct_options_idx": 2
+  },
+  {
+    "topic": "Syntax-Directed Translation",
+    "context": "Synthesized attributes typically flow upward from children to parents, while inherited attributes can flow downward or sideways in the parse tree.",
+    "question": "Which type of attribute is computed using information from the children nodes in a parse tree?",
+    "options": [
+      "A: Inherited attribute",
+      "B: Synthesized attribute",
+      "C: Universal attribute",
+      "D: Weak attribute",
+      "E: Local attribute"
+    ],
+    "correct_options_literal": "Synthesized attributes compute their values from their children’s attributes and pass them up to the parent node.",
+    "correct_options": "B",
+    "correct_options_idx": 2
+  },
+  {
+    "topic": "Syntax-Directed Translation",
+    "context": "Bottom-up syntax-directed translation can embed actions in an LR parser, executing them when reductions happen. These actions can build AST nodes or evaluate subexpressions on the fly.",
+    "question": "When does a semantic action typically execute in an LR parser with bottom-up SDT?",
+    "options": [
+      "A: Right after the shift action",
+      "B: At the parser’s completion only",
+      "C: Immediately upon reducing a right-hand side to a nonterminal",
+      "D: Before reading any tokens",
+      "E: After each token is recognized as whitespace"
+    ],
+    "correct_options_literal": "In bottom-up parsing, the action is triggered upon a reduce step, where the handle is replaced by the production’s nonterminal.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Syntax-Directed Translation",
+    "context": "For semantic checks like type compatibility, actions might gather type information from subexpressions and propagate it up the parse tree, issuing errors if mismatched.",
+    "question": "How does an S-attributed definition typically handle type-checking for an expression grammar?",
+    "options": [
+      "A: By storing inherited attributes for each operator only",
+      "B: By scanning the entire parse tree at the end with a separate pass",
+      "C: By synthesizing the type attribute at each production, checking subexpression types for compatibility before assigning the parent’s type",
+      "D: By ignoring type compatibility until runtime",
+      "E: By requiring a separate semantic parser"
+    ],
+    "correct_options_literal": "Each production’s action checks the types of child nodes and synthesizes the parent node’s type or issues errors if incompatible.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+
+  {
+    "topic": "Semantic Analysis",
+    "context": "Semantic analysis checks for correctness beyond the grammar, such as type checking, scope resolution, and variable declarations.",
+    "question": "What is the role of semantic analysis in a compiler?",
+    "options": [
+      "A: To generate final machine code",
+      "B: To handle whitespace normalization",
+      "C: To verify language-specific rules like type correctness, scope resolution, and ensure the parse tree is semantically valid",
+      "D: To reorder instructions for pipeline efficiency",
+      "E: To tokenize the input"
+    ],
+    "correct_options_literal": "Semantic analysis enforces rules that go beyond context-free syntax, including type checking, scope, and usage checks.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Semantic Analysis",
+    "context": "A type system ensures expressions are used consistently with their types. Polymorphic functions or overloaded operators add complexity, often requiring specialized type inference algorithms.",
+    "question": "Which part of the compiler typically checks whether an operator can be applied to a pair of operand types?",
+    "options": [
+      "A: The lexical analyzer",
+      "B: The syntax error recovery module",
+      "C: The semantic analyzer or type checker phase",
+      "D: The code optimization pass",
+      "E: The symbol table hashing function"
+    ],
+    "correct_options_literal": "Semantic (type) analysis ensures operators are used with valid operand types, e.g., integer + integer is valid while integer + string might be an error (unless defined).",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Semantic Analysis",
+    "context": "Scope rules determine visibility of identifiers. A nested scope’s identifier declarations may hide outer declarations with the same name, requiring correct symbol table handling.",
+    "question": "How does a compiler typically handle nested scope declarations for identifiers?",
+    "options": [
+      "A: By forcing all declarations into a single global scope",
+      "B: By ignoring identical declarations once one is found",
+      "C: By pushing a new symbol table (or scope) upon entering a block, and popping it when exiting, to manage local declarations",
+      "D: By using LR(1) items to track variable names",
+      "E: By allowing only one variable name in the entire program"
+    ],
+    "correct_options_literal": "Entering a new block often creates a nested scope (symbol table push), and leaving that block discards the local declarations (symbol table pop).",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Semantic Analysis",
+    "context": "Type coercion can automatically convert one type to another (e.g., int to float). The compiler must ensure no unsafe conversions occur or issue warnings if they do.",
+    "question": "When the language allows implicit type conversions (coercions), how does the semantic analyzer typically handle them?",
+    "options": [
+      "A: It rejects all attempts to convert between types",
+      "B: It modifies the grammar to remove all references to type",
+      "C: It inserts type-conversion operations (e.g., int-to-float) in the intermediate representation where needed",
+      "D: It only logs an error and halts compilation",
+      "E: It defers all type decisions until link time"
+    ],
+    "correct_options_literal": "The compiler automatically inserts appropriate conversion operations (like intToFloat) where needed by language rules.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Semantic Analysis",
+    "context": "An abstract syntax tree can contain pointer types, array types, function prototypes, etc. The compiler must verify usage matches declarations, e.g., array indexing uses integer subscripts.",
+    "question": "Which semantic rule ensures array indices are used correctly according to declared array bounds or type?",
+    "options": [
+      "A: Lexical analysis ensures subscript validity",
+      "B: The parser merges array index usage into parse trees automatically",
+      "C: The semantic analyzer checks that array references are used with integer indices and within bounds if known at compile time",
+      "D: The code generator guesses the subscript range",
+      "E: No checks are done until runtime"
+    ],
+    "correct_options_literal": "Semantic checks verify that an array subscript is an integer type, and if static bounds are known, it may also check ranges at compile time.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Semantic Analysis",
+    "context": "Name resolution includes ensuring function calls match declared function prototypes in terms of arity (number of parameters) and parameter types.",
+    "question": "How does a compiler typically detect an error if a function is called with an incorrect number of arguments?",
+    "options": [
+      "A: By the lexical analyzer rejecting the identifier",
+      "B: By the syntax-directed translation ignoring extra arguments",
+      "C: By the semantic analyzer comparing the call’s actual parameter count to the function’s prototype or symbol table entry",
+      "D: By the parser forcibly discarding tokens until they match",
+      "E: By generating random instructions in the code generator"
+    ],
+    "correct_options_literal": "The compiler checks the call site’s argument count/type against the function declaration in the symbol table, flagging mismatches.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Semantic Analysis",
+    "context": "Overloaded functions or operators require the compiler to choose among multiple candidates based on argument types and language-specific rules, a process called overload resolution.",
+    "question": "When a language supports function overloading, how does the compiler determine which function version to call?",
+    "options": [
+      "A: It picks the first declared function ignoring parameter types",
+      "B: It randomly chooses any overloaded version",
+      "C: It performs overload resolution by matching argument types with parameter lists, possibly applying implicit conversions if allowed",
+      "D: It allows the user to specify the memory address explicitly",
+      "E: It rejects all calls to overloaded functions"
+    ],
+    "correct_options_literal": "Overload resolution checks each candidate’s parameter signatures against the call’s argument types, accounting for allowable coercions.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Semantic Analysis",
+    "context": "Languages like C or Java have concept of ‘definite assignment’ rules, ensuring variables are used only after they have been assigned. Compilers can track these flow properties in semantic analysis.",
+    "question": "Which semantic check ensures a local variable has been assigned a value before it is used?",
+    "options": [
+      "A: Lexical scope check",
+      "B: LR(1) item check",
+      "C: Definite assignment or uninitialized variable check in semantic analysis",
+      "D: Symbol table hashing procedure",
+      "E: Peephole optimization"
+    ],
+    "correct_options_literal": "Definite assignment analysis in the semantic phase ensures references to variables only occur after assignment within all possible control-flow paths.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Semantic Analysis",
+    "context": "Semantic actions might insert references to the symbol table, storing type info, memory offsets, or linkage data for later code generation.",
+    "question": "How is the symbol table typically utilized during semantic analysis?",
+    "options": [
+      "A: It is ignored once tokens are recognized",
+      "B: It holds precomputed machine instructions",
+      "C: It maps identifiers to their declarations, types, scopes, and other metadata needed for semantic checks",
+      "D: It sets up the final memory layout for runtime objects exclusively",
+      "E: It is only used during code optimization"
+    ],
+    "correct_options_literal": "The symbol table is central to semantic checks, storing each identifier’s type, scope level, and other relevant attributes.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+
+  {
+    "topic": "Intermediate Code Generation",
+    "context": "Intermediate representations (IR) can be tree-based, linear (e.g., three-address code), or a control-flow graph. They facilitate analysis and optimizations before final code generation.",
+    "question": "Why do compilers typically generate an IR (Intermediate Representation) before machine code?",
+    "options": [
+      "A: To reduce compilation speed by adding extra steps",
+      "B: To simplify grammar parsing for the lexer",
+      "C: To provide a uniform platform-neutral representation that’s easier to analyze and optimize, then later map to different target architectures",
+      "D: Because assembly instructions are ambiguous",
+      "E: They only generate IR if no optimization is needed"
+    ],
+    "correct_options_literal": "An IR separates machine-dependent aspects from high-level constructs, enabling more robust optimization and retargeting for different hardware.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Intermediate Code Generation",
+    "context": "Three-Address Code (TAC) uses statements like x = y op z, facilitating easy manipulation by optimization passes. Temporary variables often hold intermediate results.",
+    "question": "What is one characteristic feature of three-address code (TAC)?",
+    "options": [
+      "A: Each instruction can have only one operand",
+      "B: It is restricted to hardware registers only",
+      "C: Instructions typically have at most three references: two sources and one destination, simplifying transformations and optimizations",
+      "D: It must always use postfix notation",
+      "E: It eliminates the need for a symbol table"
+    ],
+    "correct_options_literal": "TAC instructions are typically of the form temp = operand1 op operand2, with up to three references per statement (dest, src1, src2).",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Intermediate Code Generation",
+    "context": "A compiler might transform expressions into TAC by breaking complex operations into sequences of simpler instructions, each storing partial results in temporaries.",
+    "question": "Why do compilers break down complex expressions into multiple three-address statements?",
+    "options": [
+      "A: To hide the subexpressions from the semantic analyzer",
+      "B: Because hardware requires very long instructions",
+      "C: Simpler instructions are easier to optimize and manipulate in subsequent phases than a single large operation",
+      "D: To ensure final code runs in constant time",
+      "E: To enforce left recursion in the grammar"
+    ],
+    "correct_options_literal": "Decomposing expressions into smaller steps in TAC allows straightforward optimization passes like common subexpression elimination.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Intermediate Code Generation",
+    "context": "Control-flow instructions in TAC include labels, jumps, conditional branches, facilitating creation of basic blocks and control-flow graphs for optimization.",
+    "question": "Which TAC constructs are typically used to represent branching and jumping in a program?",
+    "options": [
+      "A: Direct AST links only",
+      "B: Symbol table entries for each statement",
+      "C: Goto label, if-goto label, or conditional goto instructions to handle flow changes",
+      "D: The lexical buffer alone",
+      "E: Purely function calls with no branching"
+    ],
+    "correct_options_literal": "Conditional or unconditional goto statements, often referencing labels, represent flow control in TAC and define basic block boundaries.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Intermediate Code Generation",
+    "context": "Temporaries introduced during IR generation hold partial or final results. The register allocator later decides how to map these temporaries to hardware registers or memory.",
+    "question": "Why does the IR typically use a large pool of temporary variables instead of reusing them immediately?",
+    "options": [
+      "A: The IR phase is unconcerned with memory usage",
+      "B: Minimizing variable usage is impossible in IR",
+      "C: Using distinct temporaries simplifies data-flow analysis, after which a register allocator can efficiently rename or merge them",
+      "D: The IR generator is not aware of the original source code",
+      "E: The lexical analyzer requires that each token is a unique temporary"
+    ],
+    "correct_options_literal": "Having unique temporaries clarifies dependencies, letting subsequent optimization or register allocation rename/merge them without confusion.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Intermediate Code Generation",
+    "context": "Static single assignment (SSA) form ensures each variable is assigned exactly once. Compiler optimizations (e.g., constant propagation) become simpler with SSA’s explicit dataflow representation.",
+    "question": "What is a key benefit of converting the IR to Static Single Assignment (SSA) form?",
+    "options": [
+      "A: The parser runs faster",
+      "B: Each identifier can be assigned multiple times freely",
+      "C: Dataflow analyses become more straightforward since each variable is defined once, clarifying use-def chains",
+      "D: It disables all advanced optimizations",
+      "E: It eliminates the need for any type checking"
+    ],
+    "correct_options_literal": "SSA clarifies the flow of each variable’s value by ensuring one definition per variable name, simplifying transformations like constant propagation.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Intermediate Code Generation",
+    "context": "A basic block is a straight-line code sequence with no branches in or out, except at the beginning or end. The control-flow graph is built by linking these blocks via edges corresponding to jumps and branches.",
+    "question": "Why do compilers break code into basic blocks?",
+    "options": [
+      "A: To ensure every statement is a jump",
+      "B: Basic blocks are required for lexical scanning",
+      "C: They serve as the fundamental units of optimization and control-flow analysis, containing no internal branches",
+      "D: They guarantee a single definition for each variable in block scope",
+      "E: They are only used for error recovery"
+    ],
+    "correct_options_literal": "Optimizations commonly analyze code at the granularity of basic blocks, which have a single entry and exit point, easing data-flow reasoning.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Intermediate Code Generation",
+    "context": "Intermediate code for function calls includes parameter passing (push or move to registers), call instructions, and possible return value assignment. Some IR treat function calls as special instructions.",
+    "question": "How do compilers represent function calls in a high-level IR like three-address code?",
+    "options": [
+      "A: By ignoring parameters and returning random results",
+      "B: By forcing all function bodies inline at the call site",
+      "C: Often with specialized instructions or sequences that set up parameters, invoke the function label, and store return values in temporaries",
+      "D: By handing them directly to the linker",
+      "E: By deferring call representation until final code generation"
+    ],
+    "correct_options_literal": "A typical IR approach is to have instructions for parameter setup (e.g., param x), a call statement (call f, n), and capturing the return in a temp.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Intermediate Code Generation",
+    "context": "High-level IR might keep explicit memory references (array[index]) or pointer arithmetic. Lower-level IR often expands these into address calculations (e.g., base + index*width).",
+    "question": "How are array access expressions typically represented in a low-level IR?",
+    "options": [
+      "A: They remain in the form array[index]",
+      "B: They are removed entirely as we only store scalars",
+      "C: They are converted into address calculations: base + (index * element_size), generating a pointer, then a load/store from that pointer",
+      "D: They are turned into function calls: array_access()",
+      "E: They are forced into a DAG for immediate execution"
+    ],
+    "correct_options_literal": "Low-level IR typically expands array references into pointer arithmetic plus load/store operations on that computed address.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Intermediate Code Generation",
+    "context": "Switch-case statements can be lowered to a jump table or a sequence of conditional branches in IR. Jump tables improve performance if the case labels are dense.",
+    "question": "Why might a compiler transform a high-level switch statement into a jump table instead of multiple if-goto chains in IR?",
+    "options": [
+      "A: Because jump tables always require fewer instructions than any other code",
+      "B: Jump tables do not exist in real CPU instruction sets",
+      "C: Dense numeric case labels can be indexed in constant time to jump directly to the correct case block, improving performance over many conditional checks",
+      "D: Switch-case blocks are impossible to parse otherwise",
+      "E: Jump tables eliminate the need for a symbol table"
+    ],
+    "correct_options_literal": "If case labels form a dense range, the compiler can generate an O(1) index-based jump to handle each label, rather than multiple comparisons.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+
+  {
+    "topic": "Symbol Table & Scope",
+    "context": "A symbol table entry typically includes the identifier’s name, type information, scope level, and possibly offset or address in memory for variables.",
+    "question": "Which of these pieces of information is least likely to appear in a symbol table entry for a variable?",
+    "options": [
+      "A: The variable’s type",
+      "B: The variable’s lexical scope level",
+      "C: The variable’s starting memory offset or register assignment",
+      "D: The operating system version used during compilation",
+      "E: The variable’s name/identifier"
+    ],
+    "correct_options_literal": "OS version is unrelated to symbol usage; type, scope, name, and address/offset are typically stored in the symbol table.",
+    "correct_options": "D",
+    "correct_options_idx": 4
+  },
+  {
+    "topic": "Symbol Table & Scope",
+    "context": "Hash tables are common for symbol table implementation, providing average O(1) insert/lookup. Some compilers also use tree-based or chained structures for scoping.",
+    "question": "Why are hash tables commonly used for compiler symbol tables?",
+    "options": [
+      "A: They guarantee no collisions exist",
+      "B: They can parse tokens automatically",
+      "C: They provide fast average-time lookups (O(1)) for identifiers during compilation",
+      "D: They convert the source code into intermediate code",
+      "E: They remove the need for semantic checking"
+    ],
+    "correct_options_literal": "Hash-based symbol tables yield quick insert and lookup for variables, functions, etc., crucial for compile-time performance.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Symbol Table & Scope",
+    "context": "In languages with block scopes, each block introduces a new scope level. A stack of hash tables or a linked structure can keep track of active declarations.",
+    "question": "How does a compiler commonly handle entering and exiting a nested block scope?",
+    "options": [
+      "A: By deleting the entire symbol table upon each block exit",
+      "B: By maintaining a stack of symbol tables, pushing a new one when entering a block and popping it at exit",
+      "C: By merging all blocks into a single global environment",
+      "D: By building a new parser for each block",
+      "E: By ignoring local variables inside blocks"
+    ],
+    "correct_options_literal": "A typical approach is to push a new symbol table for each block and pop it when leaving, ensuring local declarations are ephemeral.",
+    "correct_options": "B",
+    "correct_options_idx": 2
+  },
+  {
+    "topic": "Symbol Table & Scope",
+    "context": "Some languages allow separate compilation units (files). The compiler must track exports and imports, linking them later or referencing them in a global symbol table that merges partial symbol information.",
+    "question": "Which symbol table strategy accommodates multiple compilation units in a large program?",
+    "options": [
+      "A: Using a single symbol table for the entire OS",
+      "B: Combining all source files into one big lexical input",
+      "C: Maintaining partial symbol tables for each compilation unit and merging or cross-referencing external symbols during linking or a global compilation pass",
+      "D: Forcing each compilation unit to have no external references",
+      "E: Storing all symbols in the parse tree only"
+    ],
+    "correct_options_literal": "Large-scale compilers keep separate symbol tables for each file or module, then cross-reference external symbols for linking or multi-file analysis.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Symbol Table & Scope",
+    "context": "Information about function parameters can appear as child entries or sub-structures within the function’s symbol table entry, storing parameter types and order.",
+    "question": "How are function parameters typically recorded in a symbol table?",
+    "options": [
+      "A: They are never stored because parameters are ephemeral",
+      "B: Each parameter is inserted as a separate global variable",
+      "C: They are nested under the function’s symbol entry or within the function’s local scope with position/type info",
+      "D: They do not require type checking at all",
+      "E: They are replaced by macros at compile time"
+    ],
+    "correct_options_literal": "A function’s symbol table entry often references parameter descriptors, each storing the name, type, and order for semantic checks.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Symbol Table & Scope",
+    "context": "Alias analysis arises when multiple names can refer to the same memory location (e.g., pointer references, reference parameters). This complicates optimizations.",
+    "question": "What is ‘aliasing’ in the context of symbol tables and semantic analysis?",
+    "options": [
+      "A: When one token has multiple lexical categories",
+      "B: When two identifiers refer to identical memory locations, such as through pointers or references",
+      "C: When all variables are in the same scope",
+      "D: A type-checking strategy used in strongly-typed languages",
+      "E: A method of generating machine code for loops"
+    ],
+    "correct_options_literal": "Aliasing means different names or references could point to the same memory, making analyses of side effects more complex.",
+    "correct_options": "B",
+    "correct_options_idx": 2
+  },
+  {
+    "topic": "Symbol Table & Scope",
+    "context": "In languages with function overloading, the symbol table can store multiple entries for the same function name, distinguished by parameter signatures. Overload resolution picks the correct one.",
+    "question": "How does the symbol table handle overloaded function names?",
+    "options": [
+      "A: It refuses to compile if a name is reused",
+      "B: It stores them as a single entry with no type info",
+      "C: It creates multiple entries for the same identifier, keyed or stored with different parameter type lists (signatures)",
+      "D: It merges them into a single pointer for the code generator",
+      "E: It does not track parameter types at all"
+    ],
+    "correct_options_literal": "Overloaded functions share the same name but differ by parameter signature, so the table stores multiple entries or a structure capturing each signature.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Symbol Table & Scope",
+    "context": "Forward declarations allow usage of a function or variable before it is fully defined. The symbol table must track partial information, updating it when the actual declaration is encountered.",
+    "question": "How does the compiler handle a forward declaration of a function in the symbol table?",
+    "options": [
+      "A: It generates code immediately for the function body",
+      "B: It treats it as an error until the definition appears",
+      "C: It creates a partial entry with the known prototype, updating the entry once the function definition is encountered",
+      "D: It merges the forward declaration into a different namespace",
+      "E: It discards the forward-declared symbol if found incomplete"
+    ],
+    "correct_options_literal": "The table stores the incomplete info (name, parameter types) and awaits the full definition, ensuring references can check consistency later.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Symbol Table & Scope",
+    "context": "Inlining expansions can replace a function call with the function’s body. The compiler may temporarily treat the function body as if it’s part of the caller’s scope, adjusting local variable names or creating new temporaries to avoid conflicts.",
+    "question": "What happens to symbol table entries when a function is inlined at the call site?",
+    "options": [
+      "A: The symbol table merges the callee’s local variables into the caller’s scope with renamed or separate entries to avoid collisions",
+      "B: The compiler never modifies symbol entries for inlining",
+      "C: The callee’s symbol table is destroyed entirely",
+      "D: The call is replaced by an unconditional jump only",
+      "E: The parser re-parses the entire function at runtime"
+    ],
+    "correct_options_literal": "When inlining, the compiler injects the function body into the caller, systematically renaming or isolating the callee’s variables to preserve correctness.",
+    "correct_options": "A",
+    "correct_options_idx": 1
+  },
+  {
+    "topic": "Symbol Table & Scope",
+    "context": "A compiler may store offsets or addresses for variables in the symbol table, especially if the final target architecture or calling convention is known. Alternatively, it might do offset assignment later in code generation.",
+    "question": "How does the symbol table typically track the memory location of local variables?",
+    "options": [
+      "A: By storing random addresses for each variable",
+      "B: By ignoring local variables entirely",
+      "C: By assigning a stack frame offset for each variable relative to the function’s activation record base pointer",
+      "D: By pushing each variable into a global static region unconditionally",
+      "E: By mapping variables directly to CPU registers at parse time"
+    ],
+    "correct_options_literal": "A local variable’s offset in the function’s stack frame is often recorded, letting the code generator produce correct load/store instructions.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+
+  {
+    "topic": "Run-time Environments",
+    "context": "A run-time environment (RTE) defines how function calls, parameter passing, stack frames, and dynamic memory allocation occur. The activation record or stack frame stores local data, return address, and sometimes a static link for nested functions.",
+    "question": "What is the primary role of an activation record (stack frame) in a run-time environment?",
+    "options": [
+      "A: To store the entire program code",
+      "B: To parse tokens in the lexical analyzer",
+      "C: To maintain a function’s local variables, parameters, return address, and bookkeeping for when the function is active",
+      "D: To precompute all possible function outputs",
+      "E: To hold the global variable references only"
+    ],
+    "correct_options_literal": "Each function invocation has its own activation record, storing parameters, local variables, and links needed to return properly.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Run-time Environments",
+    "context": "Languages with nested procedures (e.g., Pascal) maintain static links to the enclosing scope’s activation record, ensuring local references remain valid. This is also called a ‘display’ in some implementations.",
+    "question": "Why do compilers for languages with nested functions often include a static link pointer in each activation record?",
+    "options": [
+      "A: To manage separate symbol tables for the debugger",
+      "B: To facilitate debugging logs in the console",
+      "C: To access non-local variables in an enclosing scope by pointing to that scope’s activation record",
+      "D: To override the hardware instruction set",
+      "E: To store dynamic library references"
+    ],
+    "correct_options_literal": "Nested scopes require a chain of static links so that inner functions can reference outer-scope variables at runtime.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Run-time Environments",
+    "context": "Parameter passing methods include call-by-value, call-by-reference, call-by-value-result, call-by-name, etc. Each has different implementation strategies in the activation record.",
+    "question": "How is call-by-reference typically implemented in a run-time environment?",
+    "options": [
+      "A: By copying the value of the actual parameter into the formal parameter’s location",
+      "B: By embedding an entire function inside the variable name",
+      "C: By passing a pointer to the actual argument’s memory location, so changes to the formal parameter affect the original variable",
+      "D: By ignoring all updates to the parameter inside the function",
+      "E: By forcibly converting references to integers"
+    ],
+    "correct_options_literal": "Call-by-reference is usually realized by passing the address of the actual parameter, enabling direct writes to the original variable.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Run-time Environments",
+    "context": "A heap manager handles dynamic memory allocation (e.g., malloc/new). The compiler inserts calls or instructions for these allocations, typically storing pointers in variables. Garbage collection may or may not be present, depending on the language.",
+    "question": "How does the compiler typically handle memory allocation for dynamically created objects at runtime?",
+    "options": [
+      "A: It always places them on the stack",
+      "B: It uses a specialized heap allocation routine (e.g., malloc, new), returning a pointer to allocated space",
+      "C: It compiles them into global variables",
+      "D: It forces the user to create all objects at compile time",
+      "E: It automatically transforms them into compile-time constants"
+    ],
+    "correct_options_literal": "Dynamic objects are allocated from the heap via library calls or instructions, returning a pointer for use in the program.",
+    "correct_options": "B",
+    "correct_options_idx": 2
+  },
+  {
+    "topic": "Run-time Environments",
+    "context": "When a function returns, the runtime typically pops the activation record off the stack, restoring the caller’s environment. Any local addresses in that record become invalid once popped (dangling if still accessed).",
+    "question": "Why is it unsafe to reference a local variable's address after the function returns?",
+    "options": [
+      "A: Because local variables become tokens for the lexer",
+      "B: Because the compiler merges them into global variables automatically",
+      "C: Because the activation record is popped from the stack, rendering that memory location invalid for further use",
+      "D: Because they are converted into floating-point registers",
+      "E: Because it is always replaced by an immediate constant"
+    ],
+    "correct_options_literal": "Once the function returns, its stack frame is reclaimed, so pointers to local variables point to undefined or reused memory.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Run-time Environments",
+    "context": "A calling convention (cdecl, stdcall, etc.) dictates how parameters are passed, where return values go, and who cleans up the stack. The compiler must generate code adhering to the platform’s convention.",
+    "question": "Which aspect does a calling convention typically specify?",
+    "options": [
+      "A: The grammar used in parsing function calls",
+      "B: Where the source code is stored at runtime",
+      "C: How function parameters are passed (registers, stack), who is responsible for stack cleanup, and how return values are delivered",
+      "D: Whether lexical or LR parsing is used",
+      "E: Whether inline assembly is allowed in the code"
+    ],
+    "correct_options_literal": "Calling conventions define details like parameter order (left-to-right or right-to-left), stack clean-up responsibility, and the register for return values.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Run-time Environments",
+    "context": "Position-independent code (PIC) uses relative addressing and dynamic relocations so executables or libraries can be loaded at arbitrary memory addresses. The compiler or assembler inserts relocations for global accesses.",
+    "question": "Why is position-independent code important in shared libraries?",
+    "options": [
+      "A: It ensures the library has no symbol table",
+      "B: It only applies to lexical analysis",
+      "C: It allows the library code to be loaded at any virtual address without modification, enabling multiple processes to share the same library in memory",
+      "D: It forces all data to be stored on the heap",
+      "E: It eliminates the need for function calls entirely"
+    ],
+    "correct_options_literal": "PIC can be loaded anywhere in the address space, supporting dynamic linking and memory sharing among processes.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Run-time Environments",
+    "context": "A closure captures the environment needed by a nested function (e.g., references to non-local variables). The compiler may create a structure holding the function pointer plus references to those external variables or activation records.",
+    "question": "What is a closure in the context of implementing nested functions or lambdas?",
+    "options": [
+      "A: A pointer to a global variable only",
+      "B: A specialized loop unrolling technique",
+      "C: A runtime structure containing both the function’s code pointer and the environment in which it was defined, so non-local variables can be accessed",
+      "D: A parse tree node capturing syntax rules",
+      "E: A method of code inlining to optimize tail calls"
+    ],
+    "correct_options_literal": "Closures carry both the function’s code and the referencing environment for free variables, enabling correct behavior when invoked later.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Run-time Environments",
+    "context": "In languages with exceptions (C++, Java), runtime structures like stack unwinding tables or landing pads are generated. The compiler inserts code to manage and propagate exceptions up the call chain until a handler is found.",
+    "question": "How does a compiler typically implement language-level exceptions at runtime?",
+    "options": [
+      "A: By ignoring them and continuing execution",
+      "B: By lexically analyzing the exception tokens only",
+      "C: By generating metadata and unwind mechanisms that pop activation records until a matching catch/handler is located",
+      "D: By storing exceptions in the symbol table as variables",
+      "E: By embedding the exception code into the operator precedence rules"
+    ],
+    "correct_options_literal": "Exception handling often uses tables describing how to unwind the call stack. When thrown, the runtime unwinds until it hits a matching catch block.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+
+  {
+    "topic": "Code Optimization",
+    "context": "Peephole optimizations scan short instruction sequences (the ‘peephole’) to detect local patterns (like unnecessary moves) and improve them or remove them.",
+    "question": "What is the primary goal of peephole optimization?",
+    "options": [
+      "A: To parse the code using top-down methods",
+      "B: To remove syntax errors from the source",
+      "C: To perform small, localized improvements (e.g., removing redundant instructions, combining adjacent operations) on generated code",
+      "D: To rewrite the entire IR to use dynamic programming",
+      "E: To reorder function definitions in the symbol table"
+    ],
+    "correct_options_literal": "Peephole optimization looks for short instruction patterns to simplify or replace, reducing code size and potentially improving performance.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Code Optimization",
+    "context": "Common subexpression elimination (CSE) identifies expressions that are computed multiple times with the same values, reusing the previously computed result instead of recomputing.",
+    "question": "How does common subexpression elimination (CSE) reduce redundant computation?",
+    "options": [
+      "A: By ignoring expressions inside loops",
+      "B: By merging all variables into one location",
+      "C: By identifying expressions with the same operands that produce the same result, storing them once in a temporary and reusing that value",
+      "D: By removing all expressions from the code",
+      "E: By deferring expression evaluation to runtime"
+    ],
+    "correct_options_literal": "CSE replaces repeated occurrences of the same expression with a single computed value, avoiding repeated calculations.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Code Optimization",
+    "context": "Loop-invariant code motion moves computations that do not change within a loop out of the loop, reducing per-iteration overhead.",
+    "question": "Which transformation is performed by loop-invariant code motion?",
+    "options": [
+      "A: It duplicates the loop body N times",
+      "B: It changes the loop from while to for syntax",
+      "C: It hoists expressions that produce the same result on every iteration out of the loop, computing them once instead of every iteration",
+      "D: It merges nested loops into one",
+      "E: It inlines all function calls into the loop"
+    ],
+    "correct_options_literal": "Loop-invariant code motion detects calculations that remain constant each iteration and moves them before the loop to save repeated overhead.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Code Optimization",
+    "context": "Constant propagation replaces variables that hold known constant values with their constants directly, enabling further optimizations such as constant folding and dead code elimination.",
+    "question": "Why is constant propagation beneficial in the optimization pipeline?",
+    "options": [
+      "A: It forces all variables to become floats",
+      "B: It discards the symbol table",
+      "C: By substituting known constants for variables, subsequent passes can simplify expressions and possibly remove dead branches",
+      "D: It removes all loops from the code",
+      "E: It transforms IR into random statements to obfuscate code"
+    ],
+    "correct_options_literal": "Replacing variables with literal constants can enable further simplifications, like folding expressions or removing unreachable code paths.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Code Optimization",
+    "context": "Strength reduction replaces expensive operations (e.g., multiplication) with equivalent but cheaper ones (e.g., addition, shifts), especially in loop indexing or address calculations.",
+    "question": "Which is an example of strength reduction in compiler optimization?",
+    "options": [
+      "A: Replacing x+0 with 0",
+      "B: Turning x = x * 2 into x = x + x (if it’s valid and cheaper on the target architecture)",
+      "C: Deleting an entire function definition from the code",
+      "D: Using a more powerful parsing algorithm",
+      "E: Splitting a single basic block into multiple blocks"
+    ],
+    "correct_options_literal": "Multiplying by 2 can often be replaced by an addition or shift operation, which may be faster on many architectures.",
+    "correct_options": "B",
+    "correct_options_idx": 2
+  },
+  {
+    "topic": "Code Optimization",
+    "context": "Dead code elimination removes instructions whose results are never used or code that cannot be reached at runtime (unreachable paths). This reduces code size and possibly execution time.",
+    "question": "Why can dead code be safely removed from a program during compilation?",
+    "options": [
+      "A: Because it is essential for lexical analysis",
+      "B: Because it reintroduces syntax errors",
+      "C: If the results of those instructions are never used or reachable, they have no observable effect on the program’s output",
+      "D: Because the IR requires fewer statements",
+      "E: Because the parser merges them into the start rule"
+    ],
+    "correct_options_literal": "Instructions or blocks that never affect the final outcome can be discarded without changing the program’s behavior.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Code Optimization",
+    "context": "Partial redundancy elimination (PRE) extends CSE and loop transformations to remove expressions that are redundantly computed on some but not necessarily all paths.",
+    "question": "Which optimization aims to remove expressions that are redundant on some, but not all, execution paths?",
+    "options": [
+      "A: Basic common subexpression elimination only",
+      "B: Peephole optimization",
+      "C: Partial redundancy elimination (PRE)",
+      "D: Symbol table scoping",
+      "E: Immediate code generation"
+    ],
+    "correct_options_literal": "PRE identifies expressions that are repeated along certain paths and ensures they are computed once, then reused across those paths.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Code Optimization",
+    "context": "Register allocation maps variables and temporaries to machine registers, subject to constraints. Graph-coloring algorithms treat each variable as a node and edges represent interference (cannot share a register).",
+    "question": "Why is graph coloring often used for register allocation?",
+    "options": [
+      "A: Because it’s the only known parsing strategy",
+      "B: To convert the symbol table into an AST",
+      "C: Each node (variable) that interferes with another is connected by an edge, ensuring interfering variables cannot share the same register color",
+      "D: It is used to parse regular expressions",
+      "E: It duplicates code for each register"
+    ],
+    "correct_options_literal": "In a register-interference graph, each variable is a node, and an edge indicates two variables alive at the same time. Coloring the graph assigns registers to variables without overlap.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Code Optimization",
+    "context": "Inlining expansions can improve performance by removing function call overhead, but may also increase code size. The compiler decides whether the performance gain outweighs potential downsides (code bloat, instruction cache misses).",
+    "question": "What is a key consideration when deciding to inline a function for optimization?",
+    "options": [
+      "A: Whether the function has lexical scope",
+      "B: Whether the function is declared after main",
+      "C: Balancing call overhead savings versus code size increase, which can affect instruction cache usage",
+      "D: The chosen LR parsing algorithm",
+      "E: The color of the book’s dragon on the cover"
+    ],
+    "correct_options_literal": "Inlining removes the function call overhead but increases code size, potentially hurting cache locality, so compilers weigh trade-offs.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Code Optimization",
+    "context": "Tail call optimization treats a function’s final call as a jump, reusing the current activation record if the language semantics permit it. Functional languages often rely heavily on this for recursion.",
+    "question": "What happens in tail call optimization (TCO)?",
+    "options": [
+      "A: The final call is replaced by storing results in a global array",
+      "B: The function’s local environment is reallocated after the call",
+      "C: The compiler transforms the final function call into a jump, reusing the current function’s stack frame instead of creating a new one",
+      "D: The parser ignores the last token in the file",
+      "E: The IR forcibly unrolls all loops"
+    ],
+    "correct_options_literal": "TCO reuses the current stack frame for the last call, eliminating the overhead of an additional function activation.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+
+  {
+    "topic": "Code Generation",
+    "context": "During code generation, the compiler maps intermediate operations to target instructions, considering register usage, addressing modes, and instruction selection patterns.",
+    "question": "What is the main goal of the code generator phase?",
+    "options": [
+      "A: To parse the input tokens",
+      "B: To produce an abstract syntax tree from the grammar",
+      "C: To translate IR instructions into machine instructions optimized for the target architecture’s registers and addressing modes",
+      "D: To remove all symbol table references",
+      "E: To handle runtime exceptions only"
+    ],
+    "correct_options_literal": "The code generator emits assembly or machine instructions that implement the IR logic, factoring in target-specific constraints.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Code Generation",
+    "context": "Instruction selection might match IR trees against a set of patterns describing target instructions (e.g., tree-pattern matching in a DAG). This can produce optimal or near-optimal instruction sequences.",
+    "question": "How can a compiler efficiently map IR trees to machine instructions?",
+    "options": [
+      "A: By ignoring the IR and rewriting the code by hand",
+      "B: By a direct lexical method with no patterns",
+      "C: Through tree-pattern matching algorithms that match subtrees to target instructions, often using dynamic programming for optimal selection",
+      "D: By forcing all instructions to be the same opcode",
+      "E: By passing the IR to a link-time optimizer"
+    ],
+    "correct_options_literal": "A common approach uses bottom-up tree pattern matching (e.g., BURG algorithm) to find the best instruction sequence for each subtree.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Code Generation",
+    "context": "Some architectures allow complex addressing modes (e.g., base + index * scale + displacement). The code generator tries to fold address calculations into such instructions to reduce overhead.",
+    "question": "Why does a compiler combine array indexing arithmetic directly into a single instruction when possible?",
+    "options": [
+      "A: To skip the parser phase",
+      "B: Because it merges the symbol table automatically",
+      "C: Utilizing advanced addressing modes can reduce separate instructions for address computation, improving performance",
+      "D: Because the IR is not valid otherwise",
+      "E: To increase code size for debugging"
+    ],
+    "correct_options_literal": "If the target CPU supports base+index+offset addressing, the compiler can incorporate address calculation into the final memory operation.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Code Generation",
+    "context": "Register allocation might happen before or after instruction selection. An integrated approach can yield better results but is more complex, as both instruction selection and register usage interplay strongly.",
+    "question": "Why might some compilers perform instruction selection and register allocation in multiple or integrated steps?",
+    "options": [
+      "A: They have unlimited registers available",
+      "B: The parser must see final code to parse it",
+      "C: Certain instruction choices can influence register usage, so an iterative or integrated approach can yield a more optimal final code",
+      "D: It ensures the code has no syntax errors",
+      "E: They do not actually allocate any registers at all"
+    ],
+    "correct_options_literal": "Instruction patterns and register allocation decisions are interdependent; a combined approach can produce more efficient code overall.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Code Generation",
+    "context": "Spilling occurs if there aren’t enough registers to hold all live variables simultaneously. The compiler stores some values in memory and reloads them as needed.",
+    "question": "What is register spilling?",
+    "options": [
+      "A: Overwriting the symbol table with random data",
+      "B: Eliminating all register usage entirely",
+      "C: Temporarily storing variables in memory instead of registers when there are not enough registers available",
+      "D: A technique for lexical debugging",
+      "E: Forcing the user to rename variables in the source code"
+    ],
+    "correct_options_literal": "When live ranges of variables exceed available registers, the allocator chooses some variables to store in memory and load them on demand.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Code Generation",
+    "context": "Some instructions (like multiply, divide, or floating-point ops) might have longer latencies. Scheduling can reorder instructions to hide these latencies and reduce stalls.",
+    "question": "What is the primary goal of instruction scheduling in code generation?",
+    "options": [
+      "A: To parse tokens in parallel",
+      "B: To ensure the IR is always in SSA form",
+      "C: To reorder instructions to minimize pipeline stalls or idle CPU cycles, improving runtime performance",
+      "D: To rewrite the grammar to be left-factored",
+      "E: To remove the symbol table from memory"
+    ],
+    "correct_options_literal": "Instruction scheduling arranges code to overlap long-latency operations with other independent work, reducing pipeline idle times.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Code Generation",
+    "context": "In a pipeline CPU, instructions may be issued in parallel if they do not have data hazards or resource conflicts. A compiler’s scheduling pass tries to reorder instructions to maximize concurrency.",
+    "question": "How does software pipelining differ from basic block scheduling?",
+    "options": [
+      "A: It merges all basic blocks into one function",
+      "B: It schedules instructions only within a single block",
+      "C: It unrolls loops and arranges iterations so that multiple loop bodies are partially overlapped in the pipeline, improving throughput",
+      "D: It forces a single instruction per clock cycle",
+      "E: It is a lexical analysis strategy"
+    ],
+    "correct_options_literal": "Software pipelining overlaps instructions from multiple iterations, effectively unrolling part of the loop to exploit parallelism in the pipeline.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Code Generation",
+    "context": "Delay slots (in architectures like MIPS) require the compiler to place an instruction after a branch or jump that will execute before the branch takes effect, or fill it with a no-op if no suitable instruction is found.",
+    "question": "What is a delay slot in some RISC architectures, and how do compilers handle it?",
+    "options": [
+      "A: A slot in the parser for ambiguous rules",
+      "B: A mandatory bubble inserted by the OS after each function call",
+      "C: An instruction space that always executes after a branch is issued but before control changes; the compiler tries to fill it with a useful instruction or uses a no-op",
+      "D: A lexical quirk to handle whitespace",
+      "E: A memory area for storing dynamic arrays"
+    ],
+    "correct_options_literal": "In architectures with branch delay slots, the instruction after a branch is executed regardless. The compiler tries to schedule a valid instruction there for efficiency.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Code Generation",
+    "context": "Link-time optimization (LTO) can merge IR or partially compiled code across compilation units, allowing interprocedural optimizations that the compiler couldn’t do on a single file alone.",
+    "question": "Why might link-time optimization produce more efficient executables?",
+    "options": [
+      "A: It moves the lexical analysis to the linker",
+      "B: It forces all modules to parse at runtime",
+      "C: Having the entire program’s IR at link time allows inlining, constant propagation, and dead code elimination across different compilation units",
+      "D: It removes the need for register allocation",
+      "E: It duplicates every function to reduce collisions"
+    ],
+    "correct_options_literal": "With LTO, the linker sees all code in IR form, enabling cross-file inlining or elimination of unused functions that single-file compilation can’t address.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Code Generation",
+    "context": "Final assembly or machine code must align data structures according to platform ABI rules (e.g., alignment to 4 or 8 bytes) for efficient memory access. The compiler ensures these layout constraints are met.",
+    "question": "What is the reason for aligning data in generated machine code?",
+    "options": [
+      "A: To satisfy syntax rules in the grammar",
+      "B: To run the lexical analyzer more efficiently",
+      "C: Many architectures require or prefer that data be aligned to specific boundaries (e.g., 4-byte boundary for int) for correct or faster access",
+      "D: To shift code addresses for debugging purposes only",
+      "E: It is mandated by the symbol table hashing"
+    ],
+    "correct_options_literal": "Hardware typically fetches aligned data more efficiently, and some architectures raise exceptions if data is misaligned.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+
+  {
+    "topic": "Advanced Topics",
+    "context": "Just-In-Time (JIT) compilation compiles code at runtime, often applying runtime profiling information to optimize frequently executed paths (dynamic optimization).",
+    "question": "How does a JIT compiler potentially outperform a traditional static compiler on some workloads?",
+    "options": [
+      "A: It never uses code optimization",
+      "B: It runs lexical analysis faster",
+      "C: It can gather runtime profiling data to optimize hot code paths more aggressively, tailoring optimizations to actual usage patterns",
+      "D: It discards all semantic checks",
+      "E: It forces the OS to rearrange memory segments"
+    ],
+    "correct_options_literal": "JIT compilers adapt to real execution profiles, focusing on heavily used code regions with specialized optimizations.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Advanced Topics",
+    "context": "Polyhedral optimizations analyze nested loops with affine bounds/indices to restructure them for improved data locality or parallelism, widely used in HPC compilers.",
+    "question": "Which optimization approach systematically transforms loops with affine bounds to improve data locality or parallelization?",
+    "options": [
+      "A: Peephole pattern matching",
+      "B: Operator-precedence parsing",
+      "C: Polyhedral model-based transformations",
+      "D: LR(0) item expansions",
+      "E: Symbol table hashing"
+    ],
+    "correct_options_literal": "The polyhedral model analyzes multi-dimensional loop nests, applying transformations like loop tiling, fusion, or fission to optimize memory and concurrency.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Advanced Topics",
+    "context": "Profile-guided optimization (PGO) collects execution statistics (e.g., branch frequencies) from running the instrumented binary, then uses that data to reorder code or inline selectively.",
+    "question": "How does profile-guided optimization improve performance?",
+    "options": [
+      "A: By skipping lexical analysis",
+      "B: By ignoring all low-frequency code entirely",
+      "C: Using runtime execution data (like branch frequencies) to shape code layout, inlining, and other optimizations more accurately than static heuristics",
+      "D: By forcing indefinite loops to terminate",
+      "E: By removing the parser from the final binary"
+    ],
+    "correct_options_literal": "PGO instruments the program to gather real usage data, which guides the compiler to focus optimizations on hot spots and reorder code for better cache usage.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Advanced Topics",
+    "context": "Decompilation attempts to reconstruct high-level code from machine code. It’s difficult because of lost information (e.g., variable names, higher-level constructs). Some compiler infrastructures can aid partial reverse engineering.",
+    "question": "What is a primary challenge in decompiling machine code back into a high-level language?",
+    "options": [
+      "A: The lexical rules are stored in machine code",
+      "B: There is a perfect one-to-one mapping from machine code to source constructs",
+      "C: High-level structures and variable names are typically lost, making it difficult to reconstruct the original structured flow and data abstractions",
+      "D: The parser is embedded in the CPU hardware",
+      "E: The OS disallows reading the machine code"
+    ],
+    "correct_options_literal": "Machine code lacks symbolic info about variable names, loops, or data types (unless debug data is included), so reconstructing them is nontrivial.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Advanced Topics",
+    "context": "Typed assembly language (TAL) extends assembly with type annotations, providing correctness guarantees. A typed IR can prevent certain classes of runtime errors by verifying type correctness at or after code generation.",
+    "question": "How does typed assembly language help ensure safety properties at the low level?",
+    "options": [
+      "A: It uses a top-down parser for tokens",
+      "B: By embedding type constraints in assembly instructions and verifying them, ensuring operations are type-consistent and memory is safely accessed",
+      "C: It requires no semantic checks at compile time",
+      "D: It randomly reorders instructions for optimization",
+      "E: It eliminates the need for a code generator"
+    ],
+    "correct_options_literal": "Typed assembly includes type annotations (e.g., integer, pointer) in the assembly format, letting a type checker confirm safe usage at the machine level.",
+    "correct_options": "B",
+    "correct_options_idx": 2
+  },
+  {
+    "topic": "Advanced Topics",
+    "context": "Domain-specific languages (DSLs) can use compiler frameworks to generate optimized code for specialized tasks (e.g., GPU kernels). Tools like LLVM provide IR transformations for custom front-ends.",
+    "question": "Why might a developer build a DSL and custom compiler instead of using a general-purpose language?",
+    "options": [
+      "A: DSLs must be ambiguous grammars",
+      "B: DSLs are never more efficient than general-purpose languages",
+      "C: DSLs can provide specialized syntax and semantics that are easier to optimize for a narrow domain (e.g., GPU kernels, query languages), reducing boilerplate",
+      "D: DSL compilers cannot produce machine code",
+      "E: The lexical analysis is simpler in a DSL"
+    ],
+    "correct_options_literal": "A DSL can codify domain-specific abstractions, enabling specialized optimizations that a general-purpose compiler wouldn’t automatically apply.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Advanced Topics",
+    "context": "Speculative execution is used in modern CPUs. Some compilers reorder instructions under the assumption that certain branches are more likely, but must ensure correctness if speculation fails.",
+    "question": "How does a compiler safely schedule instructions from a likely branch path before the branch is resolved?",
+    "options": [
+      "A: It changes the grammar to remove the branch",
+      "B: It leaves random no-ops instead",
+      "C: It inserts checks or reverts state if the branch prediction was wrong, ensuring the program’s semantics remain correct",
+      "D: It merges all possible branch targets into a single block",
+      "E: It is not possible to do so safely"
+    ],
+    "correct_options_literal": "Speculative scheduling can move instructions above a branch, but the compiler must ensure no side effects escape if speculation was incorrect.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Advanced Topics",
+    "context": "Binary translation can convert machine code for one architecture into code for another. Dynamic translators combine JIT-like strategies with runtime profiling, rewriting hot code segments for performance.",
+    "question": "In a dynamic binary translation system, how is hot code typically handled to improve performance?",
+    "options": [
+      "A: It is always left unoptimized",
+      "B: The translator inlines all function calls by default",
+      "C: Frequently executed code segments are recompiled on the fly with optimizations based on runtime profiling, akin to JIT compilation",
+      "D: The OS forcibly kills the process if code is too hot",
+      "E: It merges the code with the host CPU microcode"
+    ],
+    "correct_options_literal": "Dynamic translation identifies hot spots and applies more aggressive optimizations, similar to JIT, to speed up frequently run segments.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  },
+  {
+    "topic": "Advanced Topics",
+    "context": "Superoptimizers attempt to find the shortest or fastest sequence of machine instructions that implement a given function. They may use exhaustive or constraint-based search, which is computationally expensive but can produce minimal code sequences.",
+    "question": "What is the distinguishing feature of a superoptimizer compared to a standard compiler optimizer?",
+    "options": [
+      "A: It uses lexical scanning exclusively",
+      "B: It only optimizes lexical tokens, ignoring IR",
+      "C: It attempts exhaustive or near-exhaustive search to find the theoretically optimal (shortest or fastest) instruction sequence, rather than applying heuristic transformations",
+      "D: It merges all variables into single memory cells",
+      "E: It discards any form of intermediate code"
+    ],
+    "correct_options_literal": "Unlike typical compilers, a superoptimizer tries every possible instruction sequence or uses advanced constraints to ensure minimal or fastest code for a snippet.",
+    "correct_options": "C",
+    "correct_options_idx": 3
+  }
+]
