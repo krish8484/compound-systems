@@ -1,6 +1,6 @@
 name: cs244b CI
 
-on: [push]
+on: [push, workflow_dispatch]
 
 jobs:
   cs244b-CI:
