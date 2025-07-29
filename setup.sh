@@ -25,7 +25,8 @@ if [ ! -f "api_pb2.py" ] || [ ! -f "api_pb2_grpc.py" ]; then
     if command -v protoc &> /dev/null; then
         protoc -I Protos --python_out=. --grpc_python_out=. Protos/api.proto 2>/dev/null || echo "Warning: Could not compile protobuf files. Using existing files if available."
     else
-        echo "Warning: protoc not found. Using existing protobuf files if available."
+        echo "Warning: protoc not found, trying grpc_tools.protoc..."
+        uv run python -m grpc_tools.protoc -I Protos --python_out=. --grpc_python_out=. Protos/api.proto 2>/dev/null || echo "Warning: Could not compile protobuf files. Using existing files if available."
     fi
 else
     echo "Protobuf files already exist, skipping compilation."
