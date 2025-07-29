@@ -1,0 +1,28 @@
+[project]
+name = "compound-systems"
+version = "0.1.0"
+description = "Distributed Futures System for AI Workloads"
+authors = [
+    {name = "Compound Systems Team"}
+]
+dependencies = [
+    "psutil==5.8.0",
+    "grpcio-tools==1.42.0",
+    "numpy==1.26.4",
+    "flake8==7.0.0",
+    "pytest==7.4.0",
+    "pytest-repeat==0.9.3",
+    "protobuf==3.20.3",
+]
+requires-python = ">=3.9"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "-v"
+
+[tool.flake8]
+max-line-length = 127
+max-complexity = 10
+exclude = ["__pycache__", "*.pyc", "api_pb2.py", "api_pb2_grpc.py"] 
